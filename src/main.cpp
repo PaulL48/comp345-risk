@@ -1,5 +1,5 @@
 #include <iostream>
-#include "vec2f.h"
+#include "Vec2f.h"
 
 int main(int argc, char** argv)
 {

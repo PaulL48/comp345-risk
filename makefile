@@ -18,7 +18,7 @@ $(build_dir)/$(exe): $(objects)
 	$(cxx) -o $@ $^
 
 $(build_dir)/%.o: src/%.cpp $(headers) | $(build_dir)
-	$(cxx) -o $@ -c $< -I ./headers
+	$(cxx) -o $@ -c $< -I./headers
 
 $(build_dir):
 	$(makedir) $@
