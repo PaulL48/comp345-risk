@@ -7,10 +7,10 @@ objects=$(addprefix $(build_dir)/, $(raw_objects))
 headers=$(wildcard headers/*.h)
 
 ifeq ($(OS),Windows_NT)
-    exe=risk.exe
+	exe=risk.exe
 	makedir=md
 else
-    exe=risk
+	exe=risk
 	makedir=mkdir -p
 endif
 
