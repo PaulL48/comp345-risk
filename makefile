@@ -1,5 +1,5 @@
 cxx=g++
-cxx_flags=-Werror -Wpedantic -Wall -Wextra
+cxx_flags=-Werror -Wpedantic -Wall -Wextra -std=c++2a -g
 build_dir=build
 sources=$(wildcard src/*.cpp)
 raw_objects=$(patsubst %.cpp,%.o,$(notdir $(sources)))
@@ -15,10 +15,10 @@ else
 endif
 
 $(build_dir)/$(exe): $(objects)
-	$(cxx) -o $@ $^
+	$(cxx) $(cxx_flags) -o $@ $^
 
 $(build_dir)/%.o: src/%.cpp $(headers) | $(build_dir)
-	$(cxx) -o $@ -c $< -I./headers
+	$(cxx) $(cxx_flags) -o $@ -c $< -I./headers
 
 $(build_dir):
 	$(makedir) $@

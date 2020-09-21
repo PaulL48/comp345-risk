@@ -1,11 +1,21 @@
 #include <iostream>
-#include "Vec2f.h"
+#include "Graph.h"
 
-int main(int argc, char** argv)
+#include <unordered_map>
+
+int main()
 {
-    Vec2f v(1.0f, 2.0f);
-    std::cout << "Hello World!\n";
-    std::cout << v << std::endl;
+    Graph<int> g;
+    g.insert(1);
+    g.insert(2);
+    g.insert(3);
+    g.connect(1, 2);
+    g.connect(1, 3);
+    g.connect(2, 3);
+    g.connect(3, 1);
+
+    g.iter_dfs();
+
     return 0;
 }
 
