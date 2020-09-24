@@ -13,7 +13,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Check
-      run: g++ --version
+    - name: Update
+      run: sudo apt install g++
     - name: make
       run: make
