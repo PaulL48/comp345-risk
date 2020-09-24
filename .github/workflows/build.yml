@@ -13,5 +13,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Check
+      run: g++ --version
     - name: make
       run: make
