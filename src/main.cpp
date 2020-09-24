@@ -1,7 +1,7 @@
 #include <iostream>
 #include "Vec2f.h"
 
-int main(int argc, char** argv)
+int main()
 {
     Vec2f v(1.0f, 2.0f);
     std::cout << "Hello World!\n";
