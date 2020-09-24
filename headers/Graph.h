@@ -1,12 +1,14 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
+#include <algorithm>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 #include <stack>
 #include <ostream>
 #include <type_traits>
+#include "utilities.h"
 
 template <class T, class M> 
 M get_member_type(M T:: *);
@@ -15,8 +17,8 @@ template <typename T>
 class DepthFirstIterator
 {
 public:
-    using NeighborType = typename std::unordered_map<T, std::vector<T>>::mapped_type;
-    DepthFirstIterator(std::unordered_map<T, std::vector<T>>* adjacencyList);
+    using NeighborType = typename std::unordered_map<T, std::unordered_set<T>>::mapped_type;
+    DepthFirstIterator(const std::unordered_map<T, std::unordered_set<T>>* adjacencyList);
     DepthFirstIterator(const DepthFirstIterator& dfi);
     ~DepthFirstIterator();
     DepthFirstIterator& operator=(const DepthFirstIterator& dfi);
@@ -32,19 +34,20 @@ private:
     // This is holding a pointer to the adjacency list
     // The motive for this is there is no implicit way to get
     // the neighbors of a neighbor. You must directly consult the adj list
-    std::unordered_map<T, std::vector<T>>* adjacencyList;
+    const std::unordered_map<T, std::unordered_set<T>>* adjacencyList;
 };
 
 template <typename T>
 class Graph
 {
 public:
-    using NeighborType = typename std::unordered_map<T, std::vector<T>>::mapped_type;
+    using NeighborType = typename std::unordered_map<T, std::unordered_set<T>>::mapped_type;
 
     Graph();
     ~Graph();
     Graph(const Graph<T>& graph);
     Graph& operator=(const Graph<T>& graph);
+    bool operator==(const Graph<T>& graph) const;
 
     template<typename U>
     friend std::ostream& operator<<(std::ostream& output, const Graph<U>& graph);
@@ -66,14 +69,17 @@ public:
     //      continent.addEdgeIfContains(t1, t2)
     void connect(const T& vertex1, const T& vertex2);
 
-    DepthFirstIterator<T> begin();
-    DepthFirstIterator<T> end();
+    DepthFirstIterator<T> begin() const;
+    DepthFirstIterator<T> end() const;
+
+    void erase(const T& vertex);
+    //std::unordered_set<T> getKeys() const;
 private:
-    std::unordered_map<T, std::vector<T>>* adjacencyList;
+    std::unordered_map<T, std::unordered_set<T>>* adjacencyList;
 };
 
 template <typename T>
-Graph<T>::Graph() : adjacencyList(new std::unordered_map<T, std::vector<T>>)
+Graph<T>::Graph() : adjacencyList(new std::unordered_map<T, std::unordered_set<T>>)
 {
 }
 
@@ -84,7 +90,7 @@ Graph<T>::~Graph()
 }
 
 template <typename T>
-Graph<T>::Graph(const Graph<T>& graph) : adjacencyList(new std::unordered_map<T, std::vector<T>>)
+Graph<T>::Graph(const Graph<T>& graph) : adjacencyList(new std::unordered_map<T, std::unordered_set<T>>)
 {
     *(this->adjacencyList) = *graph.adjacencyList;
 }
@@ -97,22 +103,52 @@ Graph<T>& Graph<T>::operator=(const Graph<T>& graph)
 }
 
 template <typename T>
+bool Graph<T>::operator==(const Graph<T>& graph) const
+{
+    return *this->adjacencyList == *graph.adjacencyList;
+}
+
+template <typename T>
 std::ostream& operator<<(std::ostream& output, const Graph<T>& graph)
 {
+    output << *graph.adjacencyList;
     return output;
 }
 
 template <typename T>
 bool Graph<T>::isConnected() const
 {
-    
-    return false;
+    std::unordered_set<T> vertices = getKeys(*this->adjacencyList);
+    std::unordered_set<T> reachableVertices;
+    for (const T& vertex: *this)
+    {
+        reachableVertices.insert(vertex);
+    }
+
+    return reachableVertices == vertices;
 }
+
 
 template <typename T>
 bool Graph<T>::isSubgraphOf(const Graph<T>& graph) const
 {
-    return false;
+    std::unordered_set<T> subgraphVertices = getKeys(*this->adjacencyList);
+    std::unordered_set<T> graphVertices = getKeys(*graph.adjacencyList);
+
+    if (!isSubset(graphVertices, subgraphVertices))
+    {
+        return false;
+    }
+
+    std::unordered_set<T> missingVertices = setDifference(graphVertices, subgraphVertices);
+    Graph<T> destructuredGraph = graph;
+
+    for (const T& vertex : missingVertices)
+    {
+        destructuredGraph.erase(vertex);
+    }
+
+    return *this == destructuredGraph;
 }
 
 template <typename T>
@@ -120,8 +156,34 @@ void Graph<T>::insert(const T& vertex)
 {
     if (this->adjacencyList->count(vertex) == 0)
     {
-        Graph<T>::NeighborType neighbors;
+        Graph<T>::NeighborType neighbors; // Default construct neighbor type
         this->adjacencyList->insert(std::make_pair(vertex, neighbors));
+    }
+}
+
+template <typename T>
+void Graph<T>::erase(const T& vertex)
+{
+    // First pass removes the vertex
+    for (auto it = this->adjacencyList->begin(); it != this->adjacencyList->end();)
+    {
+        if (it->first == vertex)
+        {
+            it = this->adjacencyList->erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+
+    // Second pass removes the edges to the vertex
+    for (auto & [vertexKey, neighbors] : *this->adjacencyList)
+    {
+        if (neighbors.count(vertex) != 0)
+        {
+            neighbors.erase(vertex);
+        }
     }
 }
 
@@ -130,28 +192,26 @@ void Graph<T>::connect(const T& vertex1, const T& vertex2)
 {
     if (this->adjacencyList->count(vertex1) != 0 && this->adjacencyList->count(vertex2) != 0)
     {
-        this->adjacencyList->at(vertex1).push_back(vertex2);
-        this->adjacencyList->at(vertex1).push_back(vertex1);
+        this->adjacencyList->at(vertex1).insert(vertex2);
     }
 }
 
 template <typename T>
-DepthFirstIterator<T> Graph<T>::begin()
+DepthFirstIterator<T> Graph<T>::begin() const
 {
     return DepthFirstIterator<T>(this->adjacencyList);
 }
 
-
 template <typename T>
-DepthFirstIterator<T> Graph<T>::end()
+DepthFirstIterator<T> Graph<T>::end() const
 {
     return DepthFirstIterator<T>(nullptr);
 }
 
 template <typename T>
-DepthFirstIterator<T>::DepthFirstIterator(std::unordered_map<T, std::vector<T>>* adjacencyList) : visited(new std::unordered_set<const DepthFirstIterator<T>::NeighborType *>()),
-                                                                                                  stack(new std::stack<const T*, std::vector<const T*>>()),
-                                                                                                  adjacencyList(adjacencyList)
+DepthFirstIterator<T>::DepthFirstIterator(const std::unordered_map<T, std::unordered_set<T>>* adjacencyList) : visited(new std::unordered_set<const DepthFirstIterator<T>::NeighborType *>()),
+                                                                                                        stack(new std::stack<const T*, std::vector<const T*>>()),
+                                                                                                        adjacencyList(adjacencyList)
 {
     if (adjacencyList != nullptr)
     {
@@ -201,7 +261,7 @@ DepthFirstIterator<T> &DepthFirstIterator<T>::operator++()
     this->stack->pop();
 
     this->visited->insert(&(this->adjacencyList->at(*current)));
-    for (T& neighbor : this->adjacencyList->at(*current))
+    for (const T& neighbor : this->adjacencyList->at(*current))
     {
         if (this->visited->count(&(this->adjacencyList->at(neighbor))) == 0)
         {

@@ -17,11 +17,23 @@ int main()
     g.connect(1, 3);
     g.connect(2, 3);
     g.connect(3, 1);
-    
+    std::cout << g << std::endl;
 
-    for (auto it = g.begin(); it != g.end(); ++it)
+
+    Graph<int> subg;
+    subg.insert(1);
+    subg.insert(2);
+    subg.connect(1, 2);
+    subg.connect(1, 1);
+
+
+    std::cout << "Graph connected? " << g.isConnected() << std::endl;
+    std::cout << "Is subgraph? " << subg.isSubgraphOf(g) << std::endl;
+    
+    std::unordered_map<int, int> i;
+    for (const int& vertex: g)
     {
-        std::cout << *it << std::endl;
+        std::cout << vertex << std::endl;
     }
 
     return 0;
