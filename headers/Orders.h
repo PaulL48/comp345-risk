@@ -10,6 +10,8 @@ class OrdersList{
         void addToList(Order& order);
         void moveToFront(Order& order);
         void moveToEnd(Order& order);
+        void moveUp(Order& order);
+
         //void delete();
     
     private:

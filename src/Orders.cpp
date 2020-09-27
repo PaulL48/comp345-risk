@@ -1,6 +1,7 @@
 #include "Orders.h"
 #include <vector>
 #include <iostream>
+#include <algorithm>
 using namespace std;
 
 void OrdersList::addToList(Order& order){
@@ -33,6 +34,16 @@ void OrdersList::moveToEnd(Order& order){
     this->move(order, orders.size()-1);
 }
 
+void OrdersList::moveUp(Order& order){
+    vector<Order*>::iterator it = find_if(orders.begin(), orders.end(), [&order](const Order* q){ return q == &order;});
+
+    if(*it == &order){
+        int index = (it - orders.begin());
+        if(index != 0){
+            this->move(order, index-1);
+        }
+    }
+}
 
 void Deploy::validate(){}
 
