@@ -9,7 +9,7 @@ class OrdersList{
         //void delete();
     
     private:
-        list<Order> orders;
+        list<Order*> orders;
 };
 
 class Order{
