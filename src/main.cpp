@@ -11,14 +11,14 @@ int main()
     Bomb *bomb = new Bomb;
     Airlift *airlift = new Airlift;
     Bomb *bomb2 = new Bomb;
-       //Bomb *bomb3 = new Bomb;
+      // Bomb *bomb3 = new Bomb;
 
     list->addToList(*deploy);
     list->addToList(*bomb);
     list->addToList(*airlift);
     list->addToList(*bomb2);
 
-    list->moveDown(*deploy);
+    list->remove(*deploy);
 
 
     return 0;
