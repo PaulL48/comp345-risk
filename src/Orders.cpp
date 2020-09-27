@@ -1,5 +1,5 @@
 #include "Orders.h"
-#include <list>
+#include <vector>
 #include <iostream>
 using namespace std;
 
@@ -8,12 +8,14 @@ void OrdersList::addToList(Order& order){
 }
 
 void OrdersList::move(Order& order, int index){
-    list<Order*>::iterator it;
-  
-    for(it = orders.begin(); it != orders.end(); ++it){
+    vector<Order*>::iterator it;
+
+    int i;
+    for(it = orders.begin(), i = 0; it != orders.end(); ++it, ++i){
         if(*it == &order){  
-            orders.splice(next(orders.begin(), index), orders, it);
-            break;
+            Order *orderPointer = *it;
+            orders.erase(it);
+            orders.insert(next(orders.begin(), index), orderPointer);
         }
     }
 }

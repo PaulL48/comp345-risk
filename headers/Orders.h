@@ -1,6 +1,6 @@
 #ifndef ORDERS_H
 #define ORDERS_H
-#include <list>
+#include <Vector>
 #include <iostream>
 using namespace std;
 
@@ -12,7 +12,7 @@ class OrdersList{
         //void delete();
     
     private:
-        list<Order*> orders;
+        vector<Order*> orders;
 };
 
 class Order{
