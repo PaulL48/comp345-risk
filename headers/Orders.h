@@ -8,10 +8,10 @@ class Order;
 class OrdersList{
     public:
         void addToList(Order& order);
-        void move(Order& order, int index);
         //void delete();
     
     private:
+        void move(Order& order, int index);
         vector<Order*> orders;
 };
 

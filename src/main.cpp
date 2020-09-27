@@ -17,7 +17,7 @@ int main()
     list->addToList(*airlift);
     list->addToList(*bomb2);
 
-    list->move(*bomb2, 0);
+    list->moveToFront(*deploy);
 
 
     return 0;
