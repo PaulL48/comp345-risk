@@ -8,6 +8,7 @@ class Order;
 class OrdersList{
     public:
         void addToList(Order& order);
+        void moveToFront(Order& order);
         //void delete();
     
     private:

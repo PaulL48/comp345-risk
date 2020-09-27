@@ -9,7 +9,9 @@ void OrdersList::addToList(Order& order){
 
 void OrdersList::move(Order& order, int index){
     vector<Order*>::iterator it;
-
+for(it = orders.begin(); it != orders.end(); ++it){
+       cout << *it << "\n";
+    }
     int i;
     for(it = orders.begin(), i = 0; it != orders.end(); ++it, ++i){
         if(*it == &order){  
@@ -18,6 +20,13 @@ void OrdersList::move(Order& order, int index){
             orders.insert(next(orders.begin(), index), orderPointer);
         }
     }
+    for(it = orders.begin(); it != orders.end(); ++it){
+       cout << *it << "\n";
+    }
+}
+
+void OrdersList::moveToFront(Order& order){
+    this->move(order, 0);
 }
 
 void Deploy::validate(){}
