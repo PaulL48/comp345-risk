@@ -11,6 +11,7 @@ class OrdersList{
         void moveToFront(Order& order);
         void moveToEnd(Order& order);
         void moveUp(Order& order);
+        void moveDown(Order& order);
 
         //void delete();
     

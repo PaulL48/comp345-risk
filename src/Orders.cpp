@@ -45,6 +45,17 @@ void OrdersList::moveUp(Order& order){
     }
 }
 
+void OrdersList::moveDown(Order& order){
+    vector<Order*>::iterator it = find_if(orders.begin(), orders.end(), [&order](const Order* q){ return q == &order;});
+
+    if(*it == &order){
+        int index = (it - orders.begin());
+        if((unsigned long long)index != (orders.size()-1)){
+            this->move(order, index+1);
+        }
+    }
+}
+
 void Deploy::validate(){}
 
 void Deploy::execute(){}
