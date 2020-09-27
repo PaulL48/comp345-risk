@@ -1,11 +1,14 @@
 #ifndef ORDERS_H
 #define ORDERS_H
 #include <list>
+#include <iostream>
 using namespace std;
 
+class Order;
 class OrdersList{
     public:
-        void move();
+        void addToList(Order& order);
+        void move(Order& order, int index);
         //void delete();
     
     private:
