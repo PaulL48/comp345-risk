@@ -29,6 +29,11 @@ void OrdersList::moveToFront(Order& order){
     this->move(order, 0);
 }
 
+void OrdersList::moveToEnd(Order& order){
+    this->move(order, orders.size()-1);
+}
+
+
 void Deploy::validate(){}
 
 void Deploy::execute(){}
