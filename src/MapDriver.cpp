@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Graph.h"
+#include "Map.h"
 
 // TODO: Uncomment before delivery
 // int main()
