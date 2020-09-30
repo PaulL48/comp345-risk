@@ -24,9 +24,12 @@ class Order{
         Order(string description, string effect);
         string getDescription();
         string getEffect();
+        bool getExecutedStatus();
+        void setExecutedStatus(bool status);
         virtual void validate() = 0;
         virtual void execute() = 0;
     protected:
+        bool executed = false;
         string description;
         string effect;
 };

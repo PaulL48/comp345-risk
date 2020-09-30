@@ -18,7 +18,7 @@ int main()
     list->addToList(*airlift);
     list->addToList(*bomb2);
 
-    list->remove(*deploy);
+    //list->remove(*deploy);
 
 
     return 0;

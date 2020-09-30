@@ -9,7 +9,7 @@ void OrdersList::addToList(Order& order){
 void OrdersList::move(Order& order, int index){
     vector<Order*>::iterator it;
     int i;
-    
+
     for(it = orders.begin(), i = 0; it != orders.end(); ++it, ++i){
         if(*it == &order){  
             Order *orderPointer = *it;
@@ -66,32 +66,36 @@ string Order::getDescription(){ return description; }
 
 string Order::getEffect(){ return effect; }
 
+void Order::setExecutedStatus(bool status){ executed = status; }
+
+bool Order::getExecutedStatus(){ return executed; }
+
 Deploy::Deploy():Order("Deploy army", "Deploy troops to a territory"){}
 
 void Deploy::validate(){}
 
-void Deploy::execute(){}
+void Deploy::execute(){ this->setExecutedStatus(true); } 
 
 Advance::Advance():Order("Advance", "Advance troops to a neighbouring territory"){}
 
 void Advance::validate(){}
 
-void Advance::execute(){}
+void Advance::execute(){ this->setExecutedStatus(true); }
 
 Bomb::Bomb():Order("Bomb", "Bomb a territory"){}
 
 void Bomb::validate(){}
 
-void Bomb::execute(){}
+void Bomb::execute(){ this->setExecutedStatus(true); }
 
 Airlift::Airlift():Order("Airlift", "Transport suplies or troops by air"){}
 
 void Airlift::validate(){}
 
-void Airlift::execute(){}
+void Airlift::execute(){ this->setExecutedStatus(true); }
 
 Negotiate::Negotiate():Order("Negotiate", "Negotiate with the opposition to reach an agreement"){}
 
 void Negotiate::validate(){}
 
-void Negotiate::execute(){}
+void Negotiate::execute(){ this->setExecutedStatus(true); }
