@@ -42,6 +42,7 @@ class Deploy: public Order{
     public: 
         Deploy();
         Deploy(const Deploy &order);
+        Deploy& operator = (const Deploy &order); 
         void validate();
         void execute();
 };
@@ -50,6 +51,7 @@ class Advance: public Order{
     public: 
         Advance();
         Advance(const Advance &order);
+        Advance& operator = (const Advance &order);
         void validate();
         void execute();
 };
@@ -58,6 +60,7 @@ class Bomb: public Order{
     public: 
         Bomb();
         Bomb(const Bomb &order);
+        Bomb& operator = (const Bomb &order);
         void validate();
         void execute();
 };
@@ -66,6 +69,7 @@ class Blockade: public Order{
     public: 
         Blockade();
         Blockade(const Blockade &order);
+        Blockade& operator = (const Blockade &order);
         void validate();
         void execute();
 };
@@ -74,6 +78,7 @@ class Airlift: public Order{
     public: 
         Airlift();
         Airlift(const Airlift &order);
+        Airlift& operator = (const Airlift &order);
         void validate();
         void execute();
 };
@@ -82,6 +87,7 @@ class Negotiate: public Order{
     public: 
         Negotiate();
         Negotiate(const Negotiate &order);
+        Negotiate& operator = (const Negotiate &order);
         void validate();
         void execute();
 };

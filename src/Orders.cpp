@@ -98,6 +98,11 @@ ostream & operator << (ostream &out, const Order &order)
 
 Deploy::Deploy(const Deploy &order): Order(order){}
 
+Deploy& Deploy::operator = (const Deploy &order){
+    Order::operator= (order);
+    return *this;
+}
+
 Deploy::Deploy():Order("Deploy", "Deploy troops to a territory"){}
 
 void Deploy::validate(){}
@@ -105,6 +110,11 @@ void Deploy::validate(){}
 void Deploy::execute(){ this->setExecutedStatus(true); } 
 
 Advance::Advance(const Advance &order): Order(order){}
+
+Advance& Advance::operator = (const Advance &order){
+    Order::operator= (order);
+    return *this;
+}
 
 Advance::Advance():Order("Advance", "Advance troops to a neighbouring territory"){}
 
@@ -114,6 +124,11 @@ void Advance::execute(){ this->setExecutedStatus(true); }
 
 Bomb::Bomb(const Bomb &order): Order(order){}
 
+Bomb& Bomb::operator = (const Bomb &order){
+    Order::operator= (order);
+    return *this;
+}
+
 Bomb::Bomb():Order("Bomb", "Bomb a territory"){}
 
 void Bomb::validate(){}
@@ -121,6 +136,11 @@ void Bomb::validate(){}
 void Bomb::execute(){ this->setExecutedStatus(true); }
 
 Blockade::Blockade(const Blockade &order): Order(order){}
+
+Blockade& Blockade::operator = (const Blockade &order){
+    Order::operator= (order);
+    return *this;
+}
 
 Blockade::Blockade():Order("Blockade", "Seals a territory, Prevents people or goods from entering or leaving the territory"){}
 
@@ -130,6 +150,11 @@ void Blockade::execute(){ this->setExecutedStatus(true); }
 
 Airlift::Airlift(const Airlift &order): Order(order){}
 
+Airlift& Airlift::operator = (const Airlift &order){
+    Order::operator= (order);
+    return *this;
+}
+
 Airlift::Airlift():Order("Airlift", "Transport suplies or troops by air"){}
 
 void Airlift::validate(){}
@@ -137,6 +162,11 @@ void Airlift::validate(){}
 void Airlift::execute(){ this->setExecutedStatus(true); }
 
 Negotiate::Negotiate(const Negotiate &order): Order(order){}
+
+Negotiate& Negotiate::operator = (const Negotiate &order){
+    Order::operator= (order);
+    return *this;
+}
 
 Negotiate::Negotiate():Order("Negotiate", "Negotiate with the opposition to reach an agreement"){}
 
