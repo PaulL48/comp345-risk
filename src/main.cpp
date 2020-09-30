@@ -1,39 +1,52 @@
 #include <iostream>
-#include "Vec2f.h"
 #include "Orders.h"
 
 int main()
 {
-   
+  
+
     OrdersList list;
-      OrdersList ol2;
+    OrdersList ol2;
+    
+    //create orders
     Deploy *deploy = new Deploy;
     Bomb *bomb = new Bomb;
     Airlift *airlift = new Airlift;
     Blockade *blockade = new Blockade;
-      // Bomb *bomb3 = new Bomb;
       
+    //add orders to list  
     list.addToList(*deploy); 
     list.addToList(*bomb);
     list.addToList(*airlift);
     list.addToList(*blockade);
-        ol2 = list;
-
-        vector<Order*>::iterator it;
-list.moveToEnd(*bomb);
-
+      
     vector<Order*> orders  = list.getList();
-        vector<Order*> orders2  = ol2.getList();
-    for(it = orders.begin(); it != orders.end(); ++it){
-           cout << **it << "\n";
+    cout << "orders list prior to moving orders around \n";
+    cout << list;
 
-    }
+    // move bomb order to end
+    list.moveToEnd(*bomb);
+    orders  = list.getList();
+    cout << "orders list after moving bomb order to end \n";
+    cout << list;
 
-    for(it = orders2.begin(); it != orders2.end(); ++it){
-           cout << **it << "\n";
+  // move blockade order to front
+    list.moveToFront(*blockade);
+    orders  = list.getList();
+    cout << "orders list after moving blockade order tofront \n";
+    cout << list;
 
-    }
+     // move airlift order up the list
+    list.moveUp(*airlift);
+    orders  = list.getList();
+    cout << "orders list after moving airlift order up the list \n";
+    cout << list;
 
+    // move airlift order up the list
+    list.moveDown(*blockade);
+    orders  = list.getList();
+    cout << "orders list after moving blockade order down the list \n";
+    cout << list;
   
 
 

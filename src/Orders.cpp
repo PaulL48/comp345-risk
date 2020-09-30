@@ -20,6 +20,16 @@ OrdersList& OrdersList::operator = (const OrdersList &ordersList){
     return *this;
 } 
 
+ostream & operator << (ostream &out, const OrdersList &ordersList) 
+{ 
+    //iterator obj used below
+    vector<Order*>::iterator it;
+    for(it = (*ordersList.orders).begin(); it != (*ordersList.orders).end(); ++it){
+        cout << **it << "\n";
+    } 
+    return out; 
+} 
+
 
 void OrdersList::addToList(Order& order){
     orders->push_back(&order);
@@ -93,7 +103,7 @@ Order& Order::operator = (const Order &order){
     description = new string(*order.description);
     effect = new string(*order.effect);
     executed = new bool(*order.executed);
-    
+
     return *this;
 } 
 

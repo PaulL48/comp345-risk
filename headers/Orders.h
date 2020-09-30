@@ -10,6 +10,7 @@ class OrdersList{
         OrdersList();
         OrdersList(const OrdersList &order);
         OrdersList& operator = (const OrdersList &order); 
+        friend ostream & operator << (ostream &out, const OrdersList &ordersList); 
         void addToList(Order& order);
         void moveToFront(Order& order);
         void moveToEnd(Order& order);
