@@ -8,8 +8,8 @@ void OrdersList::addToList(Order& order){
 
 void OrdersList::move(Order& order, int index){
     vector<Order*>::iterator it;
-
     int i;
+    
     for(it = orders.begin(), i = 0; it != orders.end(); ++it, ++i){
         if(*it == &order){  
             Order *orderPointer = *it;
@@ -60,21 +60,37 @@ void OrdersList::remove(Order& order){
     }
 }
 
+Order::Order(string description, string effect): description(description), effect(effect){}
+
+string Order::getDescription(){ return description; }
+
+string Order::getEffect(){ return effect; }
+
+Deploy::Deploy():Order("Deploy army", "Deploy troops to a territory"){}
+
 void Deploy::validate(){}
 
 void Deploy::execute(){}
+
+Advance::Advance():Order("Advance", "Advance troops to a neighbouring territory"){}
 
 void Advance::validate(){}
 
 void Advance::execute(){}
 
+Bomb::Bomb():Order("Bomb", "Bomb a territory"){}
+
 void Bomb::validate(){}
 
 void Bomb::execute(){}
 
+Airlift::Airlift():Order("Airlift", "Transport suplies or troops by air"){}
+
 void Airlift::validate(){}
 
 void Airlift::execute(){}
+
+Negotiate::Negotiate():Order("Negotiate", "Negotiate with the opposition to reach an agreement"){}
 
 void Negotiate::validate(){}
 
