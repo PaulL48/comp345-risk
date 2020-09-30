@@ -5,37 +5,36 @@
 int main()
 {
    
-    OrdersList *list = new OrdersList();
+    OrdersList list;
   
     Deploy *deploy = new Deploy;
     Bomb *bomb = new Bomb;
     Airlift *airlift = new Airlift;
     Blockade *blockade = new Blockade;
       // Bomb *bomb3 = new Bomb;
-
       
-    list->addToList(*deploy); 
-    list->addToList(*bomb);
-    list->addToList(*airlift);
-    list->addToList(*blockade);
-        vector<Order*>::iterator it;
+    list.addToList(*deploy); 
+    list.addToList(*bomb);
+    list.addToList(*airlift);
+    list.addToList(*blockade);
+        OrdersList ol2 = list;
 
-    vector<Order*> orders  = list->getList();
-    
+        vector<Order*>::iterator it;
+list.moveToEnd(*bomb);
+
+    vector<Order*> orders  = list.getList();
+        vector<Order*> orders2  = ol2.getList();
     for(it = orders.begin(); it != orders.end(); ++it){
            cout << **it << "\n";
 
     }
 
-    list->moveToFront(*airlift);
-    airlift->execute(); 
-    bomb->execute();
-   orders  = list->getList();
-    for(it = list->getList().begin(); it != orders.end(); ++it){
-            cout << **it << "\n";
+    for(it = orders2.begin(); it != orders2.end(); ++it){
+           cout << **it << "\n";
 
     }
 
+  
 
 
   // Deploy deploy;

@@ -6,6 +6,12 @@ OrdersList::OrdersList(){
     orders = new vector<Order*>();
 }
 
+OrdersList::OrdersList(const OrdersList &ordersList){
+    orders = new vector<Order*>();
+    orders->assign((*ordersList.orders).begin(), (*ordersList.orders).end()); 
+}
+
+
 void OrdersList::addToList(Order& order){
     orders->push_back(&order);
 }
