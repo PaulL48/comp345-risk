@@ -2,19 +2,23 @@
 #include <algorithm>
 using namespace std;
 
+OrdersList::OrdersList(){
+    orders = new vector<Order*>();
+}
+
 void OrdersList::addToList(Order& order){
-    orders.push_back(&order);
+    orders->push_back(&order);
 }
 
 void OrdersList::move(Order& order, int index){
     vector<Order*>::iterator it;
     int i;
 
-    for(it = orders.begin(), i = 0; it != orders.end(); ++it, ++i){
+    for(it = orders->begin(), i = 0; it != orders->end(); ++it, ++i){
         if(*it == &order){  
             Order *orderPointer = *it;
-            orders.erase(it);
-            orders.insert(next(orders.begin(), index), orderPointer);
+            orders->erase(it);
+            orders->insert(next(orders->begin(), index), orderPointer);
         }
     }
 }
@@ -24,14 +28,14 @@ void OrdersList::moveToFront(Order& order){
 }
 
 void OrdersList::moveToEnd(Order& order){
-    this->move(order, orders.size()-1);
+    this->move(order, orders->size()-1);
 }
 
 void OrdersList::moveUp(Order& order){
-    vector<Order*>::iterator it = find_if(orders.begin(), orders.end(), [&order](const Order* q){ return q == &order;});
+    vector<Order*>::iterator it = find_if(orders->begin(), orders->end(), [&order](const Order* q){ return q == &order;});
 
     if(*it == &order){
-        int index = (it - orders.begin());
+        int index = (it - orders->begin());
         if(index != 0){
             this->move(order, index-1);
         }
@@ -39,11 +43,11 @@ void OrdersList::moveUp(Order& order){
 }
 
 void OrdersList::moveDown(Order& order){
-    vector<Order*>::iterator it = find_if(orders.begin(), orders.end(), [&order](const Order* q){ return q == &order;});
+    vector<Order*>::iterator it = find_if(orders->begin(), orders->end(), [&order](const Order* q){ return q == &order;});
 
     if(*it == &order){
-        int index = (it - orders.begin());
-        if((unsigned long long)index != (orders.size()-1)){
+        int index = (it - orders->begin());
+        if((unsigned long long)index != (orders->size()-1)){
             this->move(order, index+1);
         }
     }
@@ -52,15 +56,15 @@ void OrdersList::moveDown(Order& order){
 void OrdersList::remove(Order& order){
     vector<Order*>::iterator it;
 
-    for(it = orders.begin(); it != orders.end(); ++it){
+    for(it = orders->begin(); it != orders->end(); ++it){
         if(*it == &order){  
-            orders.erase(it);
+            orders->erase(it);
             break;
         }
     }
 }
 
-vector<Order*> OrdersList::getList(){ return orders; }
+vector<Order*> OrdersList::getList(){ return (*orders); }
 
 Order::Order(const Order &order){
     description = new string(*order.description);

@@ -7,6 +7,7 @@ using namespace std;
 class Order;
 class OrdersList{
     public:
+        OrdersList();
         void addToList(Order& order);
         void moveToFront(Order& order);
         void moveToEnd(Order& order);
@@ -17,7 +18,7 @@ class OrdersList{
     
     private:
         void move(Order& order, int index);
-        vector<Order*> orders;
+        vector<Order*> *orders;
 };
 
 class Order{
