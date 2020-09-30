@@ -10,15 +10,30 @@ int main()
     Deploy *deploy = new Deploy;
     Bomb *bomb = new Bomb;
     Airlift *airlift = new Airlift;
-    Bomb *bomb2 = new Bomb;
+    Blockade *blockade = new Blockade;
       // Bomb *bomb3 = new Bomb;
 
     list->addToList(*deploy);
     list->addToList(*bomb);
     list->addToList(*airlift);
-    list->addToList(*bomb2);
+    list->addToList(*blockade);
 
-    //list->remove(*deploy);
+    cout << *deploy;
+    cout << *bomb;
+    cout << *airlift;
+    cout << *blockade;
+
+    deploy->execute();
+    bomb->execute();
+    airlift->execute();
+    blockade->execute();
+
+
+    cout << *deploy;
+    cout << *bomb;
+    cout << *airlift;
+    cout << *blockade;
+    ///list->remove(*deploy);
 
 
     return 0;

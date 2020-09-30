@@ -70,7 +70,15 @@ void Order::setExecutedStatus(bool status){ executed = status; }
 
 bool Order::getExecutedStatus(){ return executed; }
 
-Deploy::Deploy():Order("Deploy army", "Deploy troops to a territory"){}
+ostream & operator << (ostream &out, const Order &order) 
+{ 
+    out << order.description; 
+    if(order.executed){ out << " -> Effect: " << order.effect; };
+    out << "\n"; 
+    return out; 
+} 
+
+Deploy::Deploy():Order("Deploy", "Deploy troops to a territory"){}
 
 void Deploy::validate(){}
 
@@ -87,6 +95,12 @@ Bomb::Bomb():Order("Bomb", "Bomb a territory"){}
 void Bomb::validate(){}
 
 void Bomb::execute(){ this->setExecutedStatus(true); }
+
+Blockade::Blockade():Order("Blockade", "Seals a territory, Prevents people or goods from entering or leaving the territory"){}
+
+void Blockade::validate(){}
+
+void Blockade::execute(){ this->setExecutedStatus(true); }
 
 Airlift::Airlift():Order("Airlift", "Transport suplies or troops by air"){}
 

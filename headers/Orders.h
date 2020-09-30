@@ -26,6 +26,7 @@ class Order{
         string getEffect();
         bool getExecutedStatus();
         void setExecutedStatus(bool status);
+        friend ostream & operator << (ostream &out, const Order &order); 
         virtual void validate() = 0;
         virtual void execute() = 0;
     protected:
