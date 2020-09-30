@@ -11,6 +11,15 @@ OrdersList::OrdersList(const OrdersList &ordersList){
     orders->assign((*ordersList.orders).begin(), (*ordersList.orders).end()); 
 }
 
+OrdersList& OrdersList::operator = (const OrdersList &ordersList){
+    if(this == &ordersList){ return *this; }
+
+    orders = new vector<Order*>();
+    orders->assign((*ordersList.orders).begin(), (*ordersList.orders).end()); 
+
+    return *this;
+} 
+
 
 void OrdersList::addToList(Order& order){
     orders->push_back(&order);
@@ -84,6 +93,7 @@ Order& Order::operator = (const Order &order){
     description = new string(*order.description);
     effect = new string(*order.effect);
     executed = new bool(*order.executed);
+    
     return *this;
 } 
 

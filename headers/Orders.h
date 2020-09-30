@@ -9,6 +9,7 @@ class OrdersList{
     public:
         OrdersList();
         OrdersList(const OrdersList &order);
+        OrdersList& operator = (const OrdersList &order); 
         void addToList(Order& order);
         void moveToFront(Order& order);
         void moveToEnd(Order& order);

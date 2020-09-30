@@ -6,7 +6,7 @@ int main()
 {
    
     OrdersList list;
-  
+      OrdersList ol2;
     Deploy *deploy = new Deploy;
     Bomb *bomb = new Bomb;
     Airlift *airlift = new Airlift;
@@ -17,7 +17,7 @@ int main()
     list.addToList(*bomb);
     list.addToList(*airlift);
     list.addToList(*blockade);
-        OrdersList ol2 = list;
+        ol2 = list;
 
         vector<Order*>::iterator it;
 list.moveToEnd(*bomb);
