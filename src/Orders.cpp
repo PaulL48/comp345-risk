@@ -60,11 +60,23 @@ void OrdersList::remove(Order& order){
     }
 }
 
+vector<Order*> OrdersList::getList(){ return orders; }
+
 Order::Order(const Order &order){
     description = new string(*order.description);
     effect = new string(*order.effect);
     executed = new bool(*order.executed);
 }
+
+Order& Order::operator = (const Order &order){
+    if(this == &order){ return *this; }
+
+    description = new string(*order.description);
+    effect = new string(*order.effect);
+    executed = new bool(*order.executed);
+    return *this;
+} 
+
 
 Order::Order(string description, string effect): description(new string(description)), effect(new string(effect)){}
 

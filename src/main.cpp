@@ -5,43 +5,47 @@
 int main()
 {
    
-    // OrdersList *list = new OrdersList();
+  //   OrdersList *list = new OrdersList();
   
-    // Deploy *deploy = new Deploy;
-    // Bomb *bomb = new Bomb;
-    // Airlift *airlift = new Airlift;
-    // Blockade *blockade = new Blockade;
-    //   // Bomb *bomb3 = new Bomb;
+  //   Deploy *deploy = new Deploy;
+  //   Bomb *bomb = new Bomb;
+  //   Airlift *airlift = new Airlift;
+  //   Blockade *blockade = new Blockade;
+  //     // Bomb *bomb3 = new Bomb;
 
-    // list->addToList(*deploy);
-    // list->addToList(*bomb);
-    // list->addToList(*airlift);
-    // list->addToList(*blockade);
+      
+  //   list->addToList(*deploy); 
+  //   list->addToList(*bomb);
+  //   list->addToList(*airlift);
+  //   list->addToList(*blockade);
+  //       vector<Order*>::iterator it;
 
-    // cout << *deploy;
-    // cout << *bomb;
-    // cout << *airlift;
-    // cout << *blockade;
+  //   vector<Order*> orders  = list->getList();
+  //   for(it = orders.begin(); it != orders.end(); ++it){
+  //          cout << **it << "\n";
 
-    // deploy->execute();
-    // bomb->execute();
-    // airlift->execute();
-    // blockade->execute();
+  //   }
+
+  //   list->moveToFront(*airlift);
+  //   airlift->execute(); 
+  //  orders  = list->getList();
+  //   for(it = list->getList().begin(); it != orders.end(); ++it){
+  //           cout << **it << "\n";
+
+  //   }
 
 
-    // cout << *deploy;
-    // cout << *bomb;
-    // cout << *airlift;
-    // cout << *blockade;
-    ///list->remove(*deploy);
 
   Deploy deploy;
   Bomb bomb;
-  Deploy deploy2 = deploy;
+  Deploy deploy2;
+
+  
 
   cout << deploy << "\n";
   cout << deploy2 << "\n";
-
+  
+  deploy2 = deploy;
   deploy.execute();
 
   cout << deploy << "\n";

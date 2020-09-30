@@ -13,6 +13,7 @@ class OrdersList{
         void moveUp(Order& order);
         void moveDown(Order& order);
         void remove(Order& order);
+        vector<Order*> getList();
     
     private:
         void move(Order& order, int index);
@@ -31,6 +32,7 @@ class Order{
         virtual void execute() = 0;
     protected:
         Order(const Order &order);
+        Order& operator = (const Order &order); 
         bool* executed = new bool(false);
         string* description;
         string* effect;
