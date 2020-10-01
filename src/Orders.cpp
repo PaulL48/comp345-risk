@@ -135,6 +135,8 @@ void Deploy::validate(){}
 
 void Deploy::execute(){ this->setExecutedStatus(true); } 
 
+Order* Deploy::clone() const { return new Deploy(*this); }
+
 Advance::Advance(const Advance &order): Order(order){}
 
 Advance& Advance::operator = (const Advance &order){
@@ -147,6 +149,8 @@ Advance::Advance():Order("Advance", "Advance troops to a neighbouring territory"
 void Advance::validate(){}
 
 void Advance::execute(){ this->setExecutedStatus(true); }
+
+Order* Advance::clone() const { return new Advance(*this); }
 
 Bomb::Bomb(const Bomb &order): Order(order){}
 
@@ -161,6 +165,8 @@ void Bomb::validate(){}
 
 void Bomb::execute(){ this->setExecutedStatus(true); }
 
+Order* Bomb::clone() const { return new Bomb(*this); }
+
 Blockade::Blockade(const Blockade &order): Order(order){}
 
 Blockade& Blockade::operator = (const Blockade &order){
@@ -173,6 +179,8 @@ Blockade::Blockade():Order("Blockade", "Seals a territory, Prevents people or go
 void Blockade::validate(){}
 
 void Blockade::execute(){ this->setExecutedStatus(true); }
+
+Order* Blockade::clone() const { return new Blockade(*this); }
 
 Airlift::Airlift(const Airlift &order): Order(order){}
 
@@ -187,6 +195,8 @@ void Airlift::validate(){}
 
 void Airlift::execute(){ this->setExecutedStatus(true); }
 
+Order* Airlift::clone() const { return new Airlift(*this); }
+
 Negotiate::Negotiate(const Negotiate &order): Order(order){}
 
 Negotiate& Negotiate::operator = (const Negotiate &order){
@@ -199,3 +209,5 @@ Negotiate::Negotiate():Order("Negotiate", "Negotiate with the opposition to reac
 void Negotiate::validate(){}
 
 void Negotiate::execute(){ this->setExecutedStatus(true); }
+
+Order* Negotiate::clone() const { return new Negotiate(*this); }

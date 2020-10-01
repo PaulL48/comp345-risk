@@ -33,6 +33,7 @@ class Order{
         friend std::ostream & operator << (std::ostream &out, const Order &order); 
         virtual void validate() = 0;
         virtual void execute() = 0;
+        virtual Order* clone() const = 0;
     protected:
         Order(const Order &order);
         Order& operator = (const Order &order); 
@@ -48,6 +49,7 @@ class Deploy: public Order{
         Deploy& operator = (const Deploy &order); 
         void validate();
         void execute();
+        virtual Order* clone() const;
 };
 
 class Advance: public Order{
@@ -57,6 +59,7 @@ class Advance: public Order{
         Advance& operator = (const Advance &order);
         void validate();
         void execute();
+        virtual Order* clone() const;
 };
 
 class Bomb: public Order{
@@ -66,6 +69,7 @@ class Bomb: public Order{
         Bomb& operator = (const Bomb &order);
         void validate();
         void execute();
+        virtual Order* clone() const;
 };
 
 class Blockade: public Order{
@@ -75,6 +79,7 @@ class Blockade: public Order{
         Blockade& operator = (const Blockade &order);
         void validate();
         void execute();
+        virtual Order* clone() const;
 };
 
 class Airlift: public Order{
@@ -84,6 +89,7 @@ class Airlift: public Order{
         Airlift& operator = (const Airlift &order);
         void validate();
         void execute();
+        virtual Order* clone() const;
 };
 
 class Negotiate: public Order{
@@ -93,6 +99,7 @@ class Negotiate: public Order{
         Negotiate& operator = (const Negotiate &order);
         void validate();
         void execute();
+        virtual Order* clone() const;
 };
 
 #endif
