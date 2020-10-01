@@ -1,6 +1,12 @@
 #include <iostream>
 #include "Map.h"
 
+int main()
+{
+    
+    return 0;
+}
+
 // TODO: Uncomment before delivery
 // int main()
 // {

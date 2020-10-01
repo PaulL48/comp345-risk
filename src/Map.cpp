@@ -27,10 +27,10 @@ Territory::Territory(const Territory& territory) : id(new int(*territory.id)),
 
 Territory::~Territory()
 {
+    // Non-owning pointer ownedBy is not deleted
     delete this->id;
     delete this->name;
     delete this->occupyingArmies;
-    // Non-owning pointer ownedBy is not deleted
 }
 
 Territory& Territory::operator=(const Territory& territory)
@@ -168,15 +168,15 @@ MapState Map::validate() const
     return MapState::VALID;
 }
 
-void Map::addContinent(const std::string& name)
+void Map::addContinent(const Continent& continent)
 {
-    this->continents->push_back(Continent(name));
+    this->continents->push_back(continent);
 }
 
-void Map::addTerritory(int id, const std::string& name, int continentId)
+void Map::addTerritory(const Territory& territory, int continentId)
 {
-    this->territories->insert(Territory(id, name));
-    this->continents->at(continentId).addTerritory(Territory(id, name));
+    this->territories->insert(territory);
+    this->continents->at(continentId).addTerritory(territory);
 }
 
 void Map::connectTerritories(int territoryId1, int territoryId2)
