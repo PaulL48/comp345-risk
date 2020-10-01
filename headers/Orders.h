@@ -2,7 +2,6 @@
 #define ORDERS_H
 #include <Vector>
 #include <iostream>
-using namespace std;
 
 class Order;
 class OrdersList{
@@ -10,36 +9,36 @@ class OrdersList{
         OrdersList();
         OrdersList(const OrdersList &order);
         OrdersList& operator = (const OrdersList &order); 
-        friend ostream & operator << (ostream &out, const OrdersList &ordersList); 
+        friend std::ostream & operator << (std::ostream &out, const OrdersList &ordersList); 
         void addToList(Order& order);
         void moveToFront(Order& order);
         void moveToEnd(Order& order);
         void moveUp(Order& order);
         void moveDown(Order& order);
         void remove(Order& order);
-        vector<Order*> getList();
+        const std::vector<Order*>& getList();
     
     private:
         void move(Order& order, int index);
-        vector<Order*> *orders;
+        std::vector<Order*> *orders;
 };
 
 class Order{
     public:
-        Order(string description, string effect);
-        string getDescription();
-        string getEffect();
+        Order(const std::string description, const std::string effect);
+        const std::string&  getDescription();
+        const std::string& getEffect();
         bool getExecutedStatus();
         void setExecutedStatus(bool status);
-        friend ostream & operator << (ostream &out, const Order &order); 
+        friend std::ostream & operator << (std::ostream &out, const Order &order); 
         virtual void validate() = 0;
         virtual void execute() = 0;
     protected:
         Order(const Order &order);
         Order& operator = (const Order &order); 
         bool* executed = new bool(false);
-        string* description;
-        string* effect;
+        std::string* description;
+        std::string* effect;
 };
 
 class Deploy: public Order{

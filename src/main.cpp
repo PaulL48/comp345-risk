@@ -1,5 +1,6 @@
-#include <iostream>
 #include "Orders.h"
+using std::cout;
+using std::vector;
 
 int main()
 {

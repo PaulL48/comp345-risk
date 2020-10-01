@@ -1,37 +1,33 @@
 #include "Orders.h"
 #include <algorithm>
-using namespace std;
+using std::vector;
+using std::ostream;
+using std::cout;
+using std::string;
 
-OrdersList::OrdersList(){
-    orders = new vector<Order*>();
-}
+OrdersList::OrdersList(): orders(new vector<Order*>()){}
 
-OrdersList::OrdersList(const OrdersList &ordersList){
-    orders = new vector<Order*>();
-    orders->assign((*ordersList.orders).begin(), (*ordersList.orders).end()); 
-}
+OrdersList::OrdersList(const OrdersList &ordersList): orders(new vector<Order*>(*ordersList.orders)){}
 
 OrdersList& OrdersList::operator = (const OrdersList &ordersList){
-    if(this == &ordersList){ return *this; }
+    if(this == &ordersList){ 
+        return *this; 
+    }
 
-    orders = new vector<Order*>();
-    orders->assign((*ordersList.orders).begin(), (*ordersList.orders).end()); 
-
+    orders = new vector<Order*>(*ordersList.orders);
     return *this;
 } 
 
 ostream & operator << (ostream &out, const OrdersList &ordersList) 
 { 
-    //iterator obj used below
-    vector<Order*>::iterator it;
-    for(it = (*ordersList.orders).begin(); it != (*ordersList.orders).end(); ++it){
-        cout << **it << "\n";
-    } 
+    for (const Order* order : *ordersList.orders){
+        cout << *order << "\n";
+    }
     return out; 
 } 
 
 
-void OrdersList::addToList(Order& order){
+void OrdersList::addToList(Order& order){ 
     orders->push_back(&order);
 }
 
@@ -89,7 +85,7 @@ void OrdersList::remove(Order& order){
     }
 }
 
-vector<Order*> OrdersList::getList(){ return (*orders); }
+const vector<Order*>& OrdersList::getList(){ return *orders; }
 
 Order::Order(const Order &order){
     description = new string(*order.description);
@@ -108,11 +104,11 @@ Order& Order::operator = (const Order &order){
 } 
 
 
-Order::Order(string description, string effect): description(new string(description)), effect(new string(effect)){}
+Order::Order(const string description, const string effect): description(new string(description)), effect(new string(effect)){}
 
-string Order::getDescription(){ return *description; }
+const string& Order::getDescription(){ return *description; }
 
-string Order::getEffect(){ return *effect; }
+const string& Order::getEffect(){ return *effect; }
 
 void Order::setExecutedStatus(bool status){ executed = new bool(status); }
 
