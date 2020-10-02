@@ -126,7 +126,9 @@ const bool& Order::getExecutedStatus(){ return *executed; }
 ostream & operator << (ostream &out, const Order &order) 
 { 
     out << *(order.description); 
-    if(*(order.executed)){ out << " -> Effect: " << *(order.effect); };
+    if(*(order.executed)){
+         out << " -> Effect: " << *(order.effect); 
+    };
     out << "\n"; 
     return out; 
 } 
