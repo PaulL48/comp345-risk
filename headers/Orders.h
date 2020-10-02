@@ -28,18 +28,22 @@ class Order{
         Order(const std::string description, const std::string effect);
         const std::string&  getDescription();
         const std::string& getEffect();
-        bool getExecutedStatus();
+        const bool& getExecutedStatus();
         void setExecutedStatus(bool status);
         friend std::ostream & operator << (std::ostream &out, const Order &order); 
         virtual void validate() = 0;
         virtual void execute() = 0;
         virtual Order* clone() const = 0;
+        int* uniqueId;
+
     protected:
         Order(const Order &order);
         Order& operator = (const Order &order); 
         bool* executed = new bool(false);
         std::string* description;
         std::string* effect;
+        static int counter;
+
 };
 
 class Deploy: public Order{

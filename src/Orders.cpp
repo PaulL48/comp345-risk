@@ -28,18 +28,16 @@ ostream & operator << (ostream &out, const OrdersList &ordersList)
 
 
 void OrdersList::addToList(Order& order){ 
-    orders->push_back(&order);
+    orders->push_back(order.clone());
 }
 
 void OrdersList::move(Order& order, int index){
-    vector<Order*>::iterator it;
-    int i;
-
-    for(it = orders->begin(), i = 0; it != orders->end(); ++it, ++i){
-        if(*it == &order){  
-            Order *orderPointer = *it;
-            orders->erase(it);
-            orders->insert(next(orders->begin(), index), orderPointer);
+    for (std::size_t i = 0; i < orders->size(); ++i){
+        if ((*orders->at(i)->uniqueId) == *order.uniqueId){
+            Order* temp = orders->at(i);
+            orders->erase(std::next(orders->cbegin(), i));
+            orders->insert(std::next(orders->cbegin(), index), temp);
+            break;
         }
     }
 }
@@ -53,9 +51,9 @@ void OrdersList::moveToEnd(Order& order){
 }
 
 void OrdersList::moveUp(Order& order){
-    vector<Order*>::iterator it = find_if(orders->begin(), orders->end(), [&order](const Order* q){ return q == &order;});
+    vector<Order*>::iterator it = find_if(orders->begin(), orders->end(), [&order](const Order* q){ return *(q->uniqueId) == **(&order.uniqueId);});
 
-    if(*it == &order){
+    if(it != orders->end()){
         int index = (it - orders->begin());
         if(index != 0){
             this->move(order, index-1);
@@ -64,55 +62,66 @@ void OrdersList::moveUp(Order& order){
 }
 
 void OrdersList::moveDown(Order& order){
-    vector<Order*>::iterator it = find_if(orders->begin(), orders->end(), [&order](const Order* q){ return q == &order;});
+    vector<Order*>::iterator it = find_if(orders->begin(), orders->end(), [&order](const Order* q){ return *(q->uniqueId) == **(&order.uniqueId);});
 
-    if(*it == &order){
+    if(it != orders->end()){
         int index = (it - orders->begin());
-        if((unsigned long long)index != (orders->size()-1)){
+        if(static_cast<std::size_t>(index) != (orders->size()-1)){
             this->move(order, index+1);
         }
     }
 }
 
 void OrdersList::remove(Order& order){
-    vector<Order*>::iterator it;
-
-    for(it = orders->begin(); it != orders->end(); ++it){
-        if(*it == &order){  
+    for (auto it = orders->cbegin(); it != orders->cend(); ++it){
+        if((*(*it)->uniqueId) == *order.uniqueId){  
             orders->erase(it);
             break;
         }
     }
 }
 
-const vector<Order*>& OrdersList::getList(){ return *orders; }
-
-Order::Order(const Order &order){
-    description = new string(*order.description);
-    effect = new string(*order.effect);
-    executed = new bool(*order.executed);
+const vector<Order*>& OrdersList::getList(){ 
+    return *orders; 
 }
 
+int Order::counter = 0;
+
+Order::Order(const Order &order): uniqueId(new int(*order.uniqueId)),
+                                  executed(new bool(*order.executed)),
+                                  description(new std::string(*order.description)),
+                                  effect(new std::string(*order.effect))
+{}
+
 Order& Order::operator = (const Order &order){
-    if(this == &order){ return *this; }
+    if(this == &order){ 
+        return *this; 
+    }
 
     description = new string(*order.description);
     effect = new string(*order.effect);
     executed = new bool(*order.executed);
+    uniqueId = new int(*order.uniqueId);
 
     return *this;
 } 
 
 
-Order::Order(const string description, const string effect): description(new string(description)), effect(new string(effect)){}
+Order::Order(const string description, const string effect): description(new string(description)), effect(new string(effect)){
+    uniqueId = new int(counter++);
+}
 
-const string& Order::getDescription(){ return *description; }
+const string& Order::getDescription(){ 
+    return *description; 
+}
 
-const string& Order::getEffect(){ return *effect; }
+const string& Order::getEffect(){ 
+    return *effect; 
+}
 
-void Order::setExecutedStatus(bool status){ executed = new bool(status); }
+void Order::setExecutedStatus(bool status){ *executed = status; }
 
-bool Order::getExecutedStatus(){ return executed; }
+const bool& Order::getExecutedStatus(){ return *executed; }
 
 ostream & operator << (ostream &out, const Order &order) 
 { 
@@ -125,6 +134,9 @@ ostream & operator << (ostream &out, const Order &order)
 Deploy::Deploy(const Deploy &order): Order(order){}
 
 Deploy& Deploy::operator = (const Deploy &order){
+    if (&order == this){
+        return *this;
+    }
     Order::operator= (order);
     return *this;
 }
@@ -140,6 +152,9 @@ Order* Deploy::clone() const { return new Deploy(*this); }
 Advance::Advance(const Advance &order): Order(order){}
 
 Advance& Advance::operator = (const Advance &order){
+    if (&order == this){
+        return *this;
+    }
     Order::operator= (order);
     return *this;
 }
@@ -155,6 +170,9 @@ Order* Advance::clone() const { return new Advance(*this); }
 Bomb::Bomb(const Bomb &order): Order(order){}
 
 Bomb& Bomb::operator = (const Bomb &order){
+    if (&order == this){
+        return *this;
+    }
     Order::operator= (order);
     return *this;
 }
@@ -170,6 +188,9 @@ Order* Bomb::clone() const { return new Bomb(*this); }
 Blockade::Blockade(const Blockade &order): Order(order){}
 
 Blockade& Blockade::operator = (const Blockade &order){
+    if (&order == this){
+        return *this;
+    }
     Order::operator= (order);
     return *this;
 }
@@ -185,6 +206,9 @@ Order* Blockade::clone() const { return new Blockade(*this); }
 Airlift::Airlift(const Airlift &order): Order(order){}
 
 Airlift& Airlift::operator = (const Airlift &order){
+    if (&order == this){
+        return *this;
+    }
     Order::operator= (order);
     return *this;
 }
@@ -200,6 +224,9 @@ Order* Airlift::clone() const { return new Airlift(*this); }
 Negotiate::Negotiate(const Negotiate &order): Order(order){}
 
 Negotiate& Negotiate::operator = (const Negotiate &order){
+    if (&order == this){
+        return *this;
+    }
     Order::operator= (order);
     return *this;
 }
