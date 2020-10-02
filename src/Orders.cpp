@@ -27,11 +27,11 @@ ostream & operator << (ostream &out, const OrdersList &ordersList)
 } 
 
 
-void OrdersList::addToList(Order& order){ 
+void OrdersList::addToList(const Order& order){ 
     orders->push_back(order.clone());
 }
 
-void OrdersList::move(Order& order, int index){
+void OrdersList::move(const Order& order, int index){
     for (std::size_t i = 0; i < orders->size(); ++i){
         if ((*orders->at(i)->uniqueId) == *order.uniqueId){
             Order* temp = orders->at(i);
@@ -42,15 +42,15 @@ void OrdersList::move(Order& order, int index){
     }
 }
 
-void OrdersList::moveToFront(Order& order){
+void OrdersList::moveToFront(const Order& order){
     this->move(order, 0);
 }
 
-void OrdersList::moveToEnd(Order& order){
+void OrdersList::moveToEnd(const Order& order){
     this->move(order, orders->size()-1);
 }
 
-void OrdersList::moveUp(Order& order){
+void OrdersList::moveUp(const Order& order){
     vector<Order*>::iterator it = find_if(orders->begin(), orders->end(), [&order](const Order* q){ return *(q->uniqueId) == **(&order.uniqueId);});
 
     if(it != orders->end()){
@@ -61,7 +61,7 @@ void OrdersList::moveUp(Order& order){
     }
 }
 
-void OrdersList::moveDown(Order& order){
+void OrdersList::moveDown(const Order& order){
     vector<Order*>::iterator it = find_if(orders->begin(), orders->end(), [&order](const Order* q){ return *(q->uniqueId) == **(&order.uniqueId);});
 
     if(it != orders->end()){
@@ -72,7 +72,7 @@ void OrdersList::moveDown(Order& order){
     }
 }
 
-void OrdersList::remove(Order& order){
+void OrdersList::remove(const Order& order){
     for (auto it = orders->cbegin(); it != orders->cend(); ++it){
         if((*(*it)->uniqueId) == *order.uniqueId){  
             orders->erase(it);
@@ -107,7 +107,7 @@ Order& Order::operator = (const Order &order){
 } 
 
 
-Order::Order(const string description, const string effect): description(new string(description)), effect(new string(effect)){
+Order::Order(const string& description, const string& effect): description(new string(description)), effect(new string(effect)){
     uniqueId = new int(counter++);
 }
 

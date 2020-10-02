@@ -10,22 +10,22 @@ class OrdersList{
         OrdersList(const OrdersList &order);
         OrdersList& operator = (const OrdersList &order); 
         friend std::ostream & operator << (std::ostream &out, const OrdersList &ordersList); 
-        void addToList(Order& order);
-        void moveToFront(Order& order);
-        void moveToEnd(Order& order);
-        void moveUp(Order& order);
-        void moveDown(Order& order);
-        void remove(Order& order);
+        void addToList(const Order& order);
+        void moveToFront(const Order& order);
+        void moveToEnd(const Order& order);
+        void moveUp(const Order& order);
+        void moveDown(const Order& order);
+        void remove(const Order& order);
         const std::vector<Order*>& getList();
     
     private:
-        void move(Order& order, int index);
+        void move(const Order& order, int index);
         std::vector<Order*> *orders;
 };
 
 class Order{
     public:
-        Order(const std::string description, const std::string effect);
+        Order(const std::string& description, const std::string& effect);
         const std::string&  getDescription();
         const std::string& getEffect();
         const bool& getExecutedStatus();
