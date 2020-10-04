@@ -1,17 +1,18 @@
 #include "Player.h"
 #include <string>
-#include <list>
+#include <vector>
 #include <iostream>
 
 /**
- * 
+ * This is the main constructor for the Player Class.
  * */
 Player::Player(std::string* playerName,std::vector<int>* territoriesAttack, std::vector<int>* territoriesDefend, std::vector<int>* cards, std::vector<int>* orders):
     playerName(playerName), territoriesAttack(territoriesAttack), territoriesDefend(territoriesDefend), cards(cards), orders(orders){}
 
 
 /**
- * 
+ * This is the issueOrder method. 
+ * This method creates an Order and adds it to the players orders vector.
  * */
 void Player::issueOrder(){
     /**
@@ -20,7 +21,7 @@ void Player::issueOrder(){
     Player::orders->push_back(5);
 }
 /**
- * 
+ * This is the copy constructor that takes in a Player object and creates a new Player
  * */
 Player::Player(const Player& p){
     playerName = p.playerName;
@@ -45,7 +46,7 @@ Player& Player::operator= (const Player& player){
     return *this;
 }
 /**
- * 
+ * This is the stream insertion operator
  * */
 std::ostream &operator<<(std::ostream &output, const Player &p){
     output 
