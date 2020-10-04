@@ -2,11 +2,13 @@
 #define MAP_H
 
 #include <ostream>
-#include <string>
-#include <vector>
-#include <unordered_set>
-#include <unordered_map>
 #include <stack>
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
+#include <iostream>
+
 
 //============================================================================================================================================================
 // TEMPLATE FUNCTION DECLARATIONS: OutputUtilities
@@ -39,11 +41,13 @@ namespace SetUtilities
 
     // Return whether the second set is a subset of the first
     template <typename T>
-    bool isSubset(const std::unordered_set<T> &set, const std::unordered_set<T> &subset);
+    bool isSubset(const std::unordered_set<T> &set,
+                  const std::unordered_set<T> &subset);
 
     // Return the set difference of the two sets
     template <typename T>
-    std::unordered_set<T> setDifference(const std::unordered_set<T> &minuend, const std::unordered_set<T> &subtrahend);
+    std::unordered_set<T> setDifference(const std::unordered_set<T> &minuend,
+                                        const std::unordered_set<T> &subtrahend);
 } // namespace SetUtilities
 
 //============================================================================================================================================================
@@ -69,9 +73,11 @@ public:
     DepthFirstIterator &operator=(const DepthFirstIterator &dfi); // Copy assignment
 
     template <typename U>
-    friend std::ostream &operator<<(std::ostream &output, const DepthFirstIterator<U> &dfi); // Stream output
+    friend std::ostream &operator<<(std::ostream &output,
+                                    const DepthFirstIterator<U> &dfi); // Stream output
 
-    // Return whether two DFS iterators are at the same point in iteration on the same adjacency list
+    // Return whether two DFS iterators are at the same point in iteration on
+    // the same adjacency list
     bool operator==(const DepthFirstIterator &dfi) const;
 
     // Return the negation of operator==
@@ -79,6 +85,8 @@ public:
 
     // Advance the iterator to the next vertex
     DepthFirstIterator &operator++();
+
+    DepthFirstIterator operator+(std::size_t i);
 
     // Get the vertex the iterator is currently referencing
     const T &operator*() const;
@@ -94,7 +102,8 @@ private:
     // Track upcoming nodes during iteration
     std::stack<const T *, std::vector<const T *>> *stack;
 
-    // Non-owning pointer to adjacency list. Used to get the neighbors of a neighbor
+    // Non-owning pointer to adjacency list. Used to get the neighbors of a
+    // neighbor
     const AdjacencyList<T> *adjacencyList;
 };
 
@@ -115,7 +124,8 @@ public:
     Graph &operator=(const Graph<T> &graph); // Copy assignment
 
     template <typename U>
-    friend std::ostream &operator<<(std::ostream &output, const Graph<U> &graph); // Stream output
+    friend std::ostream &operator<<(std::ostream &output,
+                                    const Graph<U> &graph); // Stream output
 
     // Return whether two graphs are identical
     bool operator==(const Graph<T> &graph) const;
@@ -135,16 +145,20 @@ public:
     // Remove the vertex and all edges to it from the graph
     void erase(const T &vertex);
 
+    void merge(const T& vertex1, const T& vertex2);
+
+    std::size_t size() const;
+
     // Return iterator to the start of the container
     DepthFirstIterator<T> begin() const;
 
     // Return iterator past the end of the container
     DepthFirstIterator<T> end() const;
 
-    // Return the first element of the graph that satisfies the supplied predicate, or nullptr
-    // if none are found
+    // Return the first element of the graph that satisfies the supplied
+    // predicate, or nullptr if none are found
     template <typename F>
-    const T *find_if(F predicate) const;
+    const T *findIf(F predicate) const;
 
 private:
     // Owning pointer to adjacency list
@@ -168,24 +182,29 @@ private:
 class Territory
 {
 public:
-    Territory();                                                                       // Default constructor
-    Territory(int id, const std::string &name, int x, int y);                          // Constructor
-    Territory(const Territory &territory);                                             // Copy constructor
-    ~Territory();                                                                      // Destructor
-    Territory &operator=(const Territory &territory);                                  // Copy assignment
-    friend std::ostream &operator<<(std::ostream &output, const Territory &territory); // Stream insertion
+    Territory();                                              // Default constructor
+    Territory(int id, const std::string &name, int x, int y); // Constructor
+    Territory(const Territory &territory);                    // Copy constructor
+    ~Territory();                                             // Destructor
+    Territory &operator=(const Territory &territory);         // Copy assignment
+    friend std::ostream &operator<<(std::ostream &output,
+                                    const Territory &territory); // Stream insertion
 
     // Return whether two territories have the same name and id
     bool operator==(const Territory &territory) const;
+    bool operator!=(const Territory &territory) const;
 
     int getId() const;
 
-    // Adding std::hash is necessary to allow Territory to be a key of an associative container
+    // Adding std::hash is necessary to allow Territory to be a key of an
+    // associative container
     friend class std::hash<Territory>;
 
 private:
     int *id;
     std::string *name;
+    int *x;
+    int *y;
     int *occupyingArmies;
     Player *ownedBy;
 };
@@ -222,11 +241,13 @@ namespace std // Only ever extend std for std::hash
 class Continent
 {
 public:
-    Continent(const std::string &name);                                                // Constructor
-    Continent(const Continent &continent);                                             // Copy constructor
-    ~Continent();                                                                      // Destructor
-    Continent &operator=(const Continent &continent);                                  // Copy assignment
-    friend std::ostream &operator<<(std::ostream &output, const Continent &continent); // Stream insertion
+    Continent(const std::string &name, int armyValue,
+              const std::string &color);              // Constructor
+    Continent(const Continent &continent);            // Copy constructor
+    ~Continent();                                     // Destructor
+    Continent &operator=(const Continent &continent); // Copy assignment
+    friend std::ostream &operator<<(std::ostream &output,
+                                    const Continent &continent); // Stream insertion
 
     // Add a territory to this continent
     void addTerritory(const Territory &territory);
@@ -248,6 +269,8 @@ public:
 
 private:
     std::string *name;
+    int* armyValue;
+    std::string* color;
     Graph<Territory> *territories;
 };
 
@@ -266,18 +289,21 @@ enum class MapState
 class Map
 {
 public:
-    Map();                                                                 // Constructor
-    Map(const Map &map);                                                   // Copy constructor
-    ~Map();                                                                // Destructor
-    Map &operator=(const Map &map);                                        // Copy assignment
-    friend std::ostream &operator<<(std::ostream &output, const Map &map); // Stream insertion
+    Map();                          // Constructor
+    Map(const Map &map);            // Copy constructor
+    ~Map();                         // Destructor
+    Map &operator=(const Map &map); // Copy assignment
+    friend std::ostream &operator<<(std::ostream &output,
+                                    const Map &map); // Stream insertion
 
     // Validate the map and return the state of validation
     MapState validate() const;
 
-    void addContinent(const Continent& continent);
+    std::string getErrorString(MapState mapState) const;
 
-    void addTerritory(const Territory& territory, int continentId);
+    void addContinent(const Continent &continent);
+
+    void addTerritory(const Territory &territory, int continentId);
 
     // Connect territories on this map
     void connectTerritories(int territoryId1, int territoryId2);
@@ -406,7 +432,8 @@ std::unordered_set<T> SetUtilities::getKeys(const std::unordered_map<T, U> &map)
 }
 
 template <typename T>
-bool SetUtilities::isSubset(const std::unordered_set<T> &set, const std::unordered_set<T> &subset)
+bool SetUtilities::isSubset(const std::unordered_set<T> &set,
+                            const std::unordered_set<T> &subset)
 {
     for (const T &element : subset)
     {
@@ -420,7 +447,9 @@ bool SetUtilities::isSubset(const std::unordered_set<T> &set, const std::unorder
 }
 
 template <typename T>
-std::unordered_set<T> SetUtilities::setDifference(const std::unordered_set<T> &minuend, const std::unordered_set<T> &subtrahend)
+std::unordered_set<T>
+SetUtilities::setDifference(const std::unordered_set<T> &minuend,
+                            const std::unordered_set<T> &subtrahend)
 {
     std::unordered_set<T> result;
     for (const T &element : minuend)
@@ -437,22 +466,34 @@ std::unordered_set<T> SetUtilities::setDifference(const std::unordered_set<T> &m
 // TEMPLATE CLASS DEFINITIONS: DepthFirstIterator
 //============================================================================================================================================================
 
+
 template <typename T>
-DepthFirstIterator<T>::DepthFirstIterator(const AdjacencyList<T> *adjacencyList) : visited(new std::unordered_set<const NeighborList<T> *>()),
-                                                                                   stack(new std::stack<const T *, std::vector<const T *>>()),
-                                                                                   adjacencyList(adjacencyList)
+DepthFirstIterator<T>::DepthFirstIterator(const AdjacencyList<T> *adjacencyList) :
+    visited(new std::unordered_set<const NeighborList<T> *>()),
+    stack(new std::stack<const T *, std::vector<const T *>>()),
+    adjacencyList(adjacencyList)
 {
     if (adjacencyList != nullptr)
     {
-        // The first vertex of the graph is pushed to the stack to start the depth first traversal
-        this->stack->push(&(this->adjacencyList->begin()->first));
+        if (adjacencyList->empty())
+        {
+            // If the adjacency list is empty, set the iterator to end()
+            this->adjacencyList = nullptr;
+        }
+        else
+        {
+            // The first vertex of the graph is pushed to the stack to start the
+            // depth first traversal
+            this->stack->push(&(this->adjacencyList->begin()->first));
+        }
     }
 }
 
 template <typename T>
-DepthFirstIterator<T>::DepthFirstIterator(const DepthFirstIterator &dfi) : visited(new std::unordered_set<const NeighborList<T> *>(dfi.visited)),
-                                                                           stack(new std::stack<const T *, std::vector<const T *>>(dfi.stack)),
-                                                                           adjacencyList(*dfi.adjacencyList)
+DepthFirstIterator<T>::DepthFirstIterator(const DepthFirstIterator &dfi) :
+    visited(new std::unordered_set<const NeighborList<T> *>(*dfi.visited)),
+    stack(new std::stack<const T *, std::vector<const T *>>(*dfi.stack)),
+    adjacencyList(dfi.adjacencyList)
 {
 }
 
@@ -465,7 +506,8 @@ DepthFirstIterator<T>::~DepthFirstIterator()
 }
 
 template <typename T>
-DepthFirstIterator<T> &DepthFirstIterator<T>::operator=(const DepthFirstIterator<T> &dfi)
+DepthFirstIterator<T> &
+DepthFirstIterator<T>::operator=(const DepthFirstIterator<T> &dfi)
 {
     if (&dfi == this)
     {
@@ -483,7 +525,8 @@ DepthFirstIterator<T> &DepthFirstIterator<T>::operator=(const DepthFirstIterator
 template <typename T>
 bool DepthFirstIterator<T>::operator==(const DepthFirstIterator<T> &dfi) const
 {
-    // Equivalence is: two iterators being at the same point of iteration over the same adjacency list
+    // Equivalence is: two iterators being at the same point of iteration over
+    // the same adjacency list
     return this->adjacencyList == dfi.adjacencyList && *this->stack == *dfi.stack;
 }
 
@@ -503,7 +546,8 @@ DepthFirstIterator<T> &DepthFirstIterator<T>::operator++()
     // Mark the current vertex as visited
     this->visited->insert(&(this->adjacencyList->at(*current)));
 
-    // Push the current vertex's neighbors onto the stack if they haven't been visited
+    // Push the current vertex's neighbors onto the stack if they haven't been
+    // visited
     for (const T &neighbor : this->adjacencyList->at(*current))
     {
         if (this->visited->count(&(this->adjacencyList->at(neighbor))) == 0)
@@ -512,7 +556,8 @@ DepthFirstIterator<T> &DepthFirstIterator<T>::operator++()
         }
     }
 
-    // If iteration is complete, set the sentinel value of the pointer to become equivalent to Graph<T>::end()
+    // If iteration is complete, set the sentinel value of the pointer to become
+    // equivalent to Graph<T>::end()
     if (this->stack->empty())
     {
         this->adjacencyList = nullptr;
@@ -520,6 +565,17 @@ DepthFirstIterator<T> &DepthFirstIterator<T>::operator++()
     }
 
     return *this;
+}
+
+template <typename T>
+DepthFirstIterator<T> DepthFirstIterator<T>::operator+(std::size_t count)
+{
+    DepthFirstIterator<T> result = *this;
+    for (std::size_t i = 0; i < count && result.adjacencyList != nullptr; ++i)
+    {
+        ++result;
+    }
+    return result;
 }
 
 template <typename T>
@@ -538,12 +594,9 @@ template <typename T>
 std::ostream &operator<<(std::ostream &output, const DepthFirstIterator<T> &dfi)
 {
     output << "{" << std::endl;
-    output << "\t"
-           << "visited: " << *dfi.visited << std::endl;
-    output << "\t"
-           << "stack: " << *dfi.stack << std::endl;
-    output << "\t"
-           << "graph: " << *dfi.adjacencyList << std::endl;
+    output << "\tvisited: " << *dfi.visited << std::endl;
+    output << "\tstack: " << *dfi.stack << std::endl;
+    output << "\tgraph: " << *dfi.adjacencyList << std::endl;
     output << "}" << std::endl;
     return output;
 }
@@ -564,7 +617,8 @@ Graph<T>::~Graph()
 }
 
 template <typename T>
-Graph<T>::Graph(const Graph<T> &graph) : adjacencyList(new AdjacencyList<T>(*graph.adjacencyList))
+Graph<T>::Graph(const Graph<T> &graph) :
+    adjacencyList(new AdjacencyList<T>(*graph.adjacencyList))
 {
 }
 
@@ -616,15 +670,15 @@ template <typename T>
 bool Graph<T>::isSubgraphOf(const Graph<T> &graph) const
 {
     // Algorithm Description:
-    // A list of vertices is obtained via the set difference graph.vertices - thisGraph.vertices
-    // The supplied graph is transformed by removing those vertices and connections to those vertices
+    // A list of vertices is obtained via the set difference graph.vertices - thisGraph.vertices 
+    // The supplied graph is transformed by removing those vertices and connections to those vertices 
     // If the transformed graph is equivalent to this graph, this graph is a subgraph
 
     std::unordered_set<T> subgraphVertices = SetUtilities::getKeys(*this->adjacencyList);
     std::unordered_set<T> graphVertices = SetUtilities::getKeys(*graph.adjacencyList);
 
-    // Early test: If the vertices of this graph are not a subset of the supplied graph,
-    // This graph cannot be a subgraph
+    // Early test: If the vertices of this graph are not a subset of the
+    // supplied graph, This graph cannot be a subgraph
     if (!SetUtilities::isSubset(graphVertices, subgraphVertices))
     {
         return false;
@@ -670,10 +724,47 @@ void Graph<T>::erase(const T &vertex)
 template <typename T>
 void Graph<T>::connect(const T &vertex1, const T &vertex2)
 {
-    if (this->adjacencyList->count(vertex1) != 0 && this->adjacencyList->count(vertex2) != 0)
+    // Assure vertices exist and that they're not already connected
+    if (this->adjacencyList->count(vertex1) != 0 &&
+        this->adjacencyList->count(vertex2) != 0 &&
+        this->adjacencyList->at(vertex1).count(vertex2) == 0 &&
+        this->adjacencyList->at(vertex2).count(vertex1) == 0)
     {
         this->adjacencyList->at(vertex1).insert(vertex2);
+        this->adjacencyList->at(vertex2).insert(vertex1);
     }
+}
+
+template <typename T>
+void Graph<T>::merge(const T &vertex1, const T &vertex2)
+{
+    // Exit if either vertex doesn't exist in this graph
+    if (this->adjacencyList->count(vertex1) == 0 ||
+        this->adjacencyList->count(vertex2) == 0)
+    {
+        return;
+    }
+
+    // Neighbors of v also have v as a neighbor. So to fix incoming edges we visit
+    // each neighbor and replace vertex2 with vertex1 as their neighbor
+    for (const T& neighbor : this->adjacencyList->at(vertex2))
+    {
+        if (neighbor != vertex1)
+        {
+            this->adjacencyList->at(neighbor).insert(vertex1);
+            this->adjacencyList->at(neighbor).erase(vertex2);
+        }
+    }
+
+    // To fix outgoing edges we combine the sets of neighbors of vertices 1 and 2
+    this->adjacencyList->at(vertex1).merge(this->adjacencyList->at(vertex2));
+    this->erase(vertex2);
+}
+
+template <typename T>
+std::size_t Graph<T>::size() const
+{
+    return this->adjacencyList->size();
 }
 
 template <typename T>
@@ -690,15 +781,23 @@ DepthFirstIterator<T> Graph<T>::end() const
 
 template <typename T>
 template <typename F>
-const T *Graph<T>::find_if(F predicate) const
+const T *Graph<T>::findIf(F predicate) const
 {
-    for (const T &vertex : SetUtilities::getKeys(*this->adjacencyList))
+    for (const auto &[vertex, neighbors] : *this->adjacencyList)
     {
         if (predicate(vertex))
         {
             return &vertex;
         }
     }
+
+    // for (const T &vertex : SetUtilities::getKeys(*this->adjacencyList))
+    // {
+    //     if (predicate(vertex))
+    //     {
+    //         return &vertex;
+    //     }
+    // }
     return nullptr;
 }
 
