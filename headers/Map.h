@@ -283,7 +283,7 @@ enum class MapState
     VALID,
     NOT_CONNECTED_GRAPH,
     CONTINENTS_NOT_CONNECTED_SUBGRAPHS,
-    TERRITORY_BELONGS_TO_MANY_CONTINENTS
+    TERRITORY_DOES_NOT_BELONG_TO_ONE_CONTINET
 };
 
 class Map
@@ -791,13 +791,6 @@ const T *Graph<T>::findIf(F predicate) const
         }
     }
 
-    // for (const T &vertex : SetUtilities::getKeys(*this->adjacencyList))
-    // {
-    //     if (predicate(vertex))
-    //     {
-    //         return &vertex;
-    //     }
-    // }
     return nullptr;
 }
 

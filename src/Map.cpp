@@ -206,8 +206,6 @@ MapState Map::validate() const
     // Merge all nodes for each continent into a single node (maintaining edges)
     // if the resulting graph is connected, then continents are connected subgraphs
     Graph<Territory> continentGraph = *this->territories;
-    std::cout << "Starting with graph: " << continentGraph << std::endl;
-
     for (const Continent& continent : *this->continents)
     {
         // We collapse it down to the first node
@@ -220,20 +218,27 @@ MapState Map::validate() const
         for (auto nextIt = it + 1; nextIt != continent.end(); ++nextIt)
         {
             continentGraph.merge(*it, *nextIt);
-            std::cout << "Combining: " << *it << ", " << *nextIt << std::endl;
-            std::cout << continentGraph << std::endl;
         }
     }
-
-    std::cout << "Ending with graph: " << continentGraph << std::endl;
 
     if (!continentGraph.isConnected())
     {
         return MapState::CONTINENTS_NOT_CONNECTED_SUBGRAPHS;
     }
 
+    // Second check to make sure each continent is connected within themselves
+    for (const Continent& continent : *this->continents)
+    {
+        if (!continent.isValidContinent(*this->territories))
+        {
+            return MapState::CONTINENTS_NOT_CONNECTED_SUBGRAPHS;
+        }
+    }
+
     // Scan through territories via continents and flag the error when a territory
     // is seen twice
+    // Assure each territory is in one and only one continent
+
     std::unordered_set<Territory> territories;
     for (const Continent &continent : *this->continents)
     {
@@ -245,8 +250,17 @@ MapState Map::validate() const
             }
             else
             {
-                return MapState::TERRITORY_BELONGS_TO_MANY_CONTINENTS;
+                return MapState::TERRITORY_DOES_NOT_BELONG_TO_ONE_CONTINET;
             }
+        }
+    }
+
+    // Check for a territory that is not part of a continent
+    for (const Territory& territory : *this->territories)
+    {
+        if (territories.count(territory) == 0)
+        {
+            return MapState::TERRITORY_DOES_NOT_BELONG_TO_ONE_CONTINET;
         }
     }
 
@@ -263,8 +277,8 @@ std::string Map::getErrorString(MapState mapState) const
         return "Map is not a connected graph";
     case MapState::CONTINENTS_NOT_CONNECTED_SUBGRAPHS:
         return "Map continents are not all connected subgraphs of the territories";
-    case MapState::TERRITORY_BELONGS_TO_MANY_CONTINENTS:
-        return "Some map territories belong to more than one continent";
+    case MapState::TERRITORY_DOES_NOT_BELONG_TO_ONE_CONTINET:
+        return "Some map territories do not belong to only one continent";
     default:
         return "Invalid MapState Error code";
     }

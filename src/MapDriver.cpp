@@ -4,21 +4,6 @@
 
 int main()
 {
-    Graph<int> g;
-    g.insert(1);
-    g.insert(2);
-    g.insert(3);
-    g.insert(4);
-    g.connect(1, 2);
-    g.connect(1, 3);
-    g.connect(2, 4);
-    g.connect(3, 1);
-    g.connect(4, 2);
-    std::cout << "Graph: " << g << std::endl;
-
-    g.merge(1, 2);
-    std::cout << "Graph: " << g << std::endl;
-
     // Test set of continents
     std::vector<Continent> testContinents({
         Continent("Continent 1", 4, "yellow"),
@@ -62,10 +47,8 @@ int main()
     for (std::size_t i = 0; i < testTerritories.size() - 1; ++i)
     {
         validMap.connectTerritories(i + 1, i + 2);
-        validMap.connectTerritories(i + 2, i + 1);
     }
-
-    std::cout << "validMap state: " << validMap.getErrorString(validMap.validate()) << std::endl;
+    std::cout << "State of a valid map: " << validMap.getErrorString(validMap.validate()) << std::endl;
 
     // Violate connectedness
     // Add random but insufficient connections
@@ -85,72 +68,40 @@ int main()
             runMap.connectTerritories(t1, t2);
             runMap.connectTerritories(t2, t1);
         }
-
-        std::cout << "runMap state: " << runMap.getErrorString(runMap.validate()) << std::endl;
+        std::cout << "State of disconnected graph: " << runMap.getErrorString(runMap.validate()) << std::endl;
     }
 
     // Violate continent connected subgraph
-    Map continentsNotValid;
+    Map invalidContinents;
     for (const Continent& continent : testContinents)
     {
-        continentsNotValid.addContinent(continent);
+        invalidContinents.addContinent(continent);
     }
 
-    continentsNotValid.addTerritory(testTerritories.at(0), 0);
-    continentsNotValid.addTerritory(testTerritories.at(1), 0);
+    invalidContinents.addTerritory(testTerritories.at(0), 0);
+    invalidContinents.addTerritory(testTerritories.at(1), 0);
+    invalidContinents.addTerritory(testTerritories.at(2), 2);
+    invalidContinents.addTerritory(testTerritories.at(3), 2);
 
-    // Violate Territory belongs to many continents
+    invalidContinents.connectTerritories(1, 2);
+    invalidContinents.connectTerritories(3, 1);
+    invalidContinents.connectTerritories(4, 1);
+
+    std::cout << "State of invalid continent graph: " << invalidContinents.getErrorString(invalidContinents.validate()) << std::endl;
+
+
+    // Violate Territory not belonging to only one continent
+    Map invalidBelonging = baseMap;
+
+    // To achieve this we must prefill a continent
+    Continent continent("Continent 5", 9, "salmon");
+    continent.addTerritory(testTerritories.at(0));
+    invalidBelonging.addContinent(continent);
+    for (std::size_t i = 0; i < testTerritories.size() - 1; ++i)
+    {
+        invalidBelonging.connectTerritories(i + 1, i + 2);
+    }
+    std::cout << "State of invalid territory ownership map: " << invalidBelonging.getErrorString(invalidBelonging.validate()) << std::endl;
 
     return 0;
 }
-
-// TODO: Uncomment before delivery
-// int main()
-// {
-//     Graph<int> g;
-//     g.insert(4);
-//     g.insert(1);
-//     g.insert(2);
-//     g.insert(3);
-    
-//     g.connect(1, 2);
-//     g.connect(1, 1);
-//     g.connect(1, 4);
-//     g.connect(1, 3);
-//     g.connect(2, 3);
-//     g.connect(3, 1);
-//     std::cout << g << std::endl;
-
-
-//     Graph<int> subg;
-//     subg.insert(1);
-//     subg.insert(2);
-//     subg.connect(1, 2);
-//     subg.connect(1, 1);
-
-
-//     std::cout << "Graph connected? " << g.isConnected() << std::endl;
-//     std::cout << "Is subgraph? " << subg.isSubgraphOf(g) << std::endl;
-
-//     int i = 3;
-//     int j = 9;
-//     std::unordered_set<int*> test;
-//     test.insert(&i);
-//     test.insert(&j);
-
-//     std::unordered_set<int> ttest;
-//     ttest.insert(4);
-//     ttest.insert(5);
-//     std::cout << test << std::endl;
-//     std::cout << ttest << std::endl;
-    
-//     for (const int& vertex: g)
-//     {
-//         std::cout << vertex << std::endl;
-//     }
-
-//     std::cout << g.begin() << std::endl;
-
-//     return 0;
-//     return 0;
-// }
