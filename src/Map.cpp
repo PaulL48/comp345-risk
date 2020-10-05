@@ -7,6 +7,8 @@
 Territory::Territory() :
     id(new int(-1)),
     name(new std::string()),
+    x(new int(0)),
+    y(new int(0)),
     occupyingArmies(new int(0)),
     ownedBy(nullptr)
 {
@@ -51,6 +53,8 @@ Territory &Territory::operator=(const Territory &territory)
 
     *this->id = *territory.id;
     *this->name = *territory.name;
+    *this->x = *territory.x;
+    *this->y = *territory.y;
     *this->occupyingArmies = *territory.occupyingArmies;
     this->ownedBy = territory.ownedBy;
     return *this;
@@ -127,6 +131,8 @@ Continent &Continent::operator=(const Continent &continent)
 
     *this->name = *continent.name;
     *this->territories = *continent.territories;
+    *this->armyValue = *continent.armyValue;
+    *this->color = *continent.color;
     return *this;
 }
 
@@ -171,14 +177,15 @@ std::ostream &operator<<(std::ostream &output, const Continent &continent)
 // CLASS DEFINITIONS: Map
 //============================================================================================================================================================
 
-Map::Map() : territories(new Graph<Territory>()), continents(new std::vector<Continent>())
+Map::Map() :
+    territories(new Graph<Territory>()), continents(new std::vector<Continent>())
 {
-
 }
 
-Map::Map(const Map& map) : territories(new Graph<Territory>(*map.territories)), continents(new std::vector<Continent>(*map.continents))
+Map::Map(const Map &map) :
+    territories(new Graph<Territory>(*map.territories)),
+    continents(new std::vector<Continent>(*map.continents))
 {
-
 }
 
 Map::~Map()
@@ -201,12 +208,11 @@ MapState Map::validate() const
         return MapState::NOT_CONNECTED_GRAPH;
     }
 
-
     // To check that continents are connected subgraphs:
     // Merge all nodes for each continent into a single node (maintaining edges)
     // if the resulting graph is connected, then continents are connected subgraphs
     Graph<Territory> continentGraph = *this->territories;
-    for (const Continent& continent : *this->continents)
+    for (const Continent &continent : *this->continents)
     {
         // We collapse it down to the first node
         auto it = continent.begin();
@@ -214,7 +220,7 @@ MapState Map::validate() const
         {
             continue;
         }
-        
+
         for (auto nextIt = it + 1; nextIt != continent.end(); ++nextIt)
         {
             continentGraph.merge(*it, *nextIt);
@@ -227,7 +233,7 @@ MapState Map::validate() const
     }
 
     // Second check to make sure each continent is connected within themselves
-    for (const Continent& continent : *this->continents)
+    for (const Continent &continent : *this->continents)
     {
         if (!continent.isValidContinent(*this->territories))
         {
@@ -256,7 +262,7 @@ MapState Map::validate() const
     }
 
     // Check for a territory that is not part of a continent
-    for (const Territory& territory : *this->territories)
+    for (const Territory &territory : *this->territories)
     {
         if (territories.count(territory) == 0)
         {
