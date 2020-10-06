@@ -9,6 +9,13 @@ OrdersList::OrdersList(): orders(new vector<Order*>()){}
 
 OrdersList::OrdersList(const OrdersList &ordersList): orders(new vector<Order*>(*ordersList.orders)){}
 
+OrdersList::~OrdersList(){
+    for (std::size_t i = 0; i < orders->size(); ++i){
+        delete orders->at(i);
+    }
+    delete this->orders;
+}
+
 OrdersList& OrdersList::operator = (const OrdersList &ordersList){
     if(this == &ordersList){ 
         return *this; 
@@ -93,6 +100,13 @@ Order::Order(const Order &order): uniqueId(new int(*order.uniqueId)),
                                   effect(new std::string(*order.effect))
 {}
 
+Order::~Order(){
+    delete this->description;
+    delete this->effect;
+    delete this->uniqueId;
+    delete this->executed;
+}
+
 Order& Order::operator = (const Order &order){
     if(this == &order){ 
         return *this; 
@@ -145,6 +159,8 @@ Deploy& Deploy::operator = (const Deploy &order){
 
 Deploy::Deploy():Order("Deploy", "Deploy troops to a territory"){}
 
+Deploy::~Deploy(){}
+
 void Deploy::validate(){}
 
 void Deploy::execute(){ this->setExecutedStatus(true); } 
@@ -162,6 +178,8 @@ Advance& Advance::operator = (const Advance &order){
 }
 
 Advance::Advance():Order("Advance", "Advance troops to a neighbouring territory"){}
+
+Advance::~Advance(){}
 
 void Advance::validate(){}
 
@@ -181,6 +199,8 @@ Bomb& Bomb::operator = (const Bomb &order){
 
 Bomb::Bomb():Order("Bomb", "Bomb a territory"){}
 
+Bomb::~Bomb(){}
+
 void Bomb::validate(){}
 
 void Bomb::execute(){ this->setExecutedStatus(true); }
@@ -198,6 +218,8 @@ Blockade& Blockade::operator = (const Blockade &order){
 }
 
 Blockade::Blockade():Order("Blockade", "Seals a territory, Prevents people or goods from entering or leaving the territory"){}
+
+Blockade::~Blockade(){}
 
 void Blockade::validate(){}
 
@@ -217,6 +239,8 @@ Airlift& Airlift::operator = (const Airlift &order){
 
 Airlift::Airlift():Order("Airlift", "Transport suplies or troops by air"){}
 
+Airlift::~Airlift(){}
+
 void Airlift::validate(){}
 
 void Airlift::execute(){ this->setExecutedStatus(true); }
@@ -234,6 +258,8 @@ Negotiate& Negotiate::operator = (const Negotiate &order){
 }
 
 Negotiate::Negotiate():Order("Negotiate", "Negotiate with the opposition to reach an agreement"){}
+
+Negotiate::~Negotiate(){}
 
 void Negotiate::validate(){}
 

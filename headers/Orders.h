@@ -9,6 +9,7 @@ class OrdersList{
         OrdersList();
         OrdersList(const OrdersList &order);
         OrdersList& operator = (const OrdersList &order); 
+        ~OrdersList();
         friend std::ostream & operator << (std::ostream &out, const OrdersList &ordersList); 
         void addToList(const Order& order);
         void moveToFront(const Order& order);
@@ -26,6 +27,7 @@ class OrdersList{
 class Order{
     public:
         Order(const std::string& description, const std::string& effect);
+        virtual ~Order();
         const std::string&  getDescription();
         const std::string& getEffect();
         const bool& getExecutedStatus();
@@ -50,6 +52,7 @@ class Deploy: public Order{
     public: 
         Deploy();
         Deploy(const Deploy &order);
+        virtual ~Deploy();
         Deploy& operator = (const Deploy &order); 
         void validate();
         void execute();
@@ -60,6 +63,7 @@ class Advance: public Order{
     public: 
         Advance();
         Advance(const Advance &order);
+        virtual ~Advance();
         Advance& operator = (const Advance &order);
         void validate();
         void execute();
@@ -70,6 +74,7 @@ class Bomb: public Order{
     public: 
         Bomb();
         Bomb(const Bomb &order);
+        virtual ~Bomb();
         Bomb& operator = (const Bomb &order);
         void validate();
         void execute();
@@ -80,6 +85,7 @@ class Blockade: public Order{
     public: 
         Blockade();
         Blockade(const Blockade &order);
+        virtual ~Blockade();
         Blockade& operator = (const Blockade &order);
         void validate();
         void execute();
@@ -90,6 +96,7 @@ class Airlift: public Order{
     public: 
         Airlift();
         Airlift(const Airlift &order);
+        virtual ~Airlift();
         Airlift& operator = (const Airlift &order);
         void validate();
         void execute();
@@ -100,6 +107,7 @@ class Negotiate: public Order{
     public: 
         Negotiate();
         Negotiate(const Negotiate &order);
+        virtual ~Negotiate();
         Negotiate& operator = (const Negotiate &order);
         void validate();
         void execute();

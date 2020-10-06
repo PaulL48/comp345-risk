@@ -4,29 +4,34 @@ using std::vector;
 
 int main()
 {
+    //create OrdersList
     OrdersList list;
     OrdersList list2;
     
-    //create orders
+    //create Order
     Deploy deploy;
     Bomb bomb;
     Airlift airlift;
     Blockade blockade;
     Airlift airlift2;
 
+    //stream insertion operator for order
     cout << "Printing deploy order. Will not print the effect of the order. \n";
     cout << deploy;
 
+    //stream insertion operator for order after order executed
     cout << "\n Printing deploy order after calling execute. Will now also print effect of ther order. \n";
     deploy.execute();
     cout << deploy;
    
-    cout << "\n printing airlift & airlift2 after assigning airlift to airlift 2 and then calling execute on airlift.\n";
+    //copy assignment operator
+    cout << "\n Printing airlift and airlift2 orders after assigning airlift to airlift 2 and then calling execute on airlift.\n";
     airlift2 = airlift;
     airlift.execute();
     cout << "Airlift: " << airlift;
     cout << "Airlift 2: " <<airlift2;
 
+    //copy constructor
     cout << "\n printing airlift 3 after initializing in with the copy constructor with airlift order \n";
     Airlift airlift3 = airlift;
     cout << "Airlift: " << airlift;
@@ -38,7 +43,10 @@ int main()
     list.addToList(airlift);
     list.addToList(blockade);
       
+    //get list  
     vector<Order*> orders  = list.getList();
+    
+    //stream insertion operator for OrdersList
     cout << "orders list prior to moving orders around \n";
     cout << list;
 
@@ -48,7 +56,7 @@ int main()
     cout << "orders list after moving bomb order to end \n";
     cout << list;
 
-  // move blockade order to front
+    // move blockade order to front
     list.moveToFront(blockade);
     orders  = list.getList();
     cout << "orders list after moving blockade order tofront \n";
@@ -95,22 +103,6 @@ int main()
     OrdersList list3 = list2;
     cout << "List3: \n";
     cout << list3;
-
-  // Deploy deploy;
-  // Bomb bomb;
-  // Deploy deploy2;
-
-  
-
-  // cout << deploy << "\n";
-  // cout << deploy2 << "\n";
-  
-  // deploy2 = deploy;
-  // deploy.execute();
-
-  // cout << deploy << "\n";
-  // cout << deploy2 << "\n";
-
     return 0;
 }
 
