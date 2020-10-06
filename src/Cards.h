@@ -1,47 +1,87 @@
+#ifndef CARDS_H
+#define CARDS_H
 
-#ifndef CARDS_H_
-#define CARDS_H_
+#include <vector>
 
-class Card {
+using namespace std;
+
+class Card{
 public:
-	Card();
-	void play();
+    virtual Card* clone() const;
+    virtual void play();
+private:
+    Card *cardPlayed;
 };
 
-class Spy: private Card {
-	void play();
-};
-
-class Bomb: private Card{
-	void play();
-};
-
-class Blockade: private Card{
-	void play();
-};
-
-class Airlift: private Card{
-	void play();
-};
-
-class Diplomacy: private Card{
-	void play(); 
-};
-
-
-class Deck {
+class Bomb : public Card{
 public:
-	Deck();
-	void draw(Hand player);
+    Bomb();
+    ~Bomb();
+    virtual Card* clone() const;
+    virtual void play(Bomb bombCard, Deck deck);
+private:
+    Bomb *cardPlayed;
+};
+
+class Reinforcement : public Card{
+public:
+    Reinforcement();
+    ~Reinforcement();
+    virtual Card* clone() const;
+    virtual void play(Reinforcement reinforcementCard, Deck deck);
+private:
+    Reinforcement *cardPlayed;
+};
+
+class Blockade : public Card{
+public:
+    Blockade();
+    ~Blockade();
+    virtual Card* clone() const;
+    virtual void play(Blockade blockadeCard, Deck deck);
+private:
+    Blockade *cardPlayed;
+};
+
+class Airlift : public Card{
+public:
+    Airlift();
+    ~Airlift();
+    virtual Card* clone() const;
+    virtual void play(Airlift airliftCard, Deck deck);
+private:
+    Airlift *cardPlayed;
+};
+
+class Diplomacy : public Card{
+public:
+    Diplomacy();
+    ~Diplomacy();
+    virtual Card* clone() const;
+    virtual void play(Diplomacy diplomacyCard, Deck deck);
+private:
+    Diplomacy *cardPlayed;
+};
+
+class Deck{ 
+public:
+    Deck();
+    ~Deck();
+    Card* draw(); 
+    void backToDeck(Card* playedCard);
 
 private:
-	const int deckSize;
-	const Card cards[]; 
+    static unsigned long deckSize;
+    vector<Card*> deck;
 };
 
+class Hand{
+    Hand();
+    ~Hand();
+    void addToHand(const Card& cardDrawn);
 
-//To be deleted
- class Hand {
-}; 
+private:
+    vector<Card> hand; 
+};
 
-#endif /* CARDS_H_ */
+#endif
