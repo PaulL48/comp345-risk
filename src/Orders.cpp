@@ -10,7 +10,7 @@ OrdersList::OrdersList(): orders(new vector<Order*>()){}
 OrdersList::OrdersList(const OrdersList &ordersList): orders(new vector<Order*>(*ordersList.orders)){}
 
 OrdersList::~OrdersList(){
-    for (std::size_t i = 0; i < orders->size(); ++i){
+    for (std::size_t i = 0; i < orders->size(); ++i){ //deletes order pointers in the vector prior to deleting the vector
         delete orders->at(i);
     }
     delete this->orders;

@@ -6,43 +6,43 @@
 class Order;
 class OrdersList{
     public:
-        OrdersList();
-        OrdersList(const OrdersList &order);
-        OrdersList& operator = (const OrdersList &order); 
-        ~OrdersList();
-        friend std::ostream & operator << (std::ostream &out, const OrdersList &ordersList); 
-        void addToList(const Order& order);
-        void moveToFront(const Order& order);
-        void moveToEnd(const Order& order);
-        void moveUp(const Order& order);
-        void moveDown(const Order& order);
-        void remove(const Order& order);
-        const std::vector<Order*>& getList();
+        OrdersList();   //constructor
+        OrdersList(const OrdersList &order); //copy constructor
+        OrdersList& operator = (const OrdersList &order);  //copy assignment operator
+        ~OrdersList(); //destructor
+        friend std::ostream & operator << (std::ostream &out, const OrdersList &ordersList); //stream insertion operator 
+        void addToList(const Order& order); //adds an order to the end of a list
+        void moveToFront(const Order& order); //moves an order to the front of the list
+        void moveToEnd(const Order& order); //moves an order to the end of the list
+        void moveUp(const Order& order); //moves an order up by one position
+        void moveDown(const Order& order); //moves an order down by one position
+        void remove(const Order& order); //removes an order from the list
+        const std::vector<Order*>& getList(); //returns orders vector by const reference
     
     private:
-        void move(const Order& order, int index);
-        std::vector<Order*> *orders;
+        void move(const Order& order, int index); //private move method used to by public move methods 
+        std::vector<Order*> *orders; //vector pointer to hold Order pointers
 };
 
 class Order{
     public:
-        Order(const std::string& description, const std::string& effect);
-        virtual ~Order();
-        const std::string&  getDescription();
-        const std::string& getEffect();
-        const bool& getExecutedStatus();
-        void setExecutedStatus(bool status);
-        friend std::ostream & operator << (std::ostream &out, const Order &order); 
-        virtual void validate() = 0;
-        virtual void execute() = 0;
-        virtual Order* clone() const = 0;
+        Order(const std::string& description, const std::string& effect); //constructor
+        virtual ~Order(); //destructor
+        const std::string&  getDescription(); //returns description string by const reference
+        const std::string& getEffect(); //returns effect string by const reference
+        const bool& getExecutedStatus(); //returns executed status bool by const reference 
+        void setExecutedStatus(bool status); //sets executed status
+        friend std::ostream & operator << (std::ostream &out, const Order &order); //stream insertion operator 
+        virtual void validate() = 0; //validates an order, virtual method
+        virtual void execute() = 0; //executes an order, virtual method
+        virtual Order* clone() const = 0; //clones an Order object and returns Order pointer, virtual method
         int* uniqueId;
 
     protected:
-        Order(const Order &order);
-        Order& operator = (const Order &order); 
-        bool* executed = new bool(false);
-        std::string* description;
+        Order(const Order &order); //copy constructor
+        Order& operator = (const Order &order); //copy assignment operator 
+        bool* executed = new bool(false); //initialized to false
+        std::string* description; 
         std::string* effect;
         static int counter;
 
