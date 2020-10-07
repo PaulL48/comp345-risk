@@ -10,6 +10,7 @@ Player::Player(std::string* playerName,std::vector<int>* territoriesAttack, std:
     playerName(playerName), territoriesAttack(territoriesAttack), territoriesDefend(territoriesDefend), cards(cards), orders(orders){}
 
 
+Player::Player():playerName(new std::string("")), territoriesAttack(new std::vector<int>), territoriesDefend(new std::vector<int>), cards(new std::vector<int>), orders(new std::vector<int>){}
 /**
  * This is the issueOrder method.
  * This method creates an Order and adds it to the players orders vector.

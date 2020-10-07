@@ -14,6 +14,7 @@ class Player{
     public:
         Player(std::string* playerName,std::vector<int>* territoriesAttack, std::vector<int>* territoriesDefend, std::vector<int>* cards, std::vector<int>* orders);
         Player(const Player& player);
+        Player();
         Player& operator= (const Player& player);
         ~Player();
         friend std::ostream& operator<<( std::ostream &output, const Player& player);
