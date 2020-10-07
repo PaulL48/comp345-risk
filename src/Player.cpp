@@ -11,47 +11,56 @@ Player::Player(std::string* playerName,std::vector<int>* territoriesAttack, std:
 
 
 /**
- * This is the issueOrder method. 
+ * This is the issueOrder method.
  * This method creates an Order and adds it to the players orders vector.
  * */
 void Player::issueOrder(){
     /**
      * Add the creation of the order - Ask the teacher on what the creation does exactly and how do we determine if it is a attack or defend order
      * */
-    Player::orders->push_back(5);
+    orders->push_back(5);
 }
+
+Player::~Player(){ 
+    delete playerName;
+    delete territoriesAttack;
+    delete territoriesDefend;
+    delete cards;
+    delete orders;
+}
+
 /**
  * This is the copy constructor that takes in a Player object and creates a new Player
  * */
 Player::Player(const Player& p){
-    playerName = p.playerName;
-    territoriesAttack = p.territoriesAttack;
-    territoriesDefend = p.territoriesDefend;
-    cards = p.cards;
-    orders = p.orders;
+    playerName = new std::string(*p.playerName);
+    territoriesAttack = new std::vector<int>(*p.territoriesAttack);
+    territoriesDefend = new std::vector<int>(*p.territoriesDefend);
+    cards =new std::vector<int>(*p.cards);
+    orders =new std::vector<int>(*p.orders);
 }
 /**
- * This is the assignment operator for the Player object 
- * 
+ * This is the assignment operator for the Player object
+ *
  * */
 Player& Player::operator= (const Player& player){
     if (this == &player)
         return *this;
-    
-    *playerName = *player.playerName;
-    *territoriesAttack = *player.territoriesAttack;
-    *territoriesDefend = *player.territoriesDefend;
-    *cards= *player.cards;
-    *orders= *player.orders;
+
+    *this->playerName = *player.playerName;
+    *this->territoriesAttack = *player.territoriesAttack;
+    *this->territoriesDefend = *player.territoriesDefend;
+    *this->cards= *player.cards;
+    *this->orders= *player.orders;
     return *this;
 }
 /**
  * This is the stream insertion operator
  * */
 std::ostream &operator<<(std::ostream &output, const Player &p){
-    output 
-        <<"{  Player Name: " << p.playerName <<
-        ", Orders : " << p.orders << ", Territories Attack: " << p.territoriesAttack 
-        << ",  Territories Defend: " << p.territoriesDefend << ",  Cards: " << p.cards ;
+    output
+        <<"( Player Name: " << p.playerName <<
+        ", Orders : " << p.orders << ", Territories Attack: " << p.territoriesAttack
+        << ",  Territories Defend: " << p.territoriesDefend << ",  Cards: " << p.cards  <<" )";
     return output;
 }
