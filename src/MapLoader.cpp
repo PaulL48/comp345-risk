@@ -67,7 +67,12 @@ Territory &Territory::operator =(const Territory &rightSide){
     if (this == &rightSide)
         return *this;
     else{
-        delete(this);
+        delete this->id;
+        delete this->name;
+        delete this->contId;
+        delete this->x;
+        delete this->y;
+
         *this->id = *rightSide.id;
         *this->name = *rightSide.name;
         *this->contId= *rightSide.contId;

@@ -8,14 +8,13 @@
 #include <dirent.h>
 #include "MapLoader.h"
 
-std::vector<std::string> split (const std::string &s, char delim) {
+std::vector<std::string> split (const std::string &str, char delimiter) {
     std::vector<std::string> result;
-    std::stringstream ss (s);
-    std::string item;
+    std::stringstream ss (str);
+    std::string line;
 
-    while (getline (ss, item, delim)) {
-        result.push_back (item);
-    }
+    while (getline (ss, line, delimiter))
+        result.push_back (line);
 
     return result;
 }
@@ -50,7 +49,7 @@ bool validateFile (const std::vector<std::string> &v) {
 int main( )
 {
 
-    DIR           *dirp;
+    DIR  *dirp;
     struct dirent *directory;
 
     dirp = opendir("../comp345-risk");
