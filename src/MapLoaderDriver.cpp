@@ -19,7 +19,7 @@ std::vector<std::string> split (const std::string &s, char delim) {
     return result;
 }
 
-bool validate (const std::vector<std::string> &v) {
+bool validateFile (const std::vector<std::string> &v) {
     std::cout << "\nVerifing Map\n";
     bool continentsSwitch;
     bool countriesSwitch;
@@ -48,6 +48,10 @@ bool validate (const std::vector<std::string> &v) {
 
 int main( )
 {
+
+
+
+
     std::string mapMame = "solar.map";
     std::ifstream input;
     input.open(mapMame);
@@ -67,7 +71,7 @@ int main( )
 
     std::cout << "Testing : " << mapMame;
 
-    if (validate(v))
+    if (validateFile(v))
         std::cout << "Map Valid";
 
     std::vector<Continent> vectorCont = Continent::extractContinents(v);
