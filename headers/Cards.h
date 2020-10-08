@@ -5,62 +5,59 @@
 
 using namespace std;
 
+class Deck; 
+const std::size_t decksize = 30;
+
 class Card{
 public:
-    virtual Card* clone() const;
-    virtual void play();
-private:
-    Card *cardPlayed;
+    virtual Card* clone() const = 0;
+    virtual void play(Deck& deck) = 0;
+
 };
 
-class Bomb : public Card{
+class Bombcard : public Card{
 public:
-    Bomb();
-    ~Bomb();
+    Bombcard();
+    ~Bombcard();
     virtual Card* clone() const;
-    virtual void play(Bomb bombCard, Deck deck);
-private:
-    Bomb *cardPlayed;
+    virtual void play(Deck& deck);
+
 };
 
-class Reinforcement : public Card{
+class Reinforcementcard : public Card{
 public:
-    Reinforcement();
-    ~Reinforcement();
+    Reinforcementcard();
+    ~Reinforcementcard();
     virtual Card* clone() const;
-    virtual void play(Reinforcement reinforcementCard, Deck deck);
-private:
-    Reinforcement *cardPlayed;
+    virtual void play(Deck& deck);
+
 };
 
-class Blockade : public Card{
+class Blockadecard : public Card{
 public:
-    Blockade();
-    ~Blockade();
+    Blockadecard();
+    ~Blockadecard();
     virtual Card* clone() const;
-    virtual void play(Blockade blockadeCard, Deck deck);
-private:
-    Blockade *cardPlayed;
+    virtual void play(Deck& deck);
+
 };
 
-class Airlift : public Card{
+class Airliftcard : public Card{
 public:
-    Airlift();
-    ~Airlift();
+    Airliftcard();
+    ~Airliftcard();
     virtual Card* clone() const;
-    virtual void play(Airlift airliftCard, Deck deck);
-private:
-    Airlift *cardPlayed;
+    virtual void play(Deck& deck);
+
 };
 
-class Diplomacy : public Card{
+class Diplomacycard : public Card{
 public:
-    Diplomacy();
-    ~Diplomacy();
+    Diplomacycard();
+    ~Diplomacycard();
     virtual Card* clone() const;
-    virtual void play(Diplomacy diplomacyCard, Deck deck);
-private:
-    Diplomacy *cardPlayed;
+    virtual void play(Deck& deck);
+
 };
 
 class Deck{ 
@@ -69,19 +66,19 @@ public:
     ~Deck();
     Card* draw(); 
     void backToDeck(Card* playedCard);
-
+    int deckSize();
 private:
-    static unsigned long deckSize;
     vector<Card*> deck;
 };
 
 class Hand{
+public:
     Hand();
     ~Hand();
-    void addToHand(const Card& cardDrawn);
-
+    void addToHand(const Card* cardDrawn);
+    int handSize();
 private:
-    vector<Card> hand; 
+    vector<Card*> hand; 
 };
 
 #endif
