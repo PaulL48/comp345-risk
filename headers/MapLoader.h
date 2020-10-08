@@ -32,7 +32,7 @@ public:
     static std::vector<Territory> extractTerritories(const std::vector<std::string> &v);
     friend std::ostream& operator<<(std::ostream &strm, const Territory &a);
     static void addTerritories(const std::vector<Territory> &v);
-    static void addBorders(const std::vector<std::string> &v, const std::vector<Territory> &vectorTerr);
+    static void addBorders(const std::vector<std::string> &v);
     ~Territory();
 
 private:

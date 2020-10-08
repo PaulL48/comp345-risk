@@ -88,7 +88,7 @@ std::vector<Continent> Continent::extractContinents(const std::vector<std::strin
     std::string name;
     int armyValue;
     std::string color;
-    for (int i = 0; i < v.size(); i++){
+    for (std::string::size_type i = 0; i < v.size(); i++){
         std::stringstream line;
         line << v[i];
         line >> first;
@@ -131,7 +131,7 @@ std::vector<Territory> Territory::extractTerritories(const std::vector<std::stri
     int contId;
     int x;
     int y;
-    for (int i = 0; i < v.size(); i++){
+    for (std::string::size_type i = 0; i < v.size(); i++){
         std::stringstream line;
         line << v[i];
         line >> first;
@@ -164,7 +164,7 @@ void Territory::addTerritories(const vector<Territory> &v){
 }
 */
 
-void Territory::addBorders(const std::vector<std::string> &v, const std::vector<Territory> &vectorTerr) {
+void Territory::addBorders(const std::vector<std::string> &v) {
     std::cout << "\nconnecting territories\n";
     bool flag;
     std::string first;
@@ -173,7 +173,7 @@ void Territory::addBorders(const std::vector<std::string> &v, const std::vector<
     int id;
     int idBorder;
 
-    for (int i = 0; i < v.size(); i++){
+    for (std::string::size_type i = 0; i < v.size(); i++){
         std::stringstream line;
         line << v[i];
         line >> first;

@@ -1,12 +1,11 @@
 //
 // Created by Ruslan Dallin on 2020-10-05.
 //
-#include "MapLoader.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <vector>
-
+#include "MapLoader.h"
 
 std::vector<std::string> split (const std::string &s, char delim) {
     std::vector<std::string> result;
@@ -27,7 +26,7 @@ bool validate (const std::vector<std::string> &v) {
     bool bordersSwitch;
     std::string first;
 
-    for (int i = 0; i < v.size(); i++) {
+    for (std::string::size_type i = 0; i < v.size(); i++) {
         std::stringstream line;
         line << v[i];
         line >> first;
@@ -42,7 +41,7 @@ bool validate (const std::vector<std::string> &v) {
     }
     if (continentsSwitch && countriesSwitch && bordersSwitch)
         return true;
-
+    return false;
 }
 
 
@@ -81,7 +80,7 @@ int main( )
 
     //addTerritories(vectorTerr);
 
-    Territory::addBorders(v, vectorTerr);
+    Territory::addBorders(v);
 
 
 
