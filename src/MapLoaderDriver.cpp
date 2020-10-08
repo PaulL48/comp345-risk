@@ -5,6 +5,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <dirent.h>
 #include "MapLoader.h"
 
 std::vector<std::string> split (const std::string &s, char delim) {
@@ -49,42 +50,54 @@ bool validateFile (const std::vector<std::string> &v) {
 int main( )
 {
 
+    DIR           *dirp;
+    struct dirent *directory;
 
-
-
-    std::string mapMame = "solar.map";
-    std::ifstream input;
-    input.open(mapMame);
-    if (input.fail( ))
+    dirp = opendir("../comp345-risk");
+    if (dirp)
     {
-        std::cout << "Input file opening failed.\n";
-        exit(1);
+        while ((directory = readdir(dirp)) != NULL)
+        {
+            std::string fileName = directory->d_name;
+            if (fileName.find(".map") != std::string::npos){
+
+                std::ifstream input;
+                input.open(fileName);
+                if (input.fail( ))
+                {
+                    std::cout << fileName << " opening failed.\n";
+                    exit(1);
+                }
+
+                std::stringstream ss;
+                std::string s;
+                while (std::getline(input,s) ){
+                    ss << s << "\n";
+                }
+
+                std::vector<std::string> v = split (ss.str(), '\n');
+
+                std::cout << "\nTesting : " << fileName;
+                if (validateFile(v))
+                    std::cout << "Testing successful \nBuilding Map\n";
+
+                std::vector<Continent> vectorCont = Continent::extractContinents(v);
+                for (auto i : vectorCont) { std::cout << i << " \n";}
+
+                //addContinents(vectorCont);
+
+                std::vector<Territory> vectorTerr = Territory::extractTerritories(v);
+                for (auto i : vectorTerr) { std::cout << i << " \n";}
+
+                //addTerritories(vectorTerr);
+
+                Territory::addBorders(v);
+
+            }
+        }
+        closedir(dirp);
     }
 
-    std::stringstream ss;
-    std::string s;
-    while (std::getline(input,s) ){
-        ss << s << "\n";
-    }
-
-    std::vector<std::string> v = split (ss.str(), '\n');
-
-    std::cout << "Testing : " << mapMame;
-
-    if (validateFile(v))
-        std::cout << "Map Valid";
-
-    std::vector<Continent> vectorCont = Continent::extractContinents(v);
-    for (auto i : vectorCont) { std::cout << i << " \n";}
-
-    //addContinents(vectorCont);
-
-    std::vector<Territory> vectorTerr = Territory::extractTerritories(v);
-    for (auto i : vectorTerr) { std::cout << i << " \n";}
-
-    //addTerritories(vectorTerr);
-
-    Territory::addBorders(v);
 
     return 0;
 
