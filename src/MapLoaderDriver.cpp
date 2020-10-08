@@ -48,7 +48,7 @@ bool validate (const std::vector<std::string> &v) {
 
 int main( )
 {
-    std::string mapMame = "europass.map";
+    std::string mapMame = "solar.map";
     std::ifstream input;
     input.open(mapMame);
     if (input.fail( ))
@@ -81,8 +81,6 @@ int main( )
     //addTerritories(vectorTerr);
 
     Territory::addBorders(v);
-
-
 
     return 0;
 
