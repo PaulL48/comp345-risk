@@ -12,17 +12,17 @@ class Player{
         std::vector<int>* cards;
         std::vector<int>* orders;
     public:
-        Player(std::string* playerName,std::vector<int>* territoriesAttack, std::vector<int>* territoriesDefend, std::vector<int>* cards, std::vector<int>* orders);
+        Player(const std::string& playerName,const std::vector<int>& territoriesAttack, const std::vector<int>& territoriesDefend, const std::vector<int>& cards, const std::vector<int>& orders);
         Player(const Player& player);
         Player();
         Player& operator= (const Player& player);
         ~Player();
         friend std::ostream& operator<<( std::ostream &output, const Player& player);
-        std::vector<int>* toAttack(){ return territoriesAttack;}
-        std::vector<int>* toDefend(){ return territoriesDefend;}
-        std::vector<int>* getCards(){ return cards;}
-        std::vector<int>* getOrders(){return orders;}
-        std::string* getPlayerName(){return playerName;}
+        std::vector<int>& toAttack();
+        std::vector<int>& toDefend();
+        std::vector<int>& getCards();
+        std::vector<int>& getOrders();
+        std::string& getPlayerName();
         void issueOrder();
 
 };

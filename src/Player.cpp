@@ -6,8 +6,8 @@
 /**
  * This is the main constructor for the Player Class.
  * */
-Player::Player(std::string* playerName,std::vector<int>* territoriesAttack, std::vector<int>* territoriesDefend, std::vector<int>* cards, std::vector<int>* orders):
-    playerName(playerName), territoriesAttack(territoriesAttack), territoriesDefend(territoriesDefend), cards(cards), orders(orders){}
+Player::Player(const std::string& playerName,const std::vector<int>& territoriesAttack, const std::vector<int>& territoriesDefend, const std::vector<int>& cards, const std::vector<int>& orders):
+    playerName(new std::string(playerName)),territoriesAttack( new std::vector<int>(territoriesAttack)), territoriesDefend(new std::vector<int>(territoriesDefend)), cards(new std::vector<int>(cards)), orders(new std::vector<int>(orders)){}
 
 
 Player::Player():playerName(new std::string("")), territoriesAttack(new std::vector<int>), territoriesDefend(new std::vector<int>), cards(new std::vector<int>), orders(new std::vector<int>){}
@@ -55,13 +55,44 @@ Player& Player::operator= (const Player& player){
     *this->orders= *player.orders;
     return *this;
 }
+
+std::vector<int>& Player::toAttack(){
+    return *territoriesAttack;
+}
+std::vector<int>& Player::toDefend(){
+    return *territoriesDefend;
+}
+std::vector<int>& Player::getCards(){
+    return *cards;
+}
+
+std::vector<int>& Player::getOrders(){
+    return *orders;
+}
+
+std::string& Player::getPlayerName(){
+    return *playerName;
+}
 /**
  * This is the stream insertion operator
  * */
 std::ostream &operator<<(std::ostream &output, const Player &p){
-    output
-        <<"( Player Name: " << p.playerName <<
-        ", Orders : " << p.orders << ", Territories Attack: " << p.territoriesAttack
-        << ",  Territories Defend: " << p.territoriesDefend << ",  Cards: " << p.cards  <<" )";
+    output <<"( Player Name: " << *p.playerName << ", Orders : ";
+      for (const auto& order : *p.orders){
+        output<< order << ",";
+    }
+    output<<"Territories Attack: ";
+      for (const auto& territory : *p.territoriesAttack){
+        output<< territory << ",";
+    }
+    output<<"Territories Defend: ";
+    for (const auto& territory : *p.territoriesDefend){
+        output<< territory << ",";
+    }
+    output<<"Cards : ";
+    for (const auto& card : *p.cards){
+        output<< card << ",";
+    }
+    output<<")";
     return output;
 }
