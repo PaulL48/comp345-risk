@@ -1,6 +1,7 @@
 //
-// Created by Ruslan Dallin on 2020-10-05.
+// Created by Ruslan Dallin on 2020-09-20.
 //
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -8,6 +9,12 @@
 #include <dirent.h>
 #include "MapLoader.h"
 
+/**
+ * Helper method. Split input into string vector
+ * @param str
+ * @param delimiter
+ * @return
+ */
 std::vector<std::string> split (const std::string &str, char delimiter) {
     std::vector<std::string> result;
     std::stringstream ss (str);
@@ -19,6 +26,11 @@ std::vector<std::string> split (const std::string &str, char delimiter) {
     return result;
 }
 
+/**
+ * Helper Method. Validate if file is valid map file
+ * @param v
+ * @return
+ */
 bool validateFile (const std::vector<std::string> &v) {
     std::cout << "\nVerifing Map\n";
     bool continentsSwitch;
@@ -48,16 +60,17 @@ bool validateFile (const std::vector<std::string> &v) {
 
 int main( )
 {
-
     DIR  *dirp;
     struct dirent *directory;
 
     dirp = opendir("../comp345-risk");
     if (dirp)
     {
+        //look through all files in the current directory
         while ((directory = readdir(dirp)) != NULL)
         {
             std::string fileName = directory->d_name;
+            //if file is a map file process it
             if (fileName.find(".map") != std::string::npos){
 
                 std::ifstream input;
@@ -73,9 +86,9 @@ int main( )
                 while (std::getline(input,s) ){
                     ss << s << "\n";
                 }
-
                 std::vector<std::string> v = split (ss.str(), '\n');
 
+                //check if valid map file
                 std::cout << "\nTesting : " << fileName;
                 if (validateFile(v))
                     std::cout << "Testing successful \nBuilding Map\n";
@@ -84,24 +97,26 @@ int main( )
                     continue;
                 }
 
+                //Map::Map mapObj;
+
                 std::vector<Continent> vectorCont = Continent::extractContinents(v);
                 for (auto i : vectorCont) { std::cout << i << " \n";}
 
-                //addContinents(vectorCont);
+                //mapObj.addContinents(mapObj, vectorCont);
 
                 std::vector<Territory> vectorTerr = Territory::extractTerritories(v);
                 for (auto i : vectorTerr) { std::cout << i << " \n";}
 
-                //addTerritories(vectorTerr);
+                //mapObj.addTerritories(mapObj, vectorTerr);
 
                 Territory::addBorders(v);
+
+                //mapObj.validate();
 
             }
         }
         closedir(dirp);
     }
-
-
     return 0;
 
 }
