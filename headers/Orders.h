@@ -3,6 +3,35 @@
 #include <Vector>
 #include <iostream>
 
+template <typename T>
+void polymorphicDeepCopy(std::vector<T*>& dest, const std::vector<T*>& source)
+{
+    // Free previous elements
+    for (T* element : dest)
+    {
+        delete element;
+    }
+
+    dest.resize(source.size());
+
+    // Clone polymorphic elements 
+    for (std::size_t i = 0; i < dest.size(); ++i)
+    {
+        dest.at(i) = source.at(i)->clone();
+    }
+}
+
+template <typename T>
+std::vector<T*> *clone(const std::vector<T*>& vector)
+{
+    std::vector<T*>* result = new std::vector<T*>(vector.size());
+    for (std::size_t i = 0; i < result->size(); ++i)
+    {
+        result->at(i) = vector.at(i)->clone();
+    }
+    return result;
+}
+
 class Order;
 class OrdersList{
     public:
@@ -36,11 +65,12 @@ class Order{
         virtual void validate() = 0; //validates an order, virtual method
         virtual void execute() = 0; //executes an order, virtual method
         virtual Order* clone() const = 0; //clones an Order object and returns Order pointer, virtual method
-        int* uniqueId;
-
+        int getUniqueId() const;
+        
     protected:
         Order(const Order &order); //copy constructor
         Order& operator = (const Order &order); //copy assignment operator 
+        int* uniqueId;        
         bool* executed = new bool(false); //initialized to false
         std::string* description; 
         std::string* effect;

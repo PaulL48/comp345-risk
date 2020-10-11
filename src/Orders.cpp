@@ -2,7 +2,6 @@
 #include <algorithm>
 using std::vector;
 using std::ostream;
-using std::cout;
 using std::string;
 
 OrdersList::OrdersList(): orders(new vector<Order*>()){}
@@ -28,7 +27,7 @@ OrdersList& OrdersList::operator = (const OrdersList &ordersList){
 ostream & operator << (ostream &out, const OrdersList &ordersList) 
 { 
     for (const Order* order : *ordersList.orders){
-        cout << *order << "\n";
+        out << *order << "\n";
     }
     return out; 
 } 
@@ -40,7 +39,7 @@ void OrdersList::addToList(const Order& order){
 
 void OrdersList::move(const Order& order, int index){
     for (std::size_t i = 0; i < orders->size(); ++i){
-        if ((*orders->at(i)->uniqueId) == *order.uniqueId){
+        if ((orders->at(i)->getUniqueId()) == (order.getUniqueId())){
             Order* temp = orders->at(i);
             orders->erase(std::next(orders->cbegin(), i));
             orders->insert(std::next(orders->cbegin(), index), temp);
@@ -58,7 +57,7 @@ void OrdersList::moveToEnd(const Order& order){
 }
 
 void OrdersList::moveUp(const Order& order){
-    vector<Order*>::iterator it = find_if(orders->begin(), orders->end(), [&order](const Order* q){ return *(q->uniqueId) == **(&order.uniqueId);});
+    vector<Order*>::iterator it = find_if(orders->begin(), orders->end(), [&order](const Order* q){ return q->getUniqueId() == order.getUniqueId();});
 
     if(it != orders->end()){
         int index = (it - orders->begin());
@@ -69,7 +68,7 @@ void OrdersList::moveUp(const Order& order){
 }
 
 void OrdersList::moveDown(const Order& order){
-    vector<Order*>::iterator it = find_if(orders->begin(), orders->end(), [&order](const Order* q){ return *(q->uniqueId) == **(&order.uniqueId);});
+    vector<Order*>::iterator it = find_if(orders->begin(), orders->end(), [&order](const Order* q){ return q->getUniqueId() == order.getUniqueId();});
 
     if(it != orders->end()){
         int index = (it - orders->begin());
@@ -81,7 +80,7 @@ void OrdersList::moveDown(const Order& order){
 
 void OrdersList::remove(const Order& order){
     for (auto it = orders->cbegin(); it != orders->cend(); ++it){
-        if((*(*it)->uniqueId) == *order.uniqueId){  
+        if(((*it)->getUniqueId()) == order.getUniqueId()){  
             orders->erase(it);
             break;
         }
@@ -115,15 +114,13 @@ Order& Order::operator = (const Order &order){
     description = new string(*order.description);
     effect = new string(*order.effect);
     executed = new bool(*order.executed);
-    uniqueId = new int(*order.uniqueId);
+    uniqueId = new int(counter++);
 
     return *this;
 } 
 
 
-Order::Order(const string& description, const string& effect): description(new string(description)), effect(new string(effect)){
-    uniqueId = new int(counter++);
-}
+Order::Order(const string& description, const string& effect): uniqueId(new int(counter++)),description(new string(description)), effect(new string(effect)){}
 
 const string& Order::getDescription(){ 
     return *description; 
@@ -136,6 +133,8 @@ const string& Order::getEffect(){
 void Order::setExecutedStatus(bool status){ *executed = status; }
 
 const bool& Order::getExecutedStatus(){ return *executed; }
+
+int Order::getUniqueId() const { return *uniqueId;}
 
 ostream & operator << (ostream &out, const Order &order) 
 { 
