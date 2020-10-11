@@ -1,5 +1,6 @@
 #include "Cards.h"
-#include "Orders.h"
+//#include "Orders.h"
+
 #include <algorithm>
 #include <iostream>
 #include <vector>
@@ -7,6 +8,22 @@
 
 
 using namespace std;
+
+Card::Card(){}
+Card::~Card(){}
+
+//copy assignment operator
+Card &Card::operator=(const Card& card){
+    if(&card == this)
+        return *this; 
+
+    return *this; 
+}
+
+//stream insertion operator
+std::ostream &operator<<(std::ostream& out, const Card& card){
+    return card.print(out);  
+}
 
 //Deck constructor initializes a deck of 30 assorted cards
 Deck::Deck(){
@@ -45,6 +62,16 @@ Deck::Deck(){
 
 Deck::~Deck(){}
 
+//copy assignment operator
+Deck& Deck::operator=(const Deck& deck){
+    if(&deck == this)
+        return *this;  
+
+    polymorphicDeepCopy(this->deck, deck.deck);
+
+    return *this; 
+}
+
 //draw method removes a card from the deck and returns it. 
 Card* Deck::draw(){
     Card* cardDrawn = deck.back();
@@ -54,12 +81,24 @@ Card* Deck::draw(){
     return cardDrawn;
 }
 
+//stream insertion operator
+std::ostream &operator<<(std::ostream& out, const Deck& deck){
+    out << "Hand: "; 
+
+    for(const Card* card : deck.deck){
+        out << card << ", "; 
+    }
+
+    return out; 
+}
+
 //backToDeck method is used to return a card to the deck once it has been played
-void Deck::backToDeck(Card* playedCard){
-    deck.push_back(playedCard);
+void Deck::backToDeck(const Card* playedCard){
+    deck.push_back(playedCard->clone());
     cout << "Card has been returned to deck" << endl;
 }
 
+//returns size of deck
 int Deck::deckSize(){
     return deck.size();
 }
@@ -71,84 +110,200 @@ Hand::Hand(){
 
 Hand::~Hand(){}
 
+//stream operator
+std::ostream &operator<<(std::ostream& out, const Hand& hand){
+    out << "Hand: "; 
+
+    for(const Card* card : hand.hand){
+        out << card << ", "; 
+    }
+
+    return out; 
+}
+
+//copy assignment operator
+Hand& Hand::operator=(const Hand& hand){
+    if(&hand == this)
+        return *this;
+
+    polymorphicDeepCopy(this->hand, hand.hand);
+
+    return *this;
+}
+
 //addToHand method takes a drawn card and adds it to the players hand
 void Hand::addToHand(const Card* cardDrawn){
     hand.push_back(cardDrawn->clone()); 
     cout << "Card has been added to your hand" << endl;
 }
 
+//returns the size of the hand
 int Hand::handSize(){
     return hand.size();
 }
 
 Bombcard::Bombcard(){}
 
+//Stream insertion operator
+std::ostream& Bombcard::print(std::ostream& out) const{
+    out << "Bomb card";
+
+    return out; 
+}
+
+//copy assignment operator
+Bombcard &Bombcard::operator=(const Bombcard& bomb){
+    if(&bomb == this)
+        return *this;
+    
+    Card::operator=(bomb);
+
+    return *this; 
+}
+
 Card* Bombcard::clone() const{
     return new Bombcard(*this);
 }
 
+//Plays the card  and creates an order
 void Bombcard::play(Deck& deck){
 //create an order using orders list Bomb constructor
-    Bomb bomb;
+   // Bomb bomb;
     cout << "Bomb order has been created" << endl;
 
 //return card to deck once played
-    deck.backToDeck(this->clone());
+    deck.backToDeck(this);
 }
 
 Reinforcementcard::Reinforcementcard(){}
+
+//stream insertion operator
+std::ostream& Reinforcementcard::print(std::ostream& out) const{
+    out << "Reinforcement card";
+
+    return out; 
+}
+
+//copy assignment operator
+Reinforcementcard &Reinforcementcard::operator=(const Reinforcementcard& reinforcement){
+    if(&reinforcement == this)
+        return *this;
+    
+    Card::operator=(reinforcement);
+
+    return *this; 
+}
 
 Card* Reinforcementcard::clone() const{
     return new Reinforcementcard(*this);
 }
 
+//Plays the card  and creates an order
 void Reinforcementcard::play(Deck& deck){
 //create an order using orders list Reinforcement constructor
-// Reinforcement reinforcement;
+   // Reinforcement reinforcement;
     cout << "Reinforcement order has been created" << endl;
 
 //return card to deck once played
-    deck.backToDeck(this->clone());
+    deck.backToDeck(this);
 }
 
 Blockadecard::Blockadecard(){}
+
+//stream operator
+std::ostream& Blockadecard::print(std::ostream& out) const{
+    out << "Blockade card";
+
+    return out; 
+}
+
+//copy assignment operator
+Blockadecard &Blockadecard::operator=(const Blockadecard& blockadecard){
+    if(&blockadecard == this)
+        return *this;
+    
+    Card::operator=(blockadecard);
+
+    return *this; 
+}
+
 
 Card* Blockadecard::clone() const{
     return new Blockadecard(*this);
 }
 
+//Plays the card  and creates an order
 void Blockadecard::play(Deck& deck){
 //create an order using orders list Blockade constructor
-    Blockade blockade;
+  //  Blockade blockade;
     cout << "Blockade order has been created" << endl;
 //return card to deck once played
-    deck.backToDeck(this->clone());
+    deck.backToDeck(this);
 }
 
 Airliftcard::Airliftcard(){}
+
+//Stream operator
+std::ostream& Airliftcard::print(std::ostream& out) const{
+    out << "Airlift card";
+
+    return out; 
+}
+
+//copy assignmnet operator
+Airliftcard &Airliftcard::operator=(const Airliftcard& airliftcard){
+    if(&airliftcard == this)
+        return *this;
+    
+    Card::operator=(airliftcard);
+
+    return *this; 
+}
+
 
 Card* Airliftcard::clone() const{
     return new Airliftcard(*this);
 }
 
+//Plays the card  and creates an order
 void Airliftcard::play(Deck& deck){
 //create an order using orders list Airlift constructor
-    Airlift airlift;
+   // Airlift airlift;
     cout << "Airlift order has been created" << endl;
 
 //return card to deck once played
-    deck.backToDeck(this->clone());
+    deck.backToDeck(this);
 }
 
 Diplomacycard::Diplomacycard(){}
+
+//Stream operator
+std::ostream& Diplomacycard::print(std::ostream& out) const{
+    out << "Diplomacy card";
+
+    return out; 
+}
+
+//copy assignment operator
+Diplomacycard &Diplomacycard::operator=(Diplomacycard& diplomacycard){
+    if(&diplomacycard == this)
+        return *this;
+    
+    Card::operator=(diplomacycard);
+
+    return *this; 
+}
 
 Card* Diplomacycard::clone() const{
     return new Diplomacycard(*this);
 }
 
+//Plays the card  and creates an order
 void Diplomacycard::play(Deck& deck){
 //create an order using orders list Diplomacy constructor
-    
+  //  Diplomacy diplomacy;
+    cout << "Diplomacy order has been created" << endl;
+
 //return card to deck once played
-    deck.backToDeck(this->clone());
+    deck.backToDeck(this);
 }
