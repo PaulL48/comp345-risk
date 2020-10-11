@@ -4,8 +4,6 @@
 #include <vector>
 #include <ostream>
 
-using namespace std;
-
 class Deck; 
 const std::size_t decksize = 30;
 
@@ -17,62 +15,68 @@ public:
     virtual void play(Deck& deck) = 0;
     Card& operator=(const Card& card);
     friend std::ostream &operator<<(std::ostream& out, const Card& card);
-private:
+protected:
+    Card(const Card & card);
     virtual std::ostream& print(std::ostream& out) const=0; 
 };
 
 class Bombcard : public Card{
 public:
     Bombcard();
-    virtual ~Bombcard()=default;
+    virtual ~Bombcard();
+    Bombcard(const Bombcard& bomb);
     virtual Card* clone() const;
     virtual void play(Deck& deck);
     Bombcard& operator=(const Bombcard& bomb);
-private:
+protected:
     virtual std::ostream& print(std::ostream& out) const; 
 };
 
 class Reinforcementcard : public Card{
 public:
     Reinforcementcard();
-    virtual ~Reinforcementcard()=default;
+    Reinforcementcard(const Reinforcementcard& reinforcementcard);
+    virtual ~Reinforcementcard();
     virtual Card* clone() const;
     virtual void play(Deck& deck);
     Reinforcementcard& operator=(const Reinforcementcard& reinforcementcard);
-private:
+protected:
     virtual std::ostream& print(std::ostream& out) const; 
 };
 
 class Blockadecard : public Card{
 public:
     Blockadecard();
-    virtual ~Blockadecard()=default;
+    virtual ~Blockadecard();
+    Blockadecard(const Blockadecard& blockadecard);
     virtual Card* clone() const;
     virtual void play(Deck& deck);
     Blockadecard& operator=(const Blockadecard& blockadecard);
-private:
+protected:
     virtual std::ostream& print(std::ostream& out) const; 
 };
 
 class Airliftcard : public Card{
 public:
     Airliftcard();
-    virtual ~Airliftcard()=default;
+    virtual ~Airliftcard();
+    Airliftcard(const Airliftcard& airliftcard);
     virtual Card* clone() const;
     virtual void play(Deck& deck);
     Airliftcard& operator=(const Airliftcard& airliftcard);
-private:
+protected:
     virtual std::ostream& print(std::ostream& out) const; 
 };
 
 class Diplomacycard : public Card{
 public:
     Diplomacycard();
-    virtual ~Diplomacycard()=default;
+    Diplomacycard(const Diplomacycard& diplomacycard);
+    virtual ~Diplomacycard();
     virtual Card* clone() const;
     virtual void play(Deck& deck);
     Diplomacycard& operator=(Diplomacycard& diplomacycard);
-private:
+protected:
     virtual std::ostream& print(std::ostream& out) const; 
 };
 
@@ -80,25 +84,27 @@ class Deck{
 public:
     Deck();
     ~Deck();
+    Deck(const Deck& deck);
     Card* draw(); 
     void backToDeck(const Card* playedCard);
     int deckSize();
     Deck& operator=(const Deck&); 
     friend std::ostream &operator<<(std::ostream& out, const Deck& deck);
-private:
-    vector<Card*> deck;
+protected:
+    std::vector<Card*> *deck;
 };
 
 class Hand{
 public:
     Hand();
     ~Hand();
+    Hand(const Hand& hand);
     void addToHand(const Card* cardDrawn);
     int handSize();
     Hand& operator=(const Hand&); 
     friend std::ostream &operator<<(std::ostream& out, const Hand& hand);
-private:
-    vector<Card*> hand; 
+protected:
+    std::vector<Card*> *hand; 
 };
 
 template <typename T>
@@ -117,6 +123,17 @@ void polymorphicDeepCopy(std::vector<T*>& dest, const std::vector<T*>& source)
     {
         dest.at(i) = source.at(i)->clone();
     }
+}
+
+template <typename T>
+std::vector<T*> *clone(const std::vector<T*>& vector)
+{
+    std::vector<T*>* result = new std::vector<T*>(vector.size());
+    for (std::size_t i = 0; i < result->size(); ++i)
+    {
+        result->at(i) = vector.at(i)->clone();
+    }
+    return result;
 }
 
 #endif
