@@ -4,18 +4,17 @@
 
 #ifndef MAPLOADER_H
 #define MAPLOADER_H
-#include <string>
 #include "Map.h"
+#include <string>
 
 // class Continent{
 // public:
-//     Continent(int idPar, const std::string &namePar, int armyValuePar, const std::string &colorPar);
-//     Continent(const Continent &continent);
-//     Continent &operator =(const Continent &rightSide);
-//     ~Continent();
-//     friend std::ostream& operator<<(std::ostream &strm, const Continent &a);
-//     static std::vector<Continent> extractContinents(const std::vector<std::string> &vParm);
-//     static void addContinents(const std::vector<Continent> &v);
+//     Continent(int idPar, const std::string &namePar, int armyValuePar, const
+//     std::string &colorPar); Continent(const Continent &continent); Continent
+//     &operator =(const Continent &rightSide); ~Continent(); friend std::ostream&
+//     operator<<(std::ostream &strm, const Continent &a); static std::vector<Continent>
+//     extractContinents(const std::vector<std::string> &vParm); static void
+//     addContinents(const std::vector<Continent> &v);
 
 // private:
 //     int *id;
@@ -27,12 +26,11 @@
 
 // class Territory {
 // public:
-//     Territory(int idPar, const std::string &namePar, int contIdPar, int xPar, int yPar);
-//     Territory(const Territory &territory);
-//     Territory &operator =(const Territory &rightSide);
-//     static std::vector<Territory> extractTerritories(const std::vector<std::string> &v);
-//     friend std::ostream& operator<<(std::ostream &strm, const Territory &a);
-//     static void addTerritories(const std::vector<Territory> &v);
+//     Territory(int idPar, const std::string &namePar, int contIdPar, int xPar, int
+//     yPar); Territory(const Territory &territory); Territory &operator =(const
+//     Territory &rightSide); static std::vector<Territory> extractTerritories(const
+//     std::vector<std::string> &v); friend std::ostream& operator<<(std::ostream &strm,
+//     const Territory &a); static void addTerritories(const std::vector<Territory> &v);
 //     static void addBorders(const std::vector<std::string> &v);
 //     ~Territory();
 
@@ -46,14 +44,12 @@
 
 namespace MapLoader
 {
-    Map loadMap(const std::string& path);
+    Map loadMap(const std::string &path);
     void addTerritories(Map &map, const std::vector<std::string> &v);
     void addBorders(Map &map, const std::vector<std::string> &v);
     void addContinents(Map &map, const std::vector<std::string> &v);
-    std::vector<std::string> readFile(std::ifstream& file);
+    std::vector<std::string> readFile(std::ifstream &file);
     bool validateFile(const std::vector<std::string> &v);
-}
+} // namespace MapLoader
 
-
-#endif //MAPLOADER_H
-
+#endif // MAPLOADER_H

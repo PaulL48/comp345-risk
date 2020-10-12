@@ -2,15 +2,15 @@
 // Created by Ruslan Dallin on 2020-09-20.
 //
 
+#include "MapLoader.h"
+#include <cstdlib>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
-#include <cstdlib>
 #include <sstream>
 #include <vector>
-#include <filesystem>
-#include "MapLoader.h"
 
-Map MapLoader::loadMap(const std::string& path)
+Map MapLoader::loadMap(const std::string &path)
 {
     Map map;
 
@@ -30,11 +30,12 @@ Map MapLoader::loadMap(const std::string& path)
 
     std::vector<std::string> v = MapLoader::readFile(input);
 
-    //check if valid map file
+    // check if valid map file
     std::cout << "Testing : " << path;
     if (MapLoader::validateFile(v))
         std::cout << "Testing successful \nBuilding Map\n";
-    else{
+    else
+    {
         std::cout << "Invalid Map\n";
         return map;
     }
@@ -52,20 +53,20 @@ Map MapLoader::loadMap(const std::string& path)
  * @param v
  * @return
  */
-void MapLoader::addContinents(Map &map, const std::vector<std::string> &v) {
+void MapLoader::addContinents(Map &map, const std::vector<std::string> &v)
+{
     std::cout << "\nextraction continents\n";
-    //std::vector<Continent> continents;
     bool flag = false;
     std::string first;
     std::string item;
 
     // the following will be used as parameters
-    //int id = 1;
     std::string name;
     int armyValue;
     std::string color;
 
-    for (std::string::size_type i = 0; i < v.size(); i++){
+    for (std::string::size_type i = 0; i < v.size(); i++)
+    {
         std::stringstream line;
         line << v[i];
         line >> first;
@@ -76,23 +77,20 @@ void MapLoader::addContinents(Map &map, const std::vector<std::string> &v) {
         // if we reach the next section stop
         if (flag && first == "[countries]")
             break;
-        if (flag) {
+        if (flag)
+        {
             std::stringstream cc;
             cc << v[i];
             cc >> name;
             cc >> armyValue;
             cc >> color;
-            // constructing continents
-            //continents.push_back(Continent(name, armyValue, color));
+
             map.addContinent(Continent(name, armyValue, color));
-            //id++;
         }
         // if we reach the continents section start creating
         if (first == "[continents]")
             flag = true;
     }
-    //std::cout << continents.size() << " extracted\n";
-    //return continents;
 }
 
 /**
@@ -100,9 +98,10 @@ void MapLoader::addContinents(Map &map, const std::vector<std::string> &v) {
  * @param v
  * @return
  */
-void MapLoader::addTerritories(Map &map, const std::vector<std::string> &v) {
+void MapLoader::addTerritories(Map &map, const std::vector<std::string> &v)
+{
     std::cout << "\nextraction territories\n";
-    //std::vector<Territory> territories;
+    // std::vector<Territory> territories;
     bool flag = false;
     std::string first;
     std::string item;
@@ -114,7 +113,8 @@ void MapLoader::addTerritories(Map &map, const std::vector<std::string> &v) {
     int x;
     int y;
 
-    for (std::string::size_type i = 0; i < v.size(); i++){
+    for (std::string::size_type i = 0; i < v.size(); i++)
+    {
         std::stringstream line;
         line << v[i];
         line >> first;
@@ -125,7 +125,8 @@ void MapLoader::addTerritories(Map &map, const std::vector<std::string> &v) {
         // if we reach the next section stop
         if (flag && first == "[borders]")
             break;
-        if (flag) {
+        if (flag)
+        {
             std::stringstream cc;
             cc << v[i];
             cc >> id;
@@ -134,23 +135,20 @@ void MapLoader::addTerritories(Map &map, const std::vector<std::string> &v) {
             cc >> x;
             cc >> y;
             // constructing territories
-            //territories.push_back(Territory(id, name, x, y));
             map.addTerritory(Territory(id, name, x, y), contId);
         }
         // if we reach the countries section start creating
         if (first == "[countries]")
             flag = true;
     }
-    //std::cout << territories.size() << " extracted\n";
-    //return territories;
 }
-
 
 /**
  * extracting and adding borders
  * @param v
  */
-void MapLoader::addBorders(Map &map, const std::vector<std::string> &v) {
+void MapLoader::addBorders(Map &map, const std::vector<std::string> &v)
+{
     std::cout << "\nconnecting territories\n";
     bool flag = false;
     std::string first;
@@ -160,19 +158,22 @@ void MapLoader::addBorders(Map &map, const std::vector<std::string> &v) {
     int id;
     int idBorder;
 
-    for (std::string::size_type i = 0; i < v.size(); i++){
+    for (std::string::size_type i = 0; i < v.size(); i++)
+    {
         std::stringstream line;
         line << v[i];
         line >> first;
         // if empty line or comment, skip
         if (v[i].length() == 0 || v[i].at(0) == ';')
             continue;
-        if (flag) {
+        if (flag)
+        {
             std::stringstream cc;
             cc << v[i];
             cc >> id;
 
-            while (cc >> idBorder){
+            while (cc >> idBorder)
+            {
                 map.connectTerritories(id, idBorder);
             }
         }
@@ -187,7 +188,7 @@ void MapLoader::addBorders(Map &map, const std::vector<std::string> &v) {
  * @param file
  * @return
  */
-std::vector<std::string> MapLoader::readFile(std::ifstream& file)
+std::vector<std::string> MapLoader::readFile(std::ifstream &file)
 {
     std::vector<std::string> lines;
     std::string line;
@@ -203,18 +204,21 @@ std::vector<std::string> MapLoader::readFile(std::ifstream& file)
  * @param v
  * @return
  */
-bool MapLoader::validateFile (const std::vector<std::string> &v) {
+bool MapLoader::validateFile(const std::vector<std::string> &v)
+{
     std::cout << "\nVerifing Map\n";
     bool continentsSwitch = false;
     bool countriesSwitch = false;
     bool bordersSwitch = false;
     std::string first;
 
-    for (std::string::size_type i = 0; i < v.size(); i++) {
+    for (std::string::size_type i = 0; i < v.size(); i++)
+    {
         std::stringstream line;
         line << v[i];
         line >> first;
-        if (v[i].size() == 0 || v[i].at(0) == ';' || v[i].at(0) == '\r' || v[i].at(0) == '\n')
+        if (v[i].size() == 0 || v[i].at(0) == ';' || v[i].at(0) == '\r' ||
+            v[i].at(0) == '\n')
             continue;
         if (first == "[continents]")
             continentsSwitch = true;
@@ -227,4 +231,3 @@ bool MapLoader::validateFile (const std::vector<std::string> &v) {
         return true;
     return false;
 }
-
