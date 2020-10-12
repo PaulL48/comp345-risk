@@ -1,11 +1,7 @@
 #include <iostream>
-#include "Vec2f.h"
 
 int main()
 {
-    Vec2f v(1.0f, 2.0f);
-    std::cout << "Hello World!\n";
-    std::cout << v << std::endl;
+    std::cout << "Remember to comment out this main when working on your driver, and uncomment it when pushing to the repo" << std::endl;
     return 0;
 }
-
