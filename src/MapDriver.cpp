@@ -25,8 +25,9 @@
 //         baseMap.addContinent(continent);
 //     }
 
-//     int continentSelector = 0;
+    
 //     int groupCount = testTerritories.size() / testContinents.size();
+//     int continentSelector = groupCount;
 //     for (const auto &territory : testTerritories)
 //     {
 //         // Distribute the territories into equal groups for the continents
@@ -71,14 +72,13 @@
 //         invalidContinents.addContinent(continent);
 //     }
 
-//     invalidContinents.addTerritory(testTerritories.at(0), 0);
-//     invalidContinents.addTerritory(testTerritories.at(1), 0);
-//     invalidContinents.addTerritory(testTerritories.at(2), 2);
-//     invalidContinents.addTerritory(testTerritories.at(3), 2);
+//     invalidContinents.addTerritory(testTerritories.at(0), 1);
+//     invalidContinents.addTerritory(testTerritories.at(1), 1);
+//     invalidContinents.addTerritory(testTerritories.at(2), 3);
+//     invalidContinents.addTerritory(testTerritories.at(3), 3);
 
 //     invalidContinents.connectTerritories(1, 2);
-//     invalidContinents.connectTerritories(3, 1);
-//     invalidContinents.connectTerritories(4, 1);
+//     invalidContinents.connectTerritories(3, 4);
 
 //     std::cout << "State of invalid continent graph: "
 //               << invalidContinents.getErrorString(invalidContinents.validate())

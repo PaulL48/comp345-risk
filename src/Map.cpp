@@ -138,8 +138,7 @@ Continent &Continent::operator=(const Continent &continent)
 
 bool Continent::isValidContinent(const Graph<Territory> &territories) const
 {
-    return this->territories->isConnected() &&
-           this->territories->isSubgraphOf(territories);
+    return this->territories->isSubgraphOf(territories);
 }
 
 void Continent::connectTerritories(const Territory &territory1,
@@ -171,6 +170,11 @@ std::ostream &operator<<(std::ostream &output, const Continent &continent)
     output << ", color: " << *continent.color;
     output << ")";
     return output;
+}
+
+std::unordered_set<Territory> Continent::getTerritories() const
+{
+    return this->territories->getVertices();
 }
 
 //============================================================================================================================================================
@@ -232,7 +236,7 @@ MapState Map::validate() const
         return MapState::CONTINENTS_NOT_CONNECTED_SUBGRAPHS;
     }
 
-    // Second check to make sure each continent is connected within themselves
+    // Second check to make sure each continent is a subgraph of the world
     for (const Continent &continent : *this->continents)
     {
         if (!continent.isValidContinent(*this->territories))
@@ -241,14 +245,12 @@ MapState Map::validate() const
         }
     }
 
-    // Scan through territories via continents and flag the error when a territory
-    // is seen twice
-    // Assure each territory is in one and only one continent
-
+    // Scan through territories via continents and flag the error when a territory is
+    // seen twice Assure each territory is in one and only one continent
     std::unordered_set<Territory> territories;
     for (const Continent &continent : *this->continents)
     {
-        for (const Territory &territory : continent)
+        for (const Territory &territory : continent.getTerritories())
         {
             if (territories.count(territory) == 0)
             {
@@ -297,8 +299,14 @@ void Map::addContinent(const Continent &continent)
 
 void Map::addTerritory(const Territory &territory, int continentId)
 {
+    if (continentId <= 0 ||
+        static_cast<std::size_t>(continentId) > this->continents->size())
+    {
+        std::cout << "Invalid continent id" << std::endl;
+    }
+
     this->territories->insert(territory);
-    this->continents->at(continentId).addTerritory(territory);
+    this->continents->at(continentId - 1).addTerritory(territory);
 }
 
 void Map::connectTerritories(int territoryId1, int territoryId2)

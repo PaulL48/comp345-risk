@@ -1,14 +1,13 @@
 #ifndef MAP_H
 #define MAP_H
 
+#include <iostream>
 #include <ostream>
 #include <stack>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
-#include <iostream>
-
 
 //============================================================================================================================================================
 // TEMPLATE FUNCTION DECLARATIONS: OutputUtilities
@@ -97,7 +96,7 @@ public:
 private:
     // Tracks vertexes already visited.
     // Improves performance and prevents cyclic graphs looping infinitely
-    std::unordered_set<const NeighborList<T> *> *visited;
+    std::unordered_set<T> *visited;
 
     // Track upcoming nodes during iteration
     std::stack<const T *, std::vector<const T *>> *stack;
@@ -145,7 +144,7 @@ public:
     // Remove the vertex and all edges to it from the graph
     void erase(const T &vertex);
 
-    void merge(const T& vertex1, const T& vertex2);
+    void merge(const T &vertex1, const T &vertex2);
 
     std::size_t size() const;
 
@@ -159,6 +158,8 @@ public:
     // predicate, or nullptr if none are found
     template <typename F>
     const T *findIf(F predicate) const;
+
+    std::unordered_set<T> getVertices() const;
 
 private:
     // Owning pointer to adjacency list
@@ -269,8 +270,8 @@ public:
 
 private:
     std::string *name;
-    int* armyValue;
-    std::string* color;
+    int *armyValue;
+    std::string *color;
     Graph<Territory> *territories;
 };
 
@@ -466,10 +467,9 @@ SetUtilities::setDifference(const std::unordered_set<T> &minuend,
 // TEMPLATE CLASS DEFINITIONS: DepthFirstIterator
 //============================================================================================================================================================
 
-
 template <typename T>
 DepthFirstIterator<T>::DepthFirstIterator(const AdjacencyList<T> *adjacencyList) :
-    visited(new std::unordered_set<const NeighborList<T> *>()),
+    visited(new std::unordered_set<T>()),
     stack(new std::stack<const T *, std::vector<const T *>>()),
     adjacencyList(adjacencyList)
 {
@@ -491,7 +491,7 @@ DepthFirstIterator<T>::DepthFirstIterator(const AdjacencyList<T> *adjacencyList)
 
 template <typename T>
 DepthFirstIterator<T>::DepthFirstIterator(const DepthFirstIterator &dfi) :
-    visited(new std::unordered_set<const NeighborList<T> *>(*dfi.visited)),
+    visited(new std::unordered_set<T>(*dfi.visited)),
     stack(new std::stack<const T *, std::vector<const T *>>(*dfi.stack)),
     adjacencyList(dfi.adjacencyList)
 {
@@ -544,13 +544,19 @@ DepthFirstIterator<T> &DepthFirstIterator<T>::operator++()
     this->stack->pop();
 
     // Mark the current vertex as visited
-    this->visited->insert(&(this->adjacencyList->at(*current)));
+    this->visited->insert(*current);
+
+    // Pop the stack of previously seen vertices
+    while (!this->stack->empty() && this->visited->count(*this->stack->top()) != 0)
+    {
+        this->stack->pop();
+    }
 
     // Push the current vertex's neighbors onto the stack if they haven't been
     // visited
     for (const T &neighbor : this->adjacencyList->at(*current))
     {
-        if (this->visited->count(&(this->adjacencyList->at(neighbor))) == 0)
+        if (this->visited->count(neighbor) == 0)
         {
             this->stack->push(&neighbor);
         }
@@ -670,11 +676,13 @@ template <typename T>
 bool Graph<T>::isSubgraphOf(const Graph<T> &graph) const
 {
     // Algorithm Description:
-    // A list of vertices is obtained via the set difference graph.vertices - thisGraph.vertices 
-    // The supplied graph is transformed by removing those vertices and connections to those vertices 
-    // If the transformed graph is equivalent to this graph, this graph is a subgraph
+    // A list of vertices is obtained via the set difference graph.vertices -
+    // thisGraph.vertices The supplied graph is transformed by removing those vertices
+    // and connections to those vertices If the transformed graph is equivalent to this
+    // graph, this graph is a subgraph
 
-    std::unordered_set<T> subgraphVertices = SetUtilities::getKeys(*this->adjacencyList);
+    std::unordered_set<T> subgraphVertices =
+        SetUtilities::getKeys(*this->adjacencyList);
     std::unordered_set<T> graphVertices = SetUtilities::getKeys(*graph.adjacencyList);
 
     // Early test: If the vertices of this graph are not a subset of the
@@ -747,7 +755,7 @@ void Graph<T>::merge(const T &vertex1, const T &vertex2)
 
     // Neighbors of v also have v as a neighbor. So to fix incoming edges we visit
     // each neighbor and replace vertex2 with vertex1 as their neighbor
-    for (const T& neighbor : this->adjacencyList->at(vertex2))
+    for (const T &neighbor : this->adjacencyList->at(vertex2))
     {
         if (neighbor != vertex1)
         {
@@ -792,6 +800,12 @@ const T *Graph<T>::findIf(F predicate) const
     }
 
     return nullptr;
+}
+
+template <typename T>
+std::unordered_set<T> Graph<T>::getVertices() const
+{
+    return SetUtilities::getKeys(*this->adjacencyList);
 }
 
 #endif

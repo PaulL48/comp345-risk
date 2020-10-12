@@ -8,7 +8,7 @@ headers=$(wildcard headers/*.h)
 
 ifeq ($(OS),Windows_NT)
 	exe=risk.exe
-	makedir=md
+	makedir=mdmake
 else
 	exe=risk
 	makedir=mkdir -p
