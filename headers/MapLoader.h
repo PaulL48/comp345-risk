@@ -52,8 +52,8 @@ namespace MapLoader
     void addContinents(Map &map, const std::vector<std::string> &v);
     std::vector<std::string> readFile(std::ifstream& file);
     bool validateFile(const std::vector<std::string> &v);
-    std::vector<std::string> split(const std::string &str, char delimiter);
 }
+
 
 #endif //MAPLOADER_H
 
