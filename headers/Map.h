@@ -97,7 +97,7 @@ public:
 private:
     // Tracks vertexes already visited.
     // Improves performance and prevents cyclic graphs looping infinitely
-    std::unordered_set<const NeighborList<T> *> *visited;
+    std::unordered_set<T> *visited;
 
     // Track upcoming nodes during iteration
     std::stack<const T *, std::vector<const T *>> *stack;
@@ -159,6 +159,8 @@ public:
     // predicate, or nullptr if none are found
     template <typename F>
     const T *findIf(F predicate) const;
+
+    std::unordered_set<T> getVertices() const;
 
 private:
     // Owning pointer to adjacency list
@@ -469,7 +471,7 @@ SetUtilities::setDifference(const std::unordered_set<T> &minuend,
 
 template <typename T>
 DepthFirstIterator<T>::DepthFirstIterator(const AdjacencyList<T> *adjacencyList) :
-    visited(new std::unordered_set<const NeighborList<T> *>()),
+    visited(new std::unordered_set<T>()),
     stack(new std::stack<const T *, std::vector<const T *>>()),
     adjacencyList(adjacencyList)
 {
@@ -491,7 +493,7 @@ DepthFirstIterator<T>::DepthFirstIterator(const AdjacencyList<T> *adjacencyList)
 
 template <typename T>
 DepthFirstIterator<T>::DepthFirstIterator(const DepthFirstIterator &dfi) :
-    visited(new std::unordered_set<const NeighborList<T> *>(*dfi.visited)),
+    visited(new std::unordered_set<T>(*dfi.visited)),
     stack(new std::stack<const T *, std::vector<const T *>>(*dfi.stack)),
     adjacencyList(dfi.adjacencyList)
 {
@@ -506,8 +508,7 @@ DepthFirstIterator<T>::~DepthFirstIterator()
 }
 
 template <typename T>
-DepthFirstIterator<T> &
-DepthFirstIterator<T>::operator=(const DepthFirstIterator<T> &dfi)
+DepthFirstIterator<T> &DepthFirstIterator<T>::operator=(const DepthFirstIterator<T> &dfi)
 {
     if (&dfi == this)
     {
@@ -544,16 +545,23 @@ DepthFirstIterator<T> &DepthFirstIterator<T>::operator++()
     this->stack->pop();
 
     // Mark the current vertex as visited
-    this->visited->insert(&(this->adjacencyList->at(*current)));
+    this->visited->insert(*current);
+
+    // Pop the stack of previously seen vertices
+    while (!this->stack->empty() && this->visited->count(*this->stack->top()) != 0)
+    {
+        this->stack->pop();
+    }
 
     // Push the current vertex's neighbors onto the stack if they haven't been
     // visited
     for (const T &neighbor : this->adjacencyList->at(*current))
     {
-        if (this->visited->count(&(this->adjacencyList->at(neighbor))) == 0)
+        if (this->visited->count(neighbor) == 0)
         {
             this->stack->push(&neighbor);
         }
+       
     }
 
     // If iteration is complete, set the sentinel value of the pointer to become
@@ -792,6 +800,12 @@ const T *Graph<T>::findIf(F predicate) const
     }
 
     return nullptr;
+}
+
+template <typename T>
+std::unordered_set<T> Graph<T>::getVertices() const
+{
+    return SetUtilities::getKeys(*this->adjacencyList);
 }
 
 #endif
