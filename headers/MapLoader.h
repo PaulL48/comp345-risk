@@ -43,5 +43,9 @@ private:
     int *y;
 };
 
+std::vector<std::string> split (const std::string &str, char delimiter);
+bool validateFile (const std::vector<std::string> &v);
+
+
 #endif //MAPLOADER_H
 
