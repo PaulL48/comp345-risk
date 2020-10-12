@@ -4,6 +4,8 @@
 #include <ostream>
 #include <vector>
 
+#include "Orders.h"
+
 class Deck;
 const std::size_t decksize = 30;
 
@@ -13,7 +15,7 @@ public:
     Card();
     virtual ~Card();
     virtual Card *clone() const = 0;
-    virtual void play(Deck &deck) = 0;
+    virtual void play(Deck &deck, OrdersList &ordersList) = 0;
     Card &operator=(const Card &card);
     friend std::ostream &operator<<(std::ostream &out, const Card &card);
 
@@ -29,7 +31,7 @@ public:
     virtual ~Bombcard();
     Bombcard(const Bombcard &bomb);
     virtual Card *clone() const;
-    virtual void play(Deck &deck);
+    virtual void play(Deck &deck, OrdersList &ordersList);
     Bombcard &operator=(const Bombcard &bomb);
 
 protected:
@@ -43,7 +45,7 @@ public:
     Reinforcementcard(const Reinforcementcard &reinforcementcard);
     virtual ~Reinforcementcard();
     virtual Card *clone() const;
-    virtual void play(Deck &deck);
+    virtual void play(Deck &deck, OrdersList &ordersList);
     Reinforcementcard &operator=(const Reinforcementcard &reinforcementcard);
 
 protected:
@@ -57,7 +59,7 @@ public:
     virtual ~Blockadecard();
     Blockadecard(const Blockadecard &blockadecard);
     virtual Card *clone() const;
-    virtual void play(Deck &deck);
+    virtual void play(Deck &deck, OrdersList &ordersList);
     Blockadecard &operator=(const Blockadecard &blockadecard);
 
 protected:
@@ -71,7 +73,7 @@ public:
     virtual ~Airliftcard();
     Airliftcard(const Airliftcard &airliftcard);
     virtual Card *clone() const;
-    virtual void play(Deck &deck);
+    virtual void play(Deck &deck, OrdersList &ordersList);
     Airliftcard &operator=(const Airliftcard &airliftcard);
 
 protected:
@@ -85,7 +87,7 @@ public:
     Diplomacycard(const Diplomacycard &diplomacycard);
     virtual ~Diplomacycard();
     virtual Card *clone() const;
-    virtual void play(Deck &deck);
+    virtual void play(Deck &deck, OrdersList &ordersList);
     Diplomacycard &operator=(Diplomacycard &diplomacycard);
 
 protected:
@@ -114,6 +116,7 @@ public:
     Hand();
     ~Hand();
     Hand(const Hand &hand);
+    void playNextCard(Deck &deck, OrdersList &ordersList);
     void addToHand(const Card *cardDrawn);
     int handSize();
     Hand &operator=(const Hand &);
@@ -122,34 +125,5 @@ public:
 protected:
     std::vector<Card *> *hand;
 };
-
-template <typename T>
-void polymorphicDeepCopy(std::vector<T *> &dest, const std::vector<T *> &source)
-{
-    // Free previous elements
-    for (T *element : dest)
-    {
-        delete element;
-    }
-
-    dest.resize(source.size());
-
-    // Clone polymorphic elements
-    for (std::size_t i = 0; i < dest.size(); ++i)
-    {
-        dest.at(i) = source.at(i)->clone();
-    }
-}
-
-template <typename T>
-std::vector<T *> *clone(const std::vector<T *> &vector)
-{
-    std::vector<T *> *result = new std::vector<T *>(vector.size());
-    for (std::size_t i = 0; i < result->size(); ++i)
-    {
-        result->at(i) = vector.at(i)->clone();
-    }
-    return result;
-}
 
 #endif

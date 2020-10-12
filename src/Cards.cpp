@@ -177,6 +177,12 @@ int Hand::handSize()
     return hand->size();
 }
 
+void Hand::playNextCard(Deck &deck, OrdersList &ordersList)
+{
+    this->hand->back()->play(deck, ordersList);
+    this->hand->pop_back();
+}
+
 Bombcard::Bombcard()
 {
 }
@@ -214,10 +220,10 @@ Card *Bombcard::clone() const
 }
 
 // Plays the card  and creates an order
-void Bombcard::play(Deck &deck)
+void Bombcard::play(Deck &deck, OrdersList &ordersList)
 {
     // create an order using orders list Bomb constructor
-    // Bomb bomb;
+    ordersList.addToList(Bomb());
     std::cout << "Bomb order has been created" << std::endl;
 
     // return card to deck once played
@@ -262,10 +268,11 @@ Card *Reinforcementcard::clone() const
 }
 
 // Plays the card  and creates an order
-void Reinforcementcard::play(Deck &deck)
+void Reinforcementcard::play(Deck &deck, OrdersList &ordersList)
 {
     // create an order using orders list Reinforcement constructor
     // Reinforcement reinforcement;
+    ordersList.addToList(Deploy()); // ??
     std::cout << "Reinforcement order has been created" << std::endl;
 
     // return card to deck once played
@@ -309,10 +316,11 @@ Card *Blockadecard::clone() const
 }
 
 // Plays the card  and creates an order
-void Blockadecard::play(Deck &deck)
+void Blockadecard::play(Deck &deck, OrdersList &ordersList)
 {
     // create an order using orders list Blockade constructor
     //  Blockade blockade;
+    ordersList.addToList(Blockade());
     std::cout << "Blockade order has been created" << std::endl;
     // return card to deck once played
     deck.backToDeck(this);
@@ -355,10 +363,10 @@ Card *Airliftcard::clone() const
 }
 
 // Plays the card  and creates an order
-void Airliftcard::play(Deck &deck)
+void Airliftcard::play(Deck &deck, OrdersList &ordersList)
 {
     // create an order using orders list Airlift constructor
-    // Airlift airlift;
+    ordersList.addToList(Airlift());
     std::cout << "Airlift order has been created" << std::endl;
 
     // return card to deck once played
@@ -402,10 +410,10 @@ Card *Diplomacycard::clone() const
 }
 
 // Plays the card  and creates an order
-void Diplomacycard::play(Deck &deck)
+void Diplomacycard::play(Deck &deck, OrdersList &ordersList)
 {
     // create an order using orders list Diplomacy constructor
-    //  Diplomacy diplomacy;
+    ordersList.addToList(Negotiate()); // ??
     std::cout << "Diplomacy order has been created" << std::endl;
 
     // return card to deck once played
