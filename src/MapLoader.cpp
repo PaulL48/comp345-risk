@@ -104,7 +104,7 @@ std::vector<Continent> Continent::extractContinents(const std::vector<std::strin
         line << v[i];
         line >> first;
         // if empty line or comment, skip
-        if (v[i].at(0) == ';' || v[i].at(0) == '\r' || v[i].at(0) == '\n')
+        if (v[i].length() == 0 || v[i].at(0) == ';')
             continue;
         // if we reach the next section stop
         if (flag && first == "[countries]")
@@ -237,7 +237,7 @@ std::vector<Territory> Territory::extractTerritories(const std::vector<std::stri
         line << v[i];
         line >> first;
         // if empty line or comment, skip
-        if (v[i].at(0) == ';' || v[i].at(0) == '\r' || v[i].at(0) == '\n')
+        if (v[i].length() == 0 || v[i].at(0) == ';')
             continue;
         // if we reach the next section stop
         if (flag && first == "[borders]")
@@ -288,7 +288,7 @@ void Territory::addBorders(const std::vector<std::string> &v) {
         line << v[i];
         line >> first;
         // if empty line or comment, skip
-        if (v[i].at(0) == ';' || v[i].at(0) == '\r' || v[i].at(0) == '\n')
+        if (v[i].length() == 0 || v[i].at(0) == ';')
             continue;
         if (flag) {
             std::stringstream cc;

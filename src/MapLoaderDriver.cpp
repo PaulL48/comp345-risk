@@ -42,7 +42,7 @@ bool validateFile (const std::vector<std::string> &v) {
         std::stringstream line;
         line << v[i];
         line >> first;
-        if (v[i].at(0) == ';' || v[i].at(0) == '\r' || v[i].at(0) == '\n')
+        if (v[i].length() == 0 || v[i].at(0) == ';')
             continue;
         if (first == "[continents]")
             continentsSwitch = true;
