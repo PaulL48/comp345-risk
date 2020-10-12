@@ -4,10 +4,10 @@
 #include <string>
 int testGetPlayerName(Player player, std::string* playerName){
     if(player.getPlayerName() == (*playerName)){
-        return 1;
+        return 0;
     }
     else
-        return 0;
+        return 1;
 }
 int testGetAttackTerriotories(Player player, std::vector<Territory>* attackTerritories){
     if(player.toAttack() == *(attackTerritories))
