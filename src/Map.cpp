@@ -1,4 +1,5 @@
 #include "Map.h"
+#include "Player.h"
 
 //============================================================================================================================================================
 // CLASS DEFINITIONS: Territory
@@ -73,13 +74,6 @@ bool Territory::operator!=(const Territory &territory) const
 int Territory::getId() const
 {
     return *this->id;
-}
-
-std::ostream &operator<<(std::ostream &output, const Player &player)
-{
-    // STUB
-    output << player.name;
-    return output;
 }
 
 std::ostream &operator<<(std::ostream &output, const Territory &territory)

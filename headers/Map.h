@@ -170,15 +170,7 @@ private:
 // CLASS DECLARATION: Territory
 //============================================================================================================================================================
 
-class Player
-{
-    // STUB
-public:
-    friend std::ostream &operator<<(std::ostream &output, const Player &player);
-
-private:
-    std::string name;
-};
+class Player;
 
 class Territory
 {
