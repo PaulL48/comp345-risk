@@ -3,25 +3,29 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include "Orders.h"
+#include "Cards.h"
+#include "Map.h"
+
 
 class Player{
     private:
         std::string* playerName;
-        std::vector<int>* territoriesAttack;
-        std::vector<int>* territoriesDefend;
-        std::vector<int>* cards;
-        std::vector<int>* orders;
+        std::vector<Territory>* territoriesAttack;
+        std::vector<Territory>* territoriesDefend;
+        Hand* cards;
+        OrdersList* orders;
     public:
-        Player(const std::string& playerName,const std::vector<int>& territoriesAttack, const std::vector<int>& territoriesDefend, const std::vector<int>& cards, const std::vector<int>& orders);
+        Player(const std::string& playerName,const std::vector<Territory>& territoriesAttack, const std::vector<Territory>& territoriesDefend, const Hand& cards, const OrdersList& orders);
         Player(const Player& player);
         Player();
         Player& operator= (const Player& player);
         ~Player();
         friend std::ostream& operator<<( std::ostream &output, const Player& player);
-        std::vector<int>& toAttack();
-        std::vector<int>& toDefend();
-        std::vector<int>& getCards();
-        std::vector<int>& getOrders();
+        std::vector<Territory>& toAttack();
+        std::vector<Territory>& toDefend();
+        Hand& getCards();
+        OrdersList& getOrders();
         std::string& getPlayerName();
         void issueOrder();
 
