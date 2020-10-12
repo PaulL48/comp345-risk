@@ -76,13 +76,6 @@ int Territory::getId() const
     return *this->id;
 }
 
-std::ostream &operator<<(std::ostream &output, const Player &player)
-{
-    // STUB
-    output << player.name;
-    return output;
-}
-
 std::ostream &operator<<(std::ostream &output, const Territory &territory)
 {
     output << "(id:" << *territory.id << ", name:" << *territory.name;
