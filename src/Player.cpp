@@ -23,7 +23,7 @@ void Player::issueOrder(){
     /**
      * As told by the teacher in class, she said it was ok to just create any type of order for the meantime as their isn't a clear explanation in the assignment concerning this part 
      * */
-    Bomb order = Bomb();
+    Bomb order;
     orders->addToList(order);
     
 }

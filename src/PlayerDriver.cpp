@@ -21,14 +21,8 @@ int testGetAttackDefendTerritories(Player player, std::vector<Territory>* defend
     else
         return 1;
 }
-int testGetCards(Player player, Hand* cards){
-    if((player.getCards())*(cards))
-        return 0;
-    else
-        return 1;
-}
-int testGetOrders(Player player, OrdersList* orders){
-    if(*(player.getOrders()) == *(orders))
+int testGetCards(Player player, Hand cards){
+    if(cards.handSize() == player.getCards().handSize())
         return 0;
     else
         return 1;
@@ -51,26 +45,26 @@ int main(){
     std::string* playerName = new std::string("Sammy");
     Card *cardDrawn;
     Deck deck;
-    Hand* hand;
+    Hand hand;
     for (int i = 0; i < 5; i++)
     {
          cardDrawn = deck.draw();
-         hand->addToHand(cardDrawn);
+         hand.addToHand(cardDrawn);
         
     }
 
-    OrdersList* orderlist;
+    OrdersList orderlist;
     Deploy deploy;
     Bomb bomb;
     Airlift airlift;
     Blockade blockade;
-    orderlist->addToList(deploy);
-    orderlist->addToList(bomb);
-    orderlist->addToList(airlift);
-    orderlist->addToList(blockade);
+    orderlist.addToList(deploy);
+    orderlist.addToList(bomb);
+    orderlist.addToList(airlift);
+    orderlist.addToList(blockade);
 
 
-    Player player = Player(playerName, initialAttackTerritories,initialDefendTerritories,hand,orderlist);
+    Player player = Player(*playerName, *initialAttackTerritories,*initialDefendTerritories,hand,orderlist);
 
     if(testGetPlayerName(player,playerName) == 0)
         std::cout << "The GetPlayerName has been successful " <<std::endl;
@@ -92,9 +86,7 @@ int main(){
     else
         std::cout<< "The getCards has not been successful"<<std::endl;
 
-    if(testGetOrders(player,orderlist ) == 0 )
-        std::cout<< "The getCards has been successful"<<std::endl;
-    else
-        std::cout<< "The getCards has not been successful"<<std::endl;
+    player.issueOrder();
+    std::cout<<"The issue order has been successful"<<std::endl;
 
 }
