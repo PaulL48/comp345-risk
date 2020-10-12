@@ -9,7 +9,7 @@ OrdersList::OrdersList() : orders(new vector<Order *>())
 }
 
 OrdersList::OrdersList(const OrdersList &ordersList) :
-    orders(new vector<Order *>(*ordersList.orders))
+    orders(clone(*ordersList.orders))
 {
 }
 
@@ -29,7 +29,7 @@ OrdersList &OrdersList::operator=(const OrdersList &ordersList)
         return *this;
     }
 
-    orders = new vector<Order *>(*ordersList.orders);
+    polymorphicDeepCopy(*orders, *ordersList.orders);
     return *this;
 }
 
