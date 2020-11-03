@@ -6,32 +6,32 @@
 //============================================================================================================================================================
 
 Territory::Territory() :
-    id(new int(-1)),
-    name(new std::string()),
-    x(new int(0)),
-    y(new int(0)),
-    occupyingArmies(new int(0)),
-    ownedBy(nullptr)
+        id(new int(-1)),
+        name(new std::string()),
+        x(new int(0)),
+        y(new int(0)),
+        occupyingArmies(new int(0)),
+        ownedBy(nullptr)
 {
 }
 
 Territory::Territory(int id, const std::string &name, int x, int y) :
-    id(new int(id)),
-    name(new std::string(name)),
-    x(new int(x)),
-    y(new int(y)),
-    occupyingArmies(new int(0)),
-    ownedBy(nullptr)
+        id(new int(id)),
+        name(new std::string(name)),
+        x(new int(x)),
+        y(new int(y)),
+        occupyingArmies(new int(0)),
+        ownedBy(nullptr)
 {
 }
 
 Territory::Territory(const Territory &territory) :
-    id(new int(*territory.id)),
-    name(new std::string(*territory.name)),
-    x(new int(*territory.x)),
-    y(new int(*territory.y)),
-    occupyingArmies(new int(*territory.occupyingArmies)),
-    ownedBy(territory.ownedBy)
+        id(new int(*territory.id)),
+        name(new std::string(*territory.name)),
+        x(new int(*territory.x)),
+        y(new int(*territory.y)),
+        occupyingArmies(new int(*territory.occupyingArmies)),
+        ownedBy(territory.ownedBy)
 {
 }
 
@@ -78,13 +78,13 @@ int Territory::getId() const
 
 std::ostream &operator<<(std::ostream &output, const Territory &territory)
 {
-    output << "(id:" << *territory.id << ", name:" << *territory.name;
+    output << "(id: " << *territory.id << ", name: " << *territory.name;
     if (territory.ownedBy != nullptr)
     {
         output << ", owning player:" << *territory.ownedBy;
         output << ", armies:" << *territory.occupyingArmies;
     }
-    output << ")";
+    output << ")\n";
     return output;
 }
 
@@ -93,18 +93,18 @@ std::ostream &operator<<(std::ostream &output, const Territory &territory)
 //============================================================================================================================================================
 
 Continent::Continent(const std::string &name, int armyValue, const std::string &color) :
-    name(new std::string(name)),
-    armyValue(new int(armyValue)),
-    color(new std::string(color)),
-    territories(new Graph<Territory>())
+        name(new std::string(name)),
+        armyValue(new int(armyValue)),
+        color(new std::string(color)),
+        territories(new Graph<Territory>())
 {
 }
 
 Continent::Continent(const Continent &continent) :
-    name(new std::string(*continent.name)),
-    armyValue(new int(*continent.armyValue)),
-    color(new std::string(*continent.color)),
-    territories(new Graph<Territory>(*continent.territories))
+        name(new std::string(*continent.name)),
+        armyValue(new int(*continent.armyValue)),
+        color(new std::string(*continent.color)),
+        territories(new Graph<Territory>(*continent.territories))
 {
 }
 
@@ -158,11 +158,13 @@ DepthFirstIterator<Territory> Continent::end() const
 
 std::ostream &operator<<(std::ostream &output, const Continent &continent)
 {
-    output << "( name: " << *continent.name;
-    output << ", territories: " << *continent.territories;
-    output << ", army value: " << *continent.armyValue;
-    output << ", color: " << *continent.color;
-    output << ")";
+    output << "\nName: " << *continent.name << "\n";
+    output << "Color: " << *continent.color << "\n";
+    output << "Army Value: " << *continent.armyValue << "\n";
+    output << "Territories: \n";
+    for (auto &entry : *continent.territories){
+        output << entry;
+    }
     return output;
 }
 
@@ -176,13 +178,13 @@ std::unordered_set<Territory> Continent::getTerritories() const
 //============================================================================================================================================================
 
 Map::Map() :
-    territories(new Graph<Territory>()), continents(new std::vector<Continent>())
+        territories(new Graph<Territory>()), continents(new std::vector<Continent>())
 {
 }
 
 Map::Map(const Map &map) :
-    territories(new Graph<Territory>(*map.territories)),
-    continents(new std::vector<Continent>(*map.continents))
+        territories(new Graph<Territory>(*map.territories)),
+        continents(new std::vector<Continent>(*map.continents))
 {
 }
 
@@ -273,16 +275,16 @@ std::string Map::getErrorString(MapState mapState) const
 {
     switch (mapState)
     {
-    case MapState::VALID:
-        return "Map contains no errors";
-    case MapState::NOT_CONNECTED_GRAPH:
-        return "Map is not a connected graph";
-    case MapState::CONTINENTS_NOT_CONNECTED_SUBGRAPHS:
-        return "Map continents are not all connected subgraphs of the territories";
-    case MapState::TERRITORY_DOES_NOT_BELONG_TO_ONE_CONTINET:
-        return "Some map territories do not belong to only one continent";
-    default:
-        return "Invalid MapState Error code";
+        case MapState::VALID:
+            return "Map contains no errors";
+        case MapState::NOT_CONNECTED_GRAPH:
+            return "Map is not a connected graph";
+        case MapState::CONTINENTS_NOT_CONNECTED_SUBGRAPHS:
+            return "Map continents are not all connected subgraphs of the territories";
+        case MapState::TERRITORY_DOES_NOT_BELONG_TO_ONE_CONTINET:
+            return "Some map territories do not belong to only one continent";
+        default:
+            return "Invalid MapState Error code";
     }
 }
 
@@ -325,10 +327,10 @@ void Map::connectTerritories(int territoryId1, int territoryId2)
         continent.connectTerritories(*territory1, *territory2);
     }
 }
-
 std::ostream &operator<<(std::ostream &output, const Map &map)
 {
-    output << "(territories: " << *map.territories
-           << ", continents: " << *map.continents << ")";
+    for (auto &entry : *map.continents){
+        output << entry;
+    }
     return output;
 }
