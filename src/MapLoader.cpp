@@ -31,7 +31,7 @@ Map MapLoader::loadMap(const std::string &path)
     std::vector<std::string> v = MapLoader::readFile(input);
 
     // check if valid map file
-    std::cout << "Testing : " << path;
+    std::cout << "Testing : " << path << "\n";
     if (MapLoader::validateFile(v))
         std::cout << "Testing successful \nBuilding Map\n";
     else
