@@ -268,16 +268,41 @@ Advance::~Advance()
 {
 }
 
-bool Advance::validate(const Player* const, const Player* const, const Territory* const, const Territory* const)
+bool Advance::validate(const Player* const player, const Player* const, const Territory* const targetTerritory, const Territory* const sourceTerritory)
 {
-    return 1==1;
+   if(&(sourceTerritory->getOwner()) == &*player){
+       if(&(targetTerritory->getOwner()) != &*player){
+           if(targetTerritory->getDoNotAttack()){
+               return false;
+           }
+       }
+       return true;
+   }
+   return false;
 }
 
-void Advance::execute(Player*, int , Territory*, Territory*)
-{}
+void Advance::execute(Player* player, int numberOfArmies, Territory* targetTerritory, Territory* sourceTerritory){
+    this->execute(player, numberOfArmies, targetTerritory, sourceTerritory, nullptr);
+}
 
-void Advance::execute( Player*, int, Territory*, Territory*, Player*)
-{}
+void Advance::execute( Player* player, int numberOfArmies, Territory* targetTerritory, Territory* sourceTerritory, Player*)
+{
+    if(this->validate(player, nullptr, targetTerritory, sourceTerritory)){
+        if(&(targetTerritory->getOwner()) == &*player){
+            // airlift from player's source territory to player's target territory
+            sourceTerritory->setNumberOfOccupyingArmies(sourceTerritory->getNumberOfOccupyingArmies()-numberOfArmies);
+            targetTerritory->setNumberOfOccupyingArmies(targetTerritory->getNumberOfOccupyingArmies()+numberOfArmies);
+        }
+        else{
+            // @todo
+            //advance to enemy territory
+        }
+        this->setExecutedStatus(true);
+    }
+    else{
+        std::cout << "Invalid order. Source territory does not belong to player." << std::endl;
+    }
+}
 
 Order *Advance::clone() const
 {
@@ -423,7 +448,7 @@ void Airlift::execute(Player* player, int numberOfArmies, Territory* targetTerri
 void Airlift::execute(Player* player, int numberOfArmies, Territory* targetTerritory, Territory* sourceTerritory, Player*)
 {
     if(this->validate(player, nullptr, targetTerritory, sourceTerritory)){
-        // @todog
+        // @todo
         this->setExecutedStatus(true);
     }
     else{
