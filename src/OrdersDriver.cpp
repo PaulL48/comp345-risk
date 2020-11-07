@@ -28,7 +28,7 @@ int main()
     cout << endl;
 
 
-   // Testing bomb
+    // Testing bomb
     Bomb bomb;
    
     cout << "Executing INVALID bomb order" << endl;
@@ -41,4 +41,21 @@ int main()
     bomb.execute(p, t2);
     cout << "\tArmies after bombing" << t2->getNumberOfOccupyingArmies() << endl;
     cout << endl;
+
+     // Testing blockade
+    Blockade blockade;
+   
+    cout << "Executing INVALID blockade order" << endl;
+    cout << "\tOwner before blockading" << (t2->getOwner()) << endl;
+    cout << "\tArmies before blockading" << t2->getNumberOfOccupyingArmies() << endl;
+    blockade.execute(p, t2);
+    cout << "\tOwner after blockading" << (t2->getOwner()) << endl;
+    cout << "\tArmies after blockading" << t2->getNumberOfOccupyingArmies() << endl;
+
+    cout << "Executing VALID blockade order" << endl;
+    cout << "\tOwner before blockading" << (t1->getOwner()) << endl;
+    cout << "\tArmies before blockading" << t1->getNumberOfOccupyingArmies() << endl;
+    blockade.execute(p, t1);
+    cout << "\tOwner after blockading" << (t1->getOwner()) << endl;
+    cout << "\tArmies after blockading" << t1->getNumberOfOccupyingArmies() << endl;
 }

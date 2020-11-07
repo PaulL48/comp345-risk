@@ -360,16 +360,29 @@ Blockade::~Blockade()
 {
 }
 
-bool Blockade::validate(const Player* const, const Player* const, const Territory* const, const Territory* const)
+bool Blockade::validate(const Player* const player, const Player* const, const Territory* const targetTerritory, const Territory* const)
 {
-    return 1==1;
+    return (&(targetTerritory->getOwner()) == &*player) ? true : false;
 }
 
-void Blockade::execute(Player*, Territory*)
-{}
+void Blockade::execute(Player* player, Territory* targetTerritory)
+{
+    this->execute(player, 0, targetTerritory, nullptr, nullptr);
+}
 
-void Blockade::execute(Player *, int, Territory*, Territory*, Player*)
-{}
+void Blockade::execute(Player *player, int, Territory* targetTerritory, Territory*, Player*)
+{
+    if(this->validate(player, nullptr, targetTerritory, nullptr)){
+        Player* neutralPlayer = new Player("Neutral", vector<Territory>(), vector<Territory>(), Hand(), OrdersList());
+        targetTerritory->setNumberOfOccupyingArmies(targetTerritory->getNumberOfOccupyingArmies()*2);
+        targetTerritory->setOwner(*neutralPlayer);
+        neutralPlayer = nullptr;
+        this->setExecutedStatus(true);
+    }
+    else{
+        std::cout << "\tInvalid order. Territory does not belong to player." << std::endl;
+    }
+}
 
 Order *Blockade::clone() const
 {
