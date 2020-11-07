@@ -411,16 +411,25 @@ Airlift::~Airlift()
 {
 }
 
-bool Airlift::validate(const Player* const, const Player* const, const Territory* const, const Territory* const)
+bool Airlift::validate(const Player* const player, const Player* const, const Territory* const targetTerritory, const Territory* const sourceTerritory)
 {
-    return 1==1;
+   return ((&(targetTerritory->getOwner()) == &*player) && (&(sourceTerritory->getOwner()) == &*player))? true : false;
 }
 
-void Airlift::execute(Player*, int, Territory*, Territory*)
-{}
+void Airlift::execute(Player* player, int numberOfArmies, Territory* targetTerritory, Territory* sourceTerritory){
+    this->execute(player, numberOfArmies, targetTerritory, sourceTerritory, nullptr);
+}
 
-void Airlift::execute(Player*, int, Territory*, Territory*, Player*)
-{}
+void Airlift::execute(Player* player, int numberOfArmies, Territory* targetTerritory, Territory* sourceTerritory, Player*)
+{
+    if(this->validate(player, nullptr, targetTerritory, sourceTerritory)){
+        // @todog
+        this->setExecutedStatus(true);
+    }
+    else{
+        std::cout << "Invalid order. Can not airlift from or to enemy territory." << std::endl;
+    }
+}
 
 Order *Airlift::clone() const
 {
