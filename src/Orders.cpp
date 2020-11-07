@@ -401,6 +401,7 @@ void Blockade::execute(Player *player, int, Territory* targetTerritory, Territor
         Player* neutralPlayer = new Player("Neutral", vector<Territory>(), vector<Territory>(), Hand(), OrdersList());
         targetTerritory->setNumberOfOccupyingArmies(targetTerritory->getNumberOfOccupyingArmies()*2);
         targetTerritory->setOwner(*neutralPlayer);
+        delete neutralPlayer;
         neutralPlayer = nullptr;
         this->setExecutedStatus(true);
     }

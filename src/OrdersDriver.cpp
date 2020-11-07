@@ -73,4 +73,11 @@ int main()
     negotiate.execute(p3, p2);
     bomb.execute(p3, t2);
     bomb.execute(p3, &((p3->toAttack())[1])); // attacklist[0] points to t2
+
+
+    delete p;
+    delete p2;
+    delete p3;
+    delete t1;
+    delete t2;
 }
