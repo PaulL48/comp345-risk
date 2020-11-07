@@ -494,6 +494,7 @@ void Negotiate::execute(Player* player, Player* enemyPlayer)
     this->execute(player, 0, nullptr, nullptr, enemyPlayer);
 }
 
+// sets doNotAttack to true for the territores inside attack lists both for player and enemy where owner of territory equals the opposing party  
 void Negotiate::execute(Player* player, int, Territory*, Territory*, Player* enemyPlayer)
 {
     if(this->validate(player, enemyPlayer, nullptr, nullptr)){

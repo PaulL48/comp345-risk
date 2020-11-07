@@ -206,7 +206,7 @@ private:
     int *y;
     int *occupyingArmies;
     Player *ownedBy;
-    bool *doNotAttack;
+    bool *doNotAttack; // the negotiate will set this value to true when a valid negotiate order is executed for territories involved in the negotiation 
 };
 
 // Taken from Boost::hash_combine.
