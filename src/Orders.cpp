@@ -220,13 +220,25 @@ Deploy::~Deploy()
 {
 }
 
-void Deploy::validate()
+bool Deploy::validate(const Player* const player, const Player* const, const Territory* const targetTerritory, const Territory* const)
 {
+   return &(targetTerritory->getOwner()) == &*player ? true : false;
 }
 
-void Deploy::execute()
+void Deploy::execute(Player* player, int numberOfArmies, Territory* targetTerritory){
+    this->execute(player, numberOfArmies, targetTerritory, nullptr, nullptr);
+}
+
+
+void Deploy::execute(Player* player, int numberOfArmies, Territory* targetTerritory, Territory*, Player*)
 {
-    this->setExecutedStatus(true);
+    if(this->validate(player, nullptr, targetTerritory, nullptr)){
+        targetTerritory->setNumberOfOccupyingArmies(targetTerritory->getNumberOfOccupyingArmies()+numberOfArmies);
+        this->setExecutedStatus(true);
+    }
+    else{
+        std::cout << "Invalid order. Target territory does not belong to player." << std::endl;
+    }
 }
 
 Order *Deploy::clone() const
@@ -256,14 +268,16 @@ Advance::~Advance()
 {
 }
 
-void Advance::validate()
+bool Advance::validate(const Player* const, const Player* const, const Territory* const, const Territory* const)
 {
+    return 1==1;
 }
 
-void Advance::execute()
-{
-    this->setExecutedStatus(true);
-}
+void Advance::execute(Player*, int , Territory*, Territory*)
+{}
+
+void Advance::execute( Player*, int, Territory*, Territory*, Player*)
+{}
 
 Order *Advance::clone() const
 {
@@ -292,14 +306,16 @@ Bomb::~Bomb()
 {
 }
 
-void Bomb::validate()
+bool Bomb::validate(const Player* const, const Player* const, const Territory* const, const Territory* const)
 {
+    return 1==1;
 }
 
-void Bomb::execute()
-{
-    this->setExecutedStatus(true);
-}
+void Bomb::execute(Player*, Territory*)
+{}
+
+void Bomb::execute(Player*, int, Territory*, Territory*, Player*)
+{}
 
 Order *Bomb::clone() const
 {
@@ -330,14 +346,16 @@ Blockade::~Blockade()
 {
 }
 
-void Blockade::validate()
+bool Blockade::validate(const Player* const, const Player* const, const Territory* const, const Territory* const)
 {
+    return 1==1;
 }
 
-void Blockade::execute()
-{
-    this->setExecutedStatus(true);
-}
+void Blockade::execute(Player*, Territory*)
+{}
+
+void Blockade::execute(Player *, int, Territory*, Territory*, Player*)
+{}
 
 Order *Blockade::clone() const
 {
@@ -366,14 +384,16 @@ Airlift::~Airlift()
 {
 }
 
-void Airlift::validate()
+bool Airlift::validate(const Player* const, const Player* const, const Territory* const, const Territory* const)
 {
+    return 1==1;
 }
 
-void Airlift::execute()
-{
-    this->setExecutedStatus(true);
-}
+void Airlift::execute(Player*, int, Territory*, Territory*)
+{}
+
+void Airlift::execute(Player*, int, Territory*, Territory*, Player*)
+{}
 
 Order *Airlift::clone() const
 {
@@ -403,14 +423,16 @@ Negotiate::~Negotiate()
 {
 }
 
-void Negotiate::validate()
+bool Negotiate::validate(const Player* const, const Player* const, const Territory* const, const Territory* const)
 {
+    return 1==1;
 }
 
-void Negotiate::execute()
-{
-    this->setExecutedStatus(true);
-}
+void Negotiate::execute(Player*, Player*)
+{}
+
+void Negotiate::execute(Player*, int, Territory*, Territory*, Player*)
+{}
 
 Order *Negotiate::clone() const
 {

@@ -7,7 +7,8 @@
 #include "Cards.h"
 #include "Map.h"
 
-
+class Hand;
+class OrdersList;
 class Player{
     private:
         std::string* playerName;
