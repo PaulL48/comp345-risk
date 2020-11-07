@@ -237,7 +237,7 @@ void Deploy::execute(Player* player, int numberOfArmies, Territory* targetTerrit
         this->setExecutedStatus(true);
     }
     else{
-        std::cout << "Invalid order. Target territory does not belong to player." << std::endl;
+        std::cout << "\tInvalid order. Target territory does not belong to player." << std::endl;
     }
 }
 
@@ -306,16 +306,30 @@ Bomb::~Bomb()
 {
 }
 
-bool Bomb::validate(const Player* const, const Player* const, const Territory* const, const Territory* const)
+bool Bomb::validate(const Player* const player, const Player* const, const Territory* const targetTerritory, const Territory* const)
 {
-    return 1==1;
+    if(&(targetTerritory->getOwner()) == &*player){
+        return false;
+    }
+
+    return true;
 }
 
-void Bomb::execute(Player*, Territory*)
-{}
+void Bomb::execute(Player* player, Territory* targetTerritory)
+{
+    this->execute(player, 0, targetTerritory, nullptr, nullptr);
+}
 
-void Bomb::execute(Player*, int, Territory*, Territory*, Player*)
-{}
+void Bomb::execute(Player* player, int, Territory* targetTerritory, Territory*, Player*)
+{
+    if(this->validate(player, nullptr, targetTerritory, nullptr)){
+        targetTerritory->setNumberOfOccupyingArmies((targetTerritory->getNumberOfOccupyingArmies())/2);
+        this->setExecutedStatus(true);
+    }
+    else{
+        std::cout << "\tInvalid order bomb." << std::endl;
+    }    
+}
 
 Order *Bomb::clone() const
 {
