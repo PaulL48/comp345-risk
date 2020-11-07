@@ -308,7 +308,7 @@ Bomb::~Bomb()
 
 bool Bomb::validate(const Player* const player, const Player* const, const Territory* const targetTerritory, const Territory* const)
 {
-    if(&(targetTerritory->getOwner()) == &*player){
+    if(&(targetTerritory->getOwner()) == &*player || (targetTerritory->getDoNotAttack())){
         return false;
     }
 
@@ -450,16 +450,42 @@ Negotiate::~Negotiate()
 {
 }
 
-bool Negotiate::validate(const Player* const, const Player* const, const Territory* const, const Territory* const)
+bool Negotiate::validate(const Player* const player, const Player* const enemyPlayer, const Territory* const, const Territory* const)
 {
-    return 1==1;
+    return (&*player == &*enemyPlayer) ? false : true;
 }
 
-void Negotiate::execute(Player*, Player*)
-{}
+void Negotiate::execute(Player* player, Player* enemyPlayer)
+{
+    this->execute(player, 0, nullptr, nullptr, enemyPlayer);
+}
 
-void Negotiate::execute(Player*, int, Territory*, Territory*, Player*)
-{}
+void Negotiate::execute(Player* player, int, Territory*, Territory*, Player* enemyPlayer)
+{
+    if(this->validate(player, enemyPlayer, nullptr, nullptr)){
+        vector<Territory> *playerTerritoriesToAtttack = &(player->toAttack());
+        vector<Territory> *enemyTerritoriesToAtttack = &(player->toAttack());
+        for (auto it = playerTerritoriesToAtttack->begin(); it != playerTerritoriesToAtttack->end(); ++it)
+        {
+            if (&(it->getOwner()) == &*enemyPlayer)
+            {
+                it->setDoNotAttack(true);
+            }
+        }
+
+        for (auto it = enemyTerritoriesToAtttack->begin(); it != enemyTerritoriesToAtttack->end(); ++it)
+        {
+            if (&(it->getOwner()) == &*player)
+            {
+                it->setDoNotAttack(true);
+            }
+        }
+        this->setExecutedStatus(true);
+    }
+    else{
+        std::cout << "\tInvalid negotiation. Target player == player." << std::endl;
+    }
+}
 
 Order *Negotiate::clone() const
 {

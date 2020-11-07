@@ -58,4 +58,19 @@ int main()
     blockade.execute(p, t1);
     cout << "\tOwner after blockading" << (t1->getOwner()) << endl;
     cout << "\tArmies after blockading" << t1->getNumberOfOccupyingArmies() << endl;
+
+    // Testing negotiate
+    Negotiate negotiate;
+    std::vector<Territory> attack({*t1, *t2});
+    Player *p3 = new Player(std::string("Player 2"), attack, std::vector<Territory>(), Hand(), OrdersList());
+    //Territory *t3 = new Territory(4, "Territory 4", 10, 1, 2, *p3);
+
+    
+    cout << "Executing INVALID negotiate order" << endl;
+    negotiate.execute(p3, p3);
+
+    cout << "Executing VALID negotiate order" << endl;
+    negotiate.execute(p3, p2);
+    bomb.execute(p3, t2);
+    bomb.execute(p3, &((p3->toAttack())[1])); // attacklist[0] points to t2
 }

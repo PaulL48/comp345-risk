@@ -192,6 +192,8 @@ public:
     const Player& getOwner() const;
     void setNumberOfOccupyingArmies(int newNumberOfArmies);
     int getNumberOfOccupyingArmies();
+    void setDoNotAttack(bool status);
+    bool &getDoNotAttack() const;
 
     // Adding std::hash is necessary to allow Territory to be a key of an
     // associative container
@@ -204,6 +206,7 @@ private:
     int *y;
     int *occupyingArmies;
     Player *ownedBy;
+    bool *doNotAttack;
 };
 
 // Taken from Boost::hash_combine.
