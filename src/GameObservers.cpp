@@ -7,7 +7,7 @@
 
 int main()
 {
-    Map map = MapLoader::loadMap("./maps/trivia.map");
+    Map map = MapLoader::loadMap("../maps/trivia.map");
     std::cout << map;
     return 0;
 }
