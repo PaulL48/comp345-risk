@@ -71,9 +71,55 @@ bool Territory::operator!=(const Territory &territory) const
     return !(*this == territory);
 }
 
+void Territory::setId(int *id)
+{
+    Territory::id = id;
+}
+
 int Territory::getId() const
 {
     return *this->id;
+}
+
+std::string *Territory::getName() const
+{
+    return name;
+}
+void Territory::setName(std::string *name)
+{
+    Territory::name = name;
+}
+int *Territory::getX() const
+{
+    return x;
+}
+void Territory::setX(int *x)
+{
+    Territory::x = x;
+}
+int *Territory::getY() const
+{
+    return y;
+}
+void Territory::setY(int *y)
+{
+    Territory::y = y;
+}
+int *Territory::getOccupyingArmies() const
+{
+    return occupyingArmies;
+}
+void Territory::setOccupyingArmies(int *occupyingArmies)
+{
+    Territory::occupyingArmies = occupyingArmies;
+}
+Player *Territory::getOwnedBy() const
+{
+    return ownedBy;
+}
+void Territory::setOwnedBy(Player *ownedBy)
+{
+    Territory::ownedBy = ownedBy;
 }
 
 std::ostream &operator<<(std::ostream &output, const Territory &territory)
@@ -128,6 +174,35 @@ Continent &Continent::operator=(const Continent &continent)
     *this->armyValue = *continent.armyValue;
     *this->color = *continent.color;
     return *this;
+}
+
+std::string *Continent::getName() const
+{
+    return name;
+}
+void Continent::setName(std::string *name)
+{
+    Continent::name = name;
+}
+int *Continent::getArmyValue() const
+{
+    return armyValue;
+}
+void Continent::setArmyValue(int *armyValue)
+{
+    Continent::armyValue = armyValue;
+}
+std::string *Continent::getColor() const
+{
+    return color;
+}
+void Continent::setColor(std::string *color)
+{
+    Continent::color = color;
+}
+void Continent::setTerritories(Graph<Territory> *territories)
+{
+    Continent::territories = territories;
 }
 
 bool Continent::isValidContinent(const Graph<Territory> &territories) const
@@ -199,6 +274,23 @@ Map &Map::operator=(const Map &map)
     *this->territories = *map.territories;
     *this->continents = *map.continents;
     return *this;
+}
+
+Graph<Territory> *Map::getTerritories() const
+{
+    return territories;
+}
+void Map::setTerritories(Graph<Territory> *territories)
+{
+    Map::territories = territories;
+}
+std::vector<Continent> *Map::getContinents() const
+{
+    return continents;
+}
+void Map::setContinents(std::vector<Continent> *continents)
+{
+    Map::continents = continents;
 }
 
 MapState Map::validate() const

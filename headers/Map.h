@@ -1,6 +1,7 @@
 #ifndef MAP_H
 #define MAP_H
 
+#include "Subject.h"
 #include <iostream>
 #include <ostream>
 #include <stack>
@@ -188,6 +189,17 @@ public:
     bool operator!=(const Territory &territory) const;
 
     int getId() const;
+    void setId(int *id);
+    std::string *getName() const;
+    void setName(std::string *name);
+    int *getX() const;
+    void setX(int *x);
+    int *getY() const;
+    void setY(int *y);
+    int *getOccupyingArmies() const;
+    void setOccupyingArmies(int *occupyingArmies);
+    Player *getOwnedBy() const;
+    void setOwnedBy(Player *ownedBy);
 
     // Adding std::hash is necessary to allow Territory to be a key of an
     // associative container
@@ -259,6 +271,13 @@ public:
 
     // Return a past-the-end iterator to this continent
     DepthFirstIterator<Territory> end() const;
+    std::string *getName() const;
+    void setName(std::string *name);
+    int *getArmyValue() const;
+    void setArmyValue(int *armyValue);
+    std::string *getColor() const;
+    void setColor(std::string *color);
+    void setTerritories(Graph<Territory> *territories);
 
 private:
     std::string *name;
@@ -279,7 +298,7 @@ enum class MapState
     TERRITORY_DOES_NOT_BELONG_TO_ONE_CONTINET
 };
 
-class Map
+class Map: public Subject
 {
 public:
     Map();                          // Constructor
@@ -300,6 +319,10 @@ public:
 
     // Connect territories on this map
     void connectTerritories(int territoryId1, int territoryId2);
+    Graph<Territory> *getTerritories() const;
+    void setTerritories(Graph<Territory> *territories);
+    std::vector<Continent> *getContinents() const;
+    void setContinents(std::vector<Continent> *continents);
 
 private:
     Graph<Territory> *territories;
