@@ -1,0 +1,42 @@
+//
+// Created by Ruslan Dallin on 2020-11-09.
+//
+
+#include "MapController.h"
+#include <MapLoader.h>
+
+MapContoller::MapContoller(MapObserver* newView, Map* newModel) {
+    mapView = newView;
+    mapModel = newModel;
+}
+void MapContoller::controlMap() {
+    while (true) {
+        int command;
+        std::cout << "Select option and type enter)\n";
+        std::cin >> command;
+
+        switch (command) {
+        case 1:
+            mapModel->testNotify();
+            break;
+        case 2:
+            break;
+        case 3:
+            return;
+        }
+    }
+}
+
+int main()
+{
+    Map *model = new Map (MapLoader::createMap("../maps/trivia.map"));
+    MapObserver *view = new MapObserver(model);
+    MapContoller *contoller = new MapContoller(view, model);
+    contoller->controlMap();
+
+    delete view;
+    delete model;
+    delete contoller;
+
+    return 0;
+}

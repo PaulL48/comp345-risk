@@ -22,14 +22,7 @@ void MapObserver::Update(){
     display();
 };
 void MapObserver::display(){
-
     std::cout << "inside display";
+
+
 };
-
-
-//int main()
-//{
-//    Map map = MapLoader::loadMap("../maps/trivia.map");
-//    std::cout << map;
-//    return 0;
-//}

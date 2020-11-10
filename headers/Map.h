@@ -324,6 +324,8 @@ public:
     std::vector<Continent> *getContinents() const;
     void setContinents(std::vector<Continent> *continents);
 
+    void testNotify ();
+
 private:
     Graph<Territory> *territories;
     std::vector<Continent> *continents;

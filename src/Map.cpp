@@ -1,5 +1,6 @@
 #include "Map.h"
 #include "Player.h"
+#include "MapLoader.h"
 
 //============================================================================================================================================================
 // CLASS DEFINITIONS: Territory
@@ -425,4 +426,9 @@ std::ostream &operator<<(std::ostream &output, const Map &map)
         output << entry;
     }
     return output;
+}
+
+void Map::testNotify (){
+    std::cout << "inside test";
+    Notify();
 }

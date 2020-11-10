@@ -10,9 +10,46 @@
 #include <sstream>
 #include <vector>
 
-Map MapLoader::loadMap(const std::string &path)
+Map MapLoader::createMap(const std::string &path)
 {
     Map map;
+
+    // Check the path is valid
+    if (!std::filesystem::exists(path) || !std::filesystem::is_regular_file(path))
+    {
+        std::cout << "Invalid file path supplied\n";
+        return map;
+    }
+
+    std::ifstream input(path);
+    if (input.fail())
+    {
+        std::cout << path << " opening failed.\n";
+        exit(1);
+    }
+
+    std::vector<std::string> v = MapLoader::readFile(input);
+
+    // check if valid map file
+    std::cout << "Testing : " << path << "\n";
+    if (MapLoader::validateFile(v))
+        std::cout << "Testing successful \nBuilding Map\n";
+    else
+    {
+        std::cout << "Invalid Map\n";
+        return map;
+    }
+
+    // Load continents
+    MapLoader::addContinents(map, v);
+    MapLoader::addTerritories(map, v);
+    MapLoader::addBorders(map, v);
+
+    return map;
+}
+
+Map MapLoader::loadMap(Map &map, const std::string &path)
+{
 
     // Check the path is valid
     if (!std::filesystem::exists(path) || !std::filesystem::is_regular_file(path))
