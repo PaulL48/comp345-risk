@@ -9,27 +9,31 @@ MapContoller::MapContoller(MapObserver* newView, Map* newModel) {
     mapView = newView;
     mapModel = newModel;
 }
+
 void MapContoller::controlMap() {
-    while (true) {
+    while (true)
+    {
         int command;
         std::cout << "Select option and type enter)\n";
         std::cin >> command;
 
-        switch (command) {
+        switch (command)
+        {
         case 1:
             mapModel->testNotify();
             break;
         case 2:
-            break;
-        case 3:
             return;
+        case 3:
+            //std::cout << *mapModel->getContinents()->at(0).getName();
+            break;
         }
     }
 }
 
 int main()
 {
-    Map *model = new Map (MapLoader::createMap("../maps/trivia.map"));
+    Map *model = new Map (MapLoader::createMap("../maps/europe.map")); // This should prob be in the main game loop.
     MapObserver *view = new MapObserver(model);
     MapContoller *contoller = new MapContoller(view, model);
     contoller->controlMap();

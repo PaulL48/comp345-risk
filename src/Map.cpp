@@ -86,9 +86,9 @@ std::string *Territory::getName() const
 {
     return name;
 }
-void Territory::setName(std::string *name)
+void Territory::setName(std::string &name)
 {
-    Territory::name = name;
+    *Territory::name = name;
 }
 int *Territory::getX() const
 {
@@ -181,9 +181,9 @@ std::string *Continent::getName() const
 {
     return name;
 }
-void Continent::setName(std::string *name)
+void Continent::setName(std::string &name)
 {
-    Continent::name = name;
+    *Continent::name = name;
 }
 int *Continent::getArmyValue() const
 {
@@ -429,6 +429,6 @@ std::ostream &operator<<(std::ostream &output, const Map &map)
 }
 
 void Map::testNotify (){
-    std::cout << "inside test";
+    std::cout << "inside test\n";
     Notify();
 }

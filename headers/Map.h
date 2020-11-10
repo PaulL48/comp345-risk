@@ -191,7 +191,7 @@ public:
     int getId() const;
     void setId(int *id);
     std::string *getName() const;
-    void setName(std::string *name);
+    void setName(std::string &name);
     int *getX() const;
     void setX(int *x);
     int *getY() const;
@@ -272,7 +272,7 @@ public:
     // Return a past-the-end iterator to this continent
     DepthFirstIterator<Territory> end() const;
     std::string *getName() const;
-    void setName(std::string *name);
+    void setName(std::string &name);
     int *getArmyValue() const;
     void setArmyValue(int *armyValue);
     std::string *getColor() const;
