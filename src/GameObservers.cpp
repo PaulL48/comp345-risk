@@ -47,7 +47,7 @@ void MapObserver::displayMap(){
 
     if (!victory()){
         std::cout << "-----------------------------------------------------------------------------------------------------------------------\n"
-                  << std::left << std::setw(20)  << "Continents" << "Conquered Territories\n"
+                  << std::left << std::setw(20)  << "Continents" << "Territory Ownership\n"
                   << "-----------------------------------------------------------------------------------------------------------------------\n";
         for (auto &cont: *_subject->getContinents()){
             std::cout << std::left << std::setw(20) << *cont.getName();
