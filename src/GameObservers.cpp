@@ -20,7 +20,8 @@ MapObserver::~MapObserver(){
 };
 
 void MapObserver::Update(){
-    display();
+    displayMap();
+    displayPlayers()
 };
 
 bool MapObserver::victory(){
@@ -42,7 +43,7 @@ bool MapObserver::victory(){
     return true;
 };
 
-void MapObserver::display(){
+void MapObserver::displayMap(){
 
     if (!victory()){
         std::cout << "-----------------------------------------------------------------------------------------------------------------------\n"
@@ -59,7 +60,31 @@ void MapObserver::display(){
             std::cout << "\n";
         }
         std::cout << "-----------------------------------------------------------------------------------------------------------------------\n";
+
     }
+
+
+};
+
+void MapObserver::displayPlayers(){
+
+//    if (!victory()){
+//        std::cout << "-----------------------------------------------------------------------------------------------------------------------\n"
+//                  << std::left << std::setw(20)  << "Players" << "Percentage of world conquered\n"
+//                  << "-----------------------------------------------------------------------------------------------------------------------\n";
+//        for (auto &player: getPlayerList()){
+//            std::cout << std::left << std::setw(20) << *player.getName();
+//            for (auto &terr: cont.getTerritories()){
+//                if (terr.getOwnedBy() == nullptr)
+//                    std::cout << std::setw(15) << "[Neutral]";
+//                else
+//                    std::cout << std::setw(15) << "[" << terr.getOwnedBy()->getPlayerName() <<"]";
+//            }
+//            std::cout << "\n";
+//        }
+//        std::cout << "-----------------------------------------------------------------------------------------------------------------------\n";
+//
+//    }
 
 
 };

@@ -13,7 +13,8 @@ public:
     MapObserver(Map* s);
     ~MapObserver();
     void Update();
-    void display();
+    void displayMap();
+    void displayPlayers();
     bool victory();
 private:
     Map *_subject;
