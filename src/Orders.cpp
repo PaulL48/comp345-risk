@@ -467,15 +467,17 @@ Airlift::~Airlift()
 
 bool Airlift::validate(const Player* const player, const Player* const, const Territory* const targetTerritory, const Territory* const sourceTerritory)
 {
-   return ((&(targetTerritory->getOwner()) == &*player) && (&(sourceTerritory->getOwner()) == &*player))? true : false;
+   return ((&(targetTerritory->getOwner()) == &*player) || (&(sourceTerritory->getOwner()) == &*player))? true : false;
 }
 
 void Airlift::execute(Player* player, int numberOfArmies, Territory* targetTerritory, Territory* sourceTerritory){
     this->execute(player, numberOfArmies, targetTerritory, sourceTerritory, nullptr);
 }
 
-void Airlift::execute(Player* player, int, Territory* targetTerritory, Territory* sourceTerritory, Player*)
+void Airlift::execute(Player* player, int numberOfArmies, Territory* targetTerritory, Territory* sourceTerritory, Player*)
 {
+    std::cout << numberOfArmies << std::endl; // just here to not have the  unused parameter warning thrown
+
     if(this->validate(player, nullptr, targetTerritory, sourceTerritory)){
         // @todo
         this->setExecutedStatus(true);
