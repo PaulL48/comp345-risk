@@ -11,8 +11,7 @@ Territory::Territory() :
     x(new int(0)),
     y(new int(0)),
     occupyingArmies(new int(0)),
-    ownedBy(nullptr),
-    doNotAttack(new bool(false))
+    ownedBy(nullptr)
 {
 }
 
@@ -22,8 +21,7 @@ Territory::Territory(int id, const std::string &name, int numberOfTerritories, i
     x(new int(x)),
     y(new int(y)),
     occupyingArmies(new int(numberOfTerritories)),
-    ownedBy(&player),
-    doNotAttack(new bool(false))
+    ownedBy(&player)
 {
 }
 
@@ -33,8 +31,7 @@ Territory::Territory(const Territory &territory) :
     x(new int(*territory.x)),
     y(new int(*territory.y)),
     occupyingArmies(new int(*territory.occupyingArmies)),
-    ownedBy(territory.ownedBy),
-    doNotAttack(territory.doNotAttack)
+    ownedBy(territory.ownedBy)
 {
 }
 
@@ -46,7 +43,6 @@ Territory::~Territory()
     delete this->x;
     delete this->y;
     delete this->occupyingArmies;
-    delete this->doNotAttack;
 }
 
 Territory &Territory::operator=(const Territory &territory)
@@ -62,7 +58,6 @@ Territory &Territory::operator=(const Territory &territory)
     *this->y = *territory.y;
     *this->occupyingArmies = *territory.occupyingArmies;
     this->ownedBy = territory.ownedBy;
-    this->doNotAttack = territory.doNotAttack;
     return *this;
 }
 
@@ -102,15 +97,6 @@ void Territory::setNumberOfOccupyingArmies(int newNumberOfArmies){
 int Territory::getNumberOfOccupyingArmies()
 {
     return *occupyingArmies;
-}
-
-void Territory::setDoNotAttack(bool status){
-    *(this->doNotAttack ) = status;
-}
-
-bool& Territory::getDoNotAttack() const
-{
-    return *doNotAttack;
 }
 
 std::ostream &operator<<(std::ostream &output, const Territory &territory)

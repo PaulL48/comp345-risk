@@ -16,6 +16,8 @@ class Player{
         std::vector<Territory>* territoriesDefend;
         Hand* cards;
         OrdersList* orders;
+        std::vector<Player*>* negotiators; // the negotiate will set this value to true when a valid negotiate order is executed for territories involved in the negotiation 
+    
     public:
         Player(const std::string& playerName,const std::vector<Territory>& territoriesAttack, const std::vector<Territory>& territoriesDefend, const Hand& cards, const OrdersList& orders);
         Player(const Player& player);
@@ -29,6 +31,7 @@ class Player{
         OrdersList& getOrders();
         std::string& getPlayerName();
         void issueOrder();
-
+        void addToNegotiatorsList(Player* player) const;
+        bool isNegotiator(const Player* player) const;
 };
 #endif

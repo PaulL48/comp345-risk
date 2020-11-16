@@ -71,7 +71,7 @@ public:
     const std::string &getEffect();  // returns effect string by const reference
     const bool &getExecutedStatus(); // returns executed status bool by const reference
     void setExecutedStatus(bool status); // sets executed status
-    friend std::ostream &operator<<(std::ostream &out,
+    friend std::ostream& operator<<(std::ostream &out,
                                     const Order &order); // stream insertion operator
     virtual Order *clone() const = 0; // clones an Order object and returns Order
                                       // pointer, virtual method

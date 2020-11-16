@@ -88,7 +88,7 @@ int main()
     Negotiate negotiate;
     std::vector<Territory> attack({*t21, *t22});
     Player *p3 = new Player(std::string("Player 2"), attack, std::vector<Territory>(), Hand(), OrdersList());
-    //Territory *t3 = new Territory(4, "Territory 4", 10, 1, 2, *p3);
+    Territory *t31 = new Territory(4, "Territory 4", 10, 1, 2, *p3);
 
     
     cout << "Executing INVALID negotiate order" << endl;
@@ -96,8 +96,10 @@ int main()
 
     cout << "Executing VALID negotiate order" << endl;
     negotiate.execute(p2, p3);
+    // p2->addToNegotiatorsList(*p3);
     bomb.execute(p3, t21);
     bomb.execute(p3, &((p3->toAttack())[1])); // attacklist[0] points to t2
+    bomb.execute(p2, t31);
 
     delete p1;
     delete p2;

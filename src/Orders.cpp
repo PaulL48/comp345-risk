@@ -275,7 +275,7 @@ bool Advance::validate(const Player* const player, const Player* const, const Te
 {
    if(&(sourceTerritory->getOwner()) == &*player){
        if(&(targetTerritory->getOwner()) != &*player){
-           if(targetTerritory->getDoNotAttack()){
+           if(player->isNegotiator(&(targetTerritory->getOwner()))){
                return false;
            }
        }
@@ -361,7 +361,7 @@ Bomb::~Bomb()
 
 bool Bomb::validate(const Player* const player, const Player* const, const Territory* const targetTerritory, const Territory* const)
 {
-    if(&(targetTerritory->getOwner()) == &*player || (targetTerritory->getDoNotAttack())){
+    if(&(targetTerritory->getOwner()) == &*player || (player->isNegotiator(&(targetTerritory->getOwner())))){
         return false;
     }
 
@@ -527,23 +527,8 @@ void Negotiate::execute(Player* player, Player* enemyPlayer)
 void Negotiate::execute(Player* player, int, Territory*, Territory*, Player* enemyPlayer)
 {
     if(this->validate(player, enemyPlayer, nullptr, nullptr)){
-        vector<Territory> *playerTerritoriesToAtttack = &(player->toAttack());
-        vector<Territory> *enemyTerritoriesToAtttack = &(player->toAttack());
-        for (auto it = playerTerritoriesToAtttack->begin(); it != playerTerritoriesToAtttack->end(); ++it)
-        {
-            if (&(it->getOwner()) == &*enemyPlayer)
-            {
-                it->setDoNotAttack(true);
-            }
-        }
-
-        for (auto it = enemyTerritoriesToAtttack->begin(); it != enemyTerritoriesToAtttack->end(); ++it)
-        {
-            if (&(it->getOwner()) == &*player)
-            {
-                it->setDoNotAttack(true);
-            }
-        }
+        player->addToNegotiatorsList(enemyPlayer);
+        enemyPlayer->addToNegotiatorsList(player);
         this->setExecutedStatus(true);
     }
     else{
