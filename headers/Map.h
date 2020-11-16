@@ -323,8 +323,7 @@ public:
     void setTerritories(Graph<Territory> *territories);
     std::vector<Continent> *getContinents() const;
     void setContinents(std::vector<Continent> *continents);
-
-    void testNotify ();
+    void setTerritoryOwner(const Territory& territory, Player *player);
 
 private:
     Graph<Territory> *territories;

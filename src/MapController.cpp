@@ -5,6 +5,8 @@
 #include "MapController.h"
 #include <MapLoader.h>
 
+// THIS IS A TEST FILE IT SHOULD BE DELETED BEFORE SUBMISSION //
+
 MapContoller::MapContoller(MapObserver* newView, Map* newModel) {
     mapView = newView;
     mapModel = newModel;

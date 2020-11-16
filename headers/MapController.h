@@ -7,6 +7,8 @@
 
 #include "GameObservers.h"
 
+// THIS IS A TEST FILE IT SHOULD BE DELETED BEFORE SUBMISSION //
+
 class MapContoller {
 private:
     MapObserver *mapView;

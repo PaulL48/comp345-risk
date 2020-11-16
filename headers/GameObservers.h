@@ -5,8 +5,10 @@
 #ifndef COMP345_RISK_GAMEOBSERVERS_H
 #define COMP345_RISK_GAMEOBSERVERS_H
 
-#include "Observer.h"
 #include "Map.h"
+#include "Observer.h"
+#include <set>
+//#include "GameEngine.h"
 
 class MapObserver : public Observer {
 public:
@@ -16,9 +18,10 @@ public:
     void displayMap();
     void displayPlayers();
     bool victory();
+    std::set<std::string> getPlayerList();
 private:
     Map *_subject;
-    const std::string congradulations =
+    const std::string congratulations =
         " .d8888b.                                              888             888          888    d8b                            \n"
         "d88P  Y88b                                             888             888          888    Y8P                            \n"
         "888    888                                             888             888          888                                   \n"
@@ -35,5 +38,14 @@ private:
 
 };
 
+class PhaseObserver : public Observer {
+public:
+    PhaseObserver(GameEngine* s);
+    ~PhaseObserver();
+    void Update();
+    void displayPhase();
+private:
+    GameEngine *_subject;
+};
 
 #endif //COMP345_RISK_GAMEOBSERVERS_H

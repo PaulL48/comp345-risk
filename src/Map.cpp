@@ -428,7 +428,12 @@ std::ostream &operator<<(std::ostream &output, const Map &map)
     return output;
 }
 
-void Map::testNotify (){
-    std::cout << "inside test\n";
-    Notify();
+void Map::setTerritoryOwner(const Territory &territory, Player *player)
+{
+    for (Territory currentTerritory: *this->territories){
+        if (currentTerritory == territory){
+            currentTerritory.setOwnedBy(player);
+            Notify();
+        }
+    }
 }
