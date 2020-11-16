@@ -78,8 +78,8 @@ void MapObserver::displayMap(){
 
 void MapObserver::displayPlayers(){
     std::set<std::string> playerSet = getPlayerList();
-    int ownedCount;
-    int count;
+    double ownedCount;
+    double count;
 
     if (!victory()){
         std::cout << "-----------------------------------------------------------------------------------------------------------------------\n"
@@ -100,7 +100,7 @@ void MapObserver::displayPlayers(){
                     count++;
                 }
             }
-            std::cout << std::setw(10) << ownedCount/count;
+            std::cout << std::setw(15) << std::fixed << std::setprecision(3) << ownedCount/count << '%';
             std::cout << "\n";
         }
         std::cout << "-----------------------------------------------------------------------------------------------------------------------\n";
