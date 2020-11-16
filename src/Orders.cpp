@@ -1,5 +1,8 @@
 #include "Orders.h"
 #include <algorithm>
+#include <random>
+#include <functional>
+#include <ctime>
 using std::ostream;
 using std::string;
 using std::vector;
@@ -288,14 +291,39 @@ void Advance::execute(Player* player, int numberOfArmies, Territory* targetTerri
 void Advance::execute( Player* player, int numberOfArmies, Territory* targetTerritory, Territory* sourceTerritory, Player*)
 {
     if(this->validate(player, nullptr, targetTerritory, sourceTerritory)){
+        sourceTerritory->setNumberOfOccupyingArmies(sourceTerritory->getNumberOfOccupyingArmies()-numberOfArmies);
         if(&(targetTerritory->getOwner()) == &*player){
-            // airlift from player's source territory to player's target territory
-            sourceTerritory->setNumberOfOccupyingArmies(sourceTerritory->getNumberOfOccupyingArmies()-numberOfArmies);
+            /*  Target territory belongs to player -> move from source to target */  
             targetTerritory->setNumberOfOccupyingArmies(targetTerritory->getNumberOfOccupyingArmies()+numberOfArmies);
         }
         else{
-            // @todo
-            //advance to enemy territory
+            /* Target territory belongs to enemy -> Attack */ 
+            std::default_random_engine generator(static_cast<unsigned int>(time(0)));
+            std::uniform_int_distribution<int> distribution(1,100);
+            auto killProbability = std::bind( distribution, generator );
+            int enemyTerritoryArmyUnits = targetTerritory->getNumberOfOccupyingArmies();
+
+            while(numberOfArmies != 0 && enemyTerritoryArmyUnits != 0){
+                // player attacks
+                // if kill probability <= 60, one defending army reduced
+                if(killProbability() <= 60){
+                    --enemyTerritoryArmyUnits;                                                
+                }
+
+                // enemy attacks
+                // if kill probability <= 70, one attacking army reduced
+                if(killProbability() <= 70){
+                    --numberOfArmies;
+                }
+            } 
+
+            if(numberOfArmies != 0){
+                targetTerritory->setOwner(*player);
+                targetTerritory->setNumberOfOccupyingArmies(numberOfArmies);
+            }
+            else{
+                targetTerritory->setNumberOfOccupyingArmies(enemyTerritoryArmyUnits);
+            }
         }
         this->setExecutedStatus(true);
     }
@@ -446,7 +474,7 @@ void Airlift::execute(Player* player, int numberOfArmies, Territory* targetTerri
     this->execute(player, numberOfArmies, targetTerritory, sourceTerritory, nullptr);
 }
 
-void Airlift::execute(Player* player, int numberOfArmies, Territory* targetTerritory, Territory* sourceTerritory, Player*)
+void Airlift::execute(Player* player, int, Territory* targetTerritory, Territory* sourceTerritory, Player*)
 {
     if(this->validate(player, nullptr, targetTerritory, sourceTerritory)){
         // @todo
