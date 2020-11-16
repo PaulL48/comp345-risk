@@ -100,7 +100,8 @@ int main()
     bomb.execute(p3, t21);
     bomb.execute(p3, &((p3->toAttack())[1])); // attacklist[0] points to t2
     bomb.execute(p2, t31);
-
+    bomb.execute(p1, t31); // p3 can still attack t31 (previous functionality would have set a doNotAttack flag on it)
+                           // thus making it unattackable by any player.
     delete p1;
     delete p2;
     delete t11;
