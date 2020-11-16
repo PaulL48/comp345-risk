@@ -22,7 +22,7 @@ void MapContoller::controlMap() {
         switch (command)
         {
         case 1:
-            mapModel->testNotify();
+            //mapModel->testNotify();
             break;
         case 2:
             return;

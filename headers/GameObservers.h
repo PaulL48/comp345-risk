@@ -46,6 +46,9 @@ public:
     void displayPhase();
 private:
     GameEngine *_subject;
+    void displayReinforcementPhase();
+    void displayissuingOrdersPhase();
+    void displayOrdersExecutionPhase();
 };
 
 #endif //COMP345_RISK_GAMEOBSERVERS_H

@@ -124,6 +124,68 @@ void PhaseObserver::Update(){
 };
 
 void PhaseObserver::displayPhase(){
+    int currentPhase;
+    currentPhase = _subject.getCurrentPhase();
+
+    switch (currentPhase)
+    {
+    case 1:
+        displayReinforcementPhase();
+        break;
+    case 2:
+        displayissuingOrdersPhase();
+        break;
+    case 3:
+        displayOrdersExecutionPhase();
+        break;
+    }
+}
+
+void PhaseObserver::displayReinforcementPhase(){
+    Player currentPlayer;
+    currentPlayer = _subject.getCurrentPlayer();
+
+    std::cout << "-----------------------------------------------------------------------------------------------------------------------\n"
+              << std::left << std::setw(20)  << currentPlayer << " - Reinforcement Phase\n"
+              << "-----------------------------------------------------------------------------------------------------------------------\n";
+    std::cout << std::setw(10) << "Your Territories: " << _subject.getOwnedTerritories();
+    std::cout << std::setw(10) << "\nYour Continents: " << _subject.getOwnedContinents();
+    std::cout << std::setw(10) << "\nContinent Control Bonus: " << _subject.getOwnedContientControlBonus();
+    std::cout << std::setw(10) << "\nTotal Available Armies: " << _subject.getTotalAvailableArmies() << "\n";
+
+}
+
+void PhaseObserver::displayissuingOrdersPhase(){
+    Player currentPlayer;
+    currentPlayer = _subject.getCurrentPlayer();
+
+    std::cout << "-----------------------------------------------------------------------------------------------------------------------\n"
+              << std::left << std::setw(20)  << currentPlayer << " - Issuing Orders Phase\n"
+              << "-----------------------------------------------------------------------------------------------------------------------\n";
+    std::cout << std::setw(10) << "Territories to defend: ";
+    for (auto &terri: currentPlayer.toDefend()){
+        std::cout << terri.getName() << "\n";
+    }
+
+    std::cout << std::setw(10) << "\nTerritories to attack: ";
+    for (auto &terri: currentPlayer.toAttack()){
+        std::cout << terri.getName() << "\n";
+    }
+
+
+}
+
+void PhaseObserver::displayOrdersExecutionPhase(){
+    Player currentPlayer;
+    currentPlayer = _subject.getCurrentPlayer();
+
+    std::cout << "-----------------------------------------------------------------------------------------------------------------------\n"
+              << std::left << std::setw(25)  << currentPlayer << " - Orders Execution Phase\n"
+              << "-----------------------------------------------------------------------------------------------------------------------\n";
+    std::cout << std::setw(10) << "\nYour orders: ";
+    for (auto order: currentPlayer.getOrders()){
+        std::cout << order.getName() << "\n";
+    }
 
 }
 
