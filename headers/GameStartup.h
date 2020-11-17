@@ -15,8 +15,8 @@ class GameStartup{
         Map* map;
         std::vector<int>* orderPlayers;
         int getNumberOfArmies(int numPlayer);
-        std::vector<Player>& intializePlayers(int numArmies);
-        std::vector<int>& intitializeOrderPlayers();
+        std::vector<Player>& intializePlayers(const int numArmies);
+        std::vector<int>& intitializeOrderPlayers(const int numPlayers);
         
         
 
