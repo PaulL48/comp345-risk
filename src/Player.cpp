@@ -12,12 +12,13 @@
 Player::Player(const std::string &playerName,
                const std::vector<Territory> &territoriesAttack,
                const std::vector<Territory> &territoriesDefend, const Hand &cards,
-               const OrdersList &orders) :
+               const OrdersList &orders,const int& numArmies) :
     playerName(new std::string(playerName)),
     territoriesAttack(new std::vector<Territory>(territoriesAttack)),
     territoriesDefend(new std::vector<Territory>(territoriesDefend)),
     cards(new Hand(cards)),
-    orders(new OrdersList(orders))
+    orders(new OrdersList(orders)),
+    numArmies(int(numArmies))
 {
 }
 
@@ -26,7 +27,8 @@ Player::Player() :
     territoriesAttack(new std::vector<Territory>),
     territoriesDefend(new std::vector<Territory>),
     cards(new Hand),
-    orders(new OrdersList)
+    orders(new OrdersList),
+    numArmies(0)
 {
 }
 /**
@@ -103,6 +105,12 @@ std::string &Player::getPlayerName()
 {
     return *playerName;
 }
+
+bool Player::operator==(const Player& player) const
+{
+    return this->playerName == player.playerName;
+}
+
 /**
  * This is the stream insertion operator
  * */
