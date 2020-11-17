@@ -13,13 +13,16 @@ class Player{
         std::string* playerName;
         std::vector<Territory>* territoriesAttack;
         std::vector<Territory>* territoriesDefend;
+        int numArmies;
         Hand* cards;
         OrdersList* orders;
     public:
-        Player(const std::string& playerName,const std::vector<Territory>& territoriesAttack, const std::vector<Territory>& territoriesDefend, const Hand& cards, const OrdersList& orders);
+        Player(const std::string& playerName,const std::vector<Territory>& territoriesAttack, const std::vector<Territory>& 
+        territoriesDefend, const Hand& cards, const OrdersList& orders, const int& numArmies);
         Player(const Player& player);
         Player();
         Player& operator= (const Player& player);
+        bool operator==(const Player& player) const;
         ~Player();
         friend std::ostream& operator<<( std::ostream &output, const Player& player);
         std::vector<Territory>& toAttack();
