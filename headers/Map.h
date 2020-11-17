@@ -106,6 +106,9 @@ private:
     const AdjacencyList<T> *adjacencyList;
 };
 
+
+
+
 //============================================================================================================================================================
 // TEMPLATE CLASS DECLARATION: Graph
 //============================================================================================================================================================
@@ -147,6 +150,19 @@ public:
     void merge(const T &vertex1, const T &vertex2);
 
     std::size_t size() const;
+    template <typename T>
+    const std::unordered_set<T>* Graph::getNeighbors(const T& vertex) const
+    {
+        for (const auto &[currentVertex, neighbors] : *this->adjacencyList)
+        {
+            if (currentVertex == vertex)
+            {
+                return &neighbors;
+            }
+        }
+        return nullptr;
+    }
+
 
     // Return iterator to the start of the container
     DepthFirstIterator<T> begin() const;
@@ -189,9 +205,12 @@ public:
 
     int getId() const;
 
+    void setPlayer(const Player &player);
+    const Player& Territory::getOwningPlayer() const;
     // Adding std::hash is necessary to allow Territory to be a key of an
     // associative container
     friend class std::hash<Territory>;
+    
 
 private:
     int *id;
@@ -291,6 +310,11 @@ public:
 
     // Validate the map and return the state of validation
     MapState validate() const;
+
+    Graph<Territory>& getGraph();
+    std::vector<Territory> getPlayersTerritories(const Player& player);
+    const std::unordered_set<Territory>* getNeighbors(const Territory& t);
+    std::vector<Continent>& getContinents();
 
     std::string getErrorString(MapState mapState) const;
 
