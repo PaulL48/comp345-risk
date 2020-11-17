@@ -45,6 +45,14 @@ Territory::~Territory()
     delete this->occupyingArmies;
 }
 
+void Territory::setPlayer(const Player &player){
+    *this->ownedBy = player;
+}
+const Player& Territory::getOwningPlayer() const
+{
+    return *this->ownedBy;
+}
+
 Territory &Territory::operator=(const Territory &territory)
 {
     if (&territory == this)
@@ -198,7 +206,10 @@ Map &Map::operator=(const Map &map)
     *this->continents = *map.continents;
     return *this;
 }
-
+const std::unordered_set<Territory>* Map::getNeighbors(const Territory& t)
+{
+    return this->territories->getNeighbors(t);
+}
 MapState Map::validate() const
 {
     if (!this->territories->isConnected())
@@ -268,6 +279,16 @@ MapState Map::validate() const
 
     return MapState::VALID;
 }
+
+Graph<Territory>& Map::getGraph(){
+    return *this->territories;
+}
+
+std::vector<Continent>& Map::getContinents(){
+    return *this->continents;
+}
+
+
 
 std::string Map::getErrorString(MapState mapState) const
 {
