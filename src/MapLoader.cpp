@@ -194,7 +194,9 @@ std::vector<std::string> MapLoader::readFile(std::ifstream &file)
     std::string line;
     while (std::getline(file, line))
     {
-        lines.push_back(line + "\n");
+        if (line.length() <= 1)
+            continue;
+        lines.push_back(line);
     }
     return lines;
 }

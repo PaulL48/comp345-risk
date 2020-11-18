@@ -144,6 +144,8 @@ public:
     // Remove the vertex and all edges to it from the graph
     void erase(const T &vertex);
 
+    void update(const T &vertex, const T &replace);
+
     void merge(const T &vertex1, const T &vertex2);
 
     std::size_t size() const;
@@ -159,7 +161,12 @@ public:
     template <typename F>
     const T *findIf(F predicate) const;
 
+    template <typename F>
+    T *mutableFindIf(F predicate);
+
     std::unordered_set<T> getVertices() const;
+
+    //std::unordered_set<T> getNeighbors(const T& vertex);
 
 private:
     // Owning pointer to adjacency list
@@ -188,6 +195,12 @@ public:
     bool operator!=(const Territory &territory) const;
 
     int getId() const;
+    const Player& getOwningPlayer() const;
+    void setOwningPlayer(Player& player);
+
+    int getOccupyingArmies() const;
+    const std::string& getName() const;
+
 
     // Adding std::hash is necessary to allow Territory to be a key of an
     // associative container
@@ -260,6 +273,13 @@ public:
     // Return a past-the-end iterator to this continent
     DepthFirstIterator<Territory> end() const;
 
+    int getBonusArmyValue() const;
+
+    void setTerritoryOwnerByName(Player& player, const std::string& territoryName);
+
+    void updateTerritory(const Territory& current, const Territory& replacement);
+
+
 private:
     std::string *name;
     int *armyValue;
@@ -300,6 +320,14 @@ public:
 
     // Connect territories on this map
     void connectTerritories(int territoryId1, int territoryId2);
+
+    std::vector<Territory> getPlayersTerritories(const Player& player) const;
+    std::vector<Continent> getPlayersContinents(const Player& player) const;
+    int getPlayersContinentBonus(const Player& player);
+
+    void setTerritoryOwnerByName(Player& player, const std::string& territoryName);
+
+    void updateTerritory(const Territory& current, const Territory& replacement);
 
 private:
     Graph<Territory> *territories;
@@ -703,6 +731,30 @@ void Graph<T>::insert(const T &vertex)
 }
 
 template <typename T>
+void Graph<T>::update(const T &vertex, const T &replace)
+{
+    if (vertex != replace || this->adjacencyList->count(vertex) == 0)
+    {
+        return; // The update should not change either the output hash or the equality of a vertex
+    }
+
+    // Search all neighbors and replace the vertex
+    for (auto &[vertexKey, neighbors] : *this->adjacencyList)
+    {
+        if (neighbors.count(vertex) != 0)
+        {
+            neighbors.erase(vertex);
+            neighbors.insert(replace);
+        }
+    }
+
+    // Replace the original vertex
+    NeighborList<T> temp = this->adjacencyList->at(vertex);
+    this->adjacencyList->erase(vertex);
+    this->adjacencyList->insert(std::make_pair(replace, temp));
+}
+
+template <typename T>
 void Graph<T>::erase(const T &vertex)
 {
     // Remove the vertex if it exists
@@ -795,9 +847,37 @@ const T *Graph<T>::findIf(F predicate) const
 }
 
 template <typename T>
+template <typename F>
+T *Graph<T>::mutableFindIf(F predicate)
+{
+    for (auto &&[vertex, neighbors] : *this->adjacencyList)
+    {
+        if (predicate(vertex))
+        {
+            return &vertex;
+        }
+    }
+
+    return nullptr;
+}
+
+template <typename T>
 std::unordered_set<T> Graph<T>::getVertices() const
 {
     return SetUtilities::getKeys(*this->adjacencyList);
 }
+
+// template <typename T>
+// const std::unordered_set<T>* Graph<T>::getNeighbors(const T& vertex) const
+// {
+//     for (const auto &[currentVertex, neighbors] : *this->adjacencyList)
+//     {
+//         if (currentVertex == vertex)
+//         {
+//             return &neighbors;
+//         }
+//     }
+//     return nullptr;
+// }
 
 #endif

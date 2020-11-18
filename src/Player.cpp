@@ -6,6 +6,16 @@
 #include <string>
 #include <vector>
 
+Player::Player(const std::string& name) : 
+    playerName(new std::string(name)),     
+    territoriesAttack(new std::vector<Territory>()),
+    territoriesDefend(new std::vector<Territory>()),
+    cards(new Hand()),
+    orders(new OrdersList()),
+    conqueredTerritory(new bool(false))
+{
+}
+
 /**
  * This is the main constructor for the Player Class.
  * */
@@ -17,7 +27,8 @@ Player::Player(const std::string &playerName,
     territoriesAttack(new std::vector<Territory>(territoriesAttack)),
     territoriesDefend(new std::vector<Territory>(territoriesDefend)),
     cards(new Hand(cards)),
-    orders(new OrdersList(orders))
+    orders(new OrdersList(orders)),
+    conqueredTerritory(new bool(false))
 {
 }
 
@@ -26,22 +37,54 @@ Player::Player() :
     territoriesAttack(new std::vector<Territory>),
     territoriesDefend(new std::vector<Territory>),
     cards(new Hand),
-    orders(new OrdersList)
+    orders(new OrdersList),
+    conqueredTerritory(new bool(false))
 {
 }
+
+void playerAddDeployOrder(Player& player, const Map& map)
+{
+    // Switch to toDefend
+    std::size_t choice = MenuUtilities::getValidatedNumericalChoice("Choose a territory to reinforce", map.getPlayersTerritories(player));
+
+    // Create the deploy order
+    // Preload the data payload
+
+}
+
+void playerDeleteOrder(Player& player)
+{
+    std::size_t choice = MenuUtilities::getValidatedNumericalChoice("Choose an order to delete: ", player.getOrders().getList());
+
+}
+
 /**
  * This is the issueOrder method.
  * This method creates an Order and adds it to the players orders vector.
  * */
-void Player::issueOrder()
+void Player::issueOrder(const Map& map)
 {
-    /**
-     * As told by the teacher in class, she said it was ok to just create any type of
-     * order for the meantime as their isn't a clear explanation in the assignment
-     * concerning this part
-     * */
-    Bomb order;
-    orders->addToList(order);
+    // Issue deploy orders until all reinforcements are deployed
+    while (this->getReinforcementsPendingDeployment() < *this->reinforcementPool)
+    {
+        std::cout << "Issue deployment orders to distribute your reinforcements" << std::endl;
+        std::cout << "Current orders are:" << std::endl;
+        std::cout << this->orders << std::endl;
+
+        MenuUtilities::executeMenuAction(
+            "Actions: ",
+            std::vector<std::string>{"Issue deploy order", "Delete deploy order"},
+            std::vector<std::function<void(void)>>{std::bind(&Player::specifyDeploymentOrder, *this, map), std::bind(playerDeleteOrder, *this)}
+        );
+    }
+
+    // Issue attack and defense orders
+    // OR at the same time play a card
+    bool stopOrders = false;
+    while (!stopOrders)
+    {
+        MenuUtilities::getValidatedNumericalChoiceWithExit("")
+    }
 }
 
 Player::~Player()
@@ -79,6 +122,16 @@ Player &Player::operator=(const Player &player)
     *this->cards = *player.cards;
     *this->orders = *player.orders;
     return *this;
+}
+
+bool Player::operator==(const Player& player) const
+{
+    return *this->playerName == *player.playerName;
+}
+
+bool Player::operator!=(const Player& player) const
+{
+    return !(*this == player);
 }
 
 std::vector<Territory> &Player::toAttack()
@@ -122,4 +175,25 @@ std::ostream &operator<<(std::ostream &output, const Player &p)
     output << "Cards : " << *p.cards;
     output << ")";
     return output;
+}
+
+void Player::addArmies(int add)
+{
+    // stub
+    add++;
+}
+
+int Player::getReinforcementPool() const
+{
+    return 10;
+}
+
+void Player::setConqueredTerritory(bool conqueredTerritory)
+{
+    *this->conqueredTerritory = conqueredTerritory;
+}
+
+bool Player::getConqueredTerritory() const
+{
+    return *this->conqueredTerritory;
 }

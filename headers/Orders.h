@@ -32,6 +32,23 @@ std::vector<T *> *clone(const std::vector<T *> &vector)
     return result;
 }
 
+class Player;
+class Territory;
+
+struct OrderDataPayload
+{
+    OrderDataPayload(); // allocate numArmies
+    ~OrderDataPayload(); // Free numArmies
+    OrderDataPayload(const OrderDataPayload& orderDataPayload);
+    // TODO: Other required methods
+
+    Player* player;
+    Player* enemyPlayer;
+    const int* numberOfArmies; // Owning pointer
+    Territory* sourceTerritory;
+    Territory* targetTerritory;
+};
+
 class Order;
 class OrdersList
 {
@@ -76,6 +93,8 @@ public:
                                       // pointer, virtual method
     int getUniqueId() const;
 
+    OrderDataPayload& getMutableDataPayload();
+
 protected:
     Order(const Order &order);            // copy constructor
     Order &operator=(const Order &order); // copy assignment operator
@@ -84,6 +103,7 @@ protected:
     std::string *description;
     std::string *effect;
     static int counter;
+    OrderDataPayload* dataPayload;
 };
 
 class Deploy : public Order
