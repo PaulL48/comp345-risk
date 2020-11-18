@@ -6,12 +6,20 @@
 #include "GameEngine.h"
 #include "Map.h"
 #include "MapLoader.h"
+#include "Cards.h"
 //#include "GameStartup.h"
 //#include "MapObserver.h"
 
 
 GameEngine::GameEngine()
 {
+    PlayerAmount amount; 
+    MapSelect maps;  
+    ControlObservers observers;
+
+    //std::vector<Player> players= &GameStartup::getPlayers();
+    //std::size_t players = players.size();   
+    //std::cout << "There are currently " << players << " in the game" << std::endl;
 }
 
 GameEngine::~GameEngine(){}
@@ -46,7 +54,6 @@ MapSelect::MapSelect()
     }
 
     std::cout << "Loading the selected map..." << std::endl; 
-    std::cout << "---------------------------------------------------------------" << std::endl;
     std::cout << std::endl;   
 }
 
@@ -68,6 +75,8 @@ PlayerAmount::PlayerAmount()
 
         std::cin >> totalPlayers; 
     }
+
+    std::cout << "---------------------------------------------------------------" << std::endl;
     std::cout << std::endl; 
 
     setPlayers(totalPlayers); 
@@ -114,20 +123,39 @@ ControlObservers::ControlObservers()
     std::cout << "---------------------------------------------------------------" << std::endl;
 
     //Need to handle observers here
-    
+
     // if(phaseObserver == 1)
     // {
     //     Map *model = new Map (MapLoader::createMap(mapNames[selectedMap-1])); 
     //     MapObserver *view = new MapObserver(model);
     //     MapContoller *contoller = new MapContoller(view, model);
     //     contoller->controlMap();
-
     //     delete view;
     //     delete model;
     //     delete contoller;
     // }
 
-    MapLoader::loadMap(mapNames[selectedMap-1]);
+    //if(statObserver == 1) 
+    //{
+    //}
+    
+    std::ifstream input(mapNames[selectedMap-1]);
+    std::vector<std::string> v = MapLoader::readFile(input);
+
+    if(MapLoader::validateFile(v))
+    {
+        MapLoader::loadMap(mapNames[selectedMap-1]);
+        Deck gameDeck;
+    }
+    else
+    {
+        std::cout << std::endl;
+        std::cout << "The selected map is invalid, please start again." << std::endl;
+    }
+    
+    std::cout << "---------------------------------------------------------------" << std::endl;
+
+    mapNames.clear();
 }
     
 ControlObservers::~ControlObservers(){}

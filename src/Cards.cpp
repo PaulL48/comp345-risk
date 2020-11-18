@@ -36,8 +36,10 @@ std::ostream &operator<<(std::ostream &out, const Card &card)
 // Deck constructor initializes a deck of 30 assorted cards
 Deck::Deck() : deck(new std::vector<Card *>())
 {
-
     std::srand(time(0));
+
+    std::cout << "Initializind the deck..." << std::endl;
+    std::cout << std::endl; 
 
     for (std::size_t i = 0; i < decksize; i++)
     {
@@ -68,7 +70,9 @@ Deck::Deck() : deck(new std::vector<Card *>())
             break;
         }
     }
+    std::cout << std::endl;
     std::cout << "**  Deck has been created  **" << std::endl;
+    std::cout << "---------------------------------------------------------------" << std::endl;
 }
 
 Deck::~Deck()
