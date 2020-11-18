@@ -26,6 +26,7 @@ class GameStartup{
         ~GameStartup();              
         void startupPhase();
         std::vector<Player>& getPlayers();
+        Map& getMap();
         std::vector<int>& getOrderPlayers();
 };
 #endif

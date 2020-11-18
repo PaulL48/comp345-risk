@@ -12,13 +12,14 @@
 Player::Player(const std::string &playerName,
                const std::vector<Territory> &territoriesAttack,
                const std::vector<Territory> &territoriesDefend, const Hand &cards,
-               const OrdersList &orders,const int& numArmies) :
+               const OrdersList &orders,const int& numArmies, const std::vector<int>& playerOrder) :
     playerName(new std::string(playerName)),
     territoriesAttack(new std::vector<Territory>(territoriesAttack)),
     territoriesDefend(new std::vector<Territory>(territoriesDefend)),
     cards(new Hand(cards)),
     orders(new OrdersList(orders)),
-    numArmies(int(numArmies))
+    numArmies(new int(numArmies)),
+    playerOrder(new std::vector<int>(playerOrder))
 {
 }
 
@@ -28,7 +29,8 @@ Player::Player() :
     territoriesDefend(new std::vector<Territory>),
     cards(new Hand),
     orders(new OrdersList),
-    numArmies(0)
+    numArmies(new int(0)),
+    playerOrder(new std::vector<int>)
 {
 }
 /**
@@ -105,7 +107,12 @@ std::string &Player::getPlayerName()
 {
     return *playerName;
 }
-
+int &Player::getNumArmies(){
+    return *numArmies;
+}
+std::vector<int>& Player::getPlayerOrder(){
+    return *playerOrder;
+}
 bool Player::operator==(const Player& player) const
 {
     return this->playerName == player.playerName;

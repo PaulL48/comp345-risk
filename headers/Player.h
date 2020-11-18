@@ -13,12 +13,13 @@ class Player{
         std::string* playerName;
         std::vector<Territory>* territoriesAttack;
         std::vector<Territory>* territoriesDefend;
-        int numArmies;
+        std::vector<int>* playerOrder; 
+        int* numArmies;
         Hand* cards;
         OrdersList* orders;
     public:
         Player(const std::string& playerName,const std::vector<Territory>& territoriesAttack, const std::vector<Territory>& 
-        territoriesDefend, const Hand& cards, const OrdersList& orders, const int& numArmies);
+        territoriesDefend, const Hand& cards, const OrdersList& orders, const int& numArmies,const std::vector<int>& playerOrder);
         Player(const Player& player);
         Player();
         Player& operator= (const Player& player);
@@ -27,10 +28,12 @@ class Player{
         friend std::ostream& operator<<( std::ostream &output, const Player& player);
         std::vector<Territory>& toAttack();
         std::vector<Territory>& toDefend();
+        std::vector<int>& getPlayerOrder();
         Hand& getCards();
         OrdersList& getOrders();
         std::string& getPlayerName();
         void issueOrder();
+        int &Player::getNumArmies();
 
 };
 #endif
