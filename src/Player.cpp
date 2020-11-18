@@ -19,7 +19,8 @@ Player::Player(const std::string &playerName,
     territoriesDefend(new std::vector<Territory>(territoriesDefend)),
     cards(new Hand(cards)),
     orders(new OrdersList(orders)),
-    negotiators(new std::vector<Player*>)
+    negotiators(new std::vector<Player*>),
+    conqueredTerritory(new bool(false))
 {
 }
 
@@ -29,7 +30,8 @@ Player::Player() :
     territoriesDefend(new std::vector<Territory>),
     cards(new Hand),
     orders(new OrdersList),
-    negotiators(new std::vector<Player*>)
+    negotiators(new std::vector<Player*>),
+    conqueredTerritory(new bool(false))
 {
 }
 /**
@@ -55,6 +57,7 @@ Player::~Player()
     delete cards;
     delete orders;
     delete negotiators;
+    delete conqueredTerritory;
 }
 
 /**
@@ -68,6 +71,7 @@ Player::Player(const Player &p)
     cards = new Hand(*p.cards);
     orders = new OrdersList(*p.orders);
     negotiators = new std::vector<Player*>(*p.negotiators);
+    conqueredTerritory = new bool(*p.conqueredTerritory);
 }
 /**
  * This is the assignment operator for the Player object
@@ -84,6 +88,7 @@ Player &Player::operator=(const Player &player)
     *this->cards = *player.cards;
     *this->orders = *player.orders;
     *this->negotiators = *player.negotiators;
+    *this->conqueredTerritory = *player.conqueredTerritory;
     return *this;
 }
 
