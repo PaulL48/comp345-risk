@@ -122,7 +122,7 @@ ControlObservers::ControlObservers()
     }
     std::cout << "---------------------------------------------------------------" << std::endl;
 
-    //Need to handle observers here
+    // ***  Handle observers here  ***
 
     // if(phaseObserver == 1)
     // {

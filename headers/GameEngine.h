@@ -5,10 +5,10 @@
 #include <vector>
 #include "Map.h"
 
-static int totalPlayers; 
+static int totalPlayers = 0; 
 static std::size_t selectedMap;
-static int phaseObserver;
-static int statObserver; 
+static int phaseObserver = 0;
+static int statObserver = 0; 
 static std::vector<std::string> mapNames; 
 
 class GameEngine
