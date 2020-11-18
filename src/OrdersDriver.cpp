@@ -67,7 +67,7 @@ int main()
     cout << "\tArmies after bombing" << t21->getNumberOfOccupyingArmies() << endl;
     cout << endl;
 
-     // Testing blockade
+    // Testing blockade
     Blockade blockade;
    
     cout << "Executing INVALID blockade order" << endl;
@@ -102,10 +102,26 @@ int main()
     bomb.execute(p2, t31);
     bomb.execute(p1, t31); // p3 can still attack t31 (previous functionality would have set a doNotAttack flag on it)
                            // thus making it unattackable by any player.
+
+    // Testing airlift
+    Airlift airlift;
+   
+    cout << "Executing INVALID airlift order" << endl;
+    airlift.execute(p1, 5, t11, t21);
+   
+    cout << "Executing VALID airlift order" << endl;
+    cout << "\tArmies source territory before airlifting" << t12->getNumberOfOccupyingArmies() << endl;
+    cout << "\tArmies target territory before airlifting" << t11->getNumberOfOccupyingArmies() << endl;
+    airlift.execute(p1, 5, t11, t12);
+    cout << "\tArmies source territory after airlifting" << t12->getNumberOfOccupyingArmies() << endl;
+    cout << "\tArmies target territory after airlifting" << t11->getNumberOfOccupyingArmies() << endl;
+
     delete p1;
     delete p2;
+    delete p3;
     delete t11;
     delete t12;
     delete t21;
     delete t22;
+    delete t31;
 }
