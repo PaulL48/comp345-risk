@@ -13,10 +13,11 @@ class Player{
         std::string* playerName;
         std::vector<Territory>* territoriesAttack;
         std::vector<Territory>* territoriesDefend;
-        std::vector<int>* playerOrder; 
-        int* numArmies;
         Hand* cards;
         OrdersList* orders;
+        int* numArmies;
+        std::vector<int>* playerOrder; 
+        
     public:
         Player(const std::string& playerName,const std::vector<Territory>& territoriesAttack, const std::vector<Territory>& 
         territoriesDefend, const Hand& cards, const OrdersList& orders, const int& numArmies,const std::vector<int>& playerOrder);

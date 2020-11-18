@@ -18,7 +18,13 @@ GameStartup::GameStartup() :
     map( new Map)
 {
 }
-
+GameStartup::~GameStartup()
+{
+    delete numPlayers;
+    delete map;
+    delete players;
+    delete orderPlayers;
+}
 Map& GameStartup::getMap(){
     return *map;
 }

@@ -9,7 +9,6 @@ int main()
         {Continent("Continent 1", 4, "yellow"), Continent("Continent 2", 5, "blue"),
          Continent("Continent 3", 6, "grey"), Continent("Continent 4", 7, "green"),
          Continent("Continent 5", 8, "magenta")});
-    GameStartup game = GameStartup();
 
     std::vector<Territory> testTerritories(
         {Territory(1, "Territory 1", 1, 2), Territory(2, "Territory 2", 3, 4),
@@ -18,6 +17,7 @@ int main()
          Territory(7, "Territory 7", 13, 14), Territory(8, "Territory 8", 15, 16),
          Territory(9, "Territory 9", 17, 18), Territory(10, "Territory 10", 19, 20)});
 
+    std::cout<< "IM HERE";
     Map map;
     for (Continent continent : testContinents)
     {
@@ -38,7 +38,7 @@ int main()
         validMap.connectTerritories(i + 1, i + 2);
     }
 
-
+    std::cout<< "IM HERE";
     GameStartup game = GameStartup(4,validMap);
     game.startupPhase();
     //for(Territory terr : game.getMap().getGraph() ){
