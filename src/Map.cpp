@@ -15,13 +15,23 @@ Territory::Territory() :
 {
 }
 
-Territory::Territory(int id, const std::string &name, int x, int y) :
+Territory::Territory(int id, const std::string &name,int x, int y) :
     id(new int(id)),
     name(new std::string(name)),
     x(new int(x)),
     y(new int(y)),
     occupyingArmies(new int(0)),
     ownedBy(nullptr)
+{
+}
+
+Territory::Territory(int id, const std::string &name, int numberOfTerritories, int x, int y, Player &player) :
+    id(new int(id)),
+    name(new std::string(name)),
+    x(new int(x)),
+    y(new int(y)),
+    occupyingArmies(new int(numberOfTerritories)),
+    ownedBy(&player)
 {
 }
 
@@ -74,6 +84,29 @@ bool Territory::operator!=(const Territory &territory) const
 int Territory::getId() const
 {
     return *this->id;
+}
+
+void Territory::setOwner(const Player& newOwner){
+    *(this->ownedBy) = newOwner; 
+}
+
+const Player& Territory::getOwner() const
+{
+    return *this->ownedBy;
+}
+
+void Territory::setNumberOfOccupyingArmies(int newNumberOfArmies){
+    if(newNumberOfArmies >= 0){
+        *(this->occupyingArmies) = newNumberOfArmies; 
+    }
+    else{
+        std::cout << "Cannot assign negative value to number of armies." << std::endl;
+    }
+}
+
+int Territory::getNumberOfOccupyingArmies()
+{
+    return *occupyingArmies;
 }
 
 std::ostream &operator<<(std::ostream &output, const Territory &territory)

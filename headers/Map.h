@@ -176,7 +176,8 @@ class Territory
 {
 public:
     Territory();                                              // Default constructor
-    Territory(int id, const std::string &name, int x, int y); // Constructor
+    Territory(int id, const std::string &name, int numberOfTerritories, int x, int y, Player &player ); // Constructor
+    Territory(int id, const std::string &name,int x, int y);
     Territory(const Territory &territory);                    // Copy constructor
     ~Territory();                                             // Destructor
     Territory &operator=(const Territory &territory);         // Copy assignment
@@ -188,6 +189,10 @@ public:
     bool operator!=(const Territory &territory) const;
 
     int getId() const;
+    void setOwner(const Player& newOwner);
+    const Player& getOwner() const;
+    void setNumberOfOccupyingArmies(int newNumberOfArmies);
+    int getNumberOfOccupyingArmies();
 
     // Adding std::hash is necessary to allow Territory to be a key of an
     // associative container

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 /**
  * This is the main constructor for the Player Class.
@@ -17,7 +18,9 @@ Player::Player(const std::string &playerName,
     territoriesAttack(new std::vector<Territory>(territoriesAttack)),
     territoriesDefend(new std::vector<Territory>(territoriesDefend)),
     cards(new Hand(cards)),
-    orders(new OrdersList(orders))
+    orders(new OrdersList(orders)),
+    negotiators(new std::vector<Player*>),
+    conqueredTerritory(new bool(false))
 {
 }
 
@@ -26,7 +29,9 @@ Player::Player() :
     territoriesAttack(new std::vector<Territory>),
     territoriesDefend(new std::vector<Territory>),
     cards(new Hand),
-    orders(new OrdersList)
+    orders(new OrdersList),
+    negotiators(new std::vector<Player*>),
+    conqueredTerritory(new bool(false))
 {
 }
 /**
@@ -51,6 +56,8 @@ Player::~Player()
     delete territoriesDefend;
     delete cards;
     delete orders;
+    delete negotiators;
+    delete conqueredTerritory;
 }
 
 /**
@@ -63,6 +70,8 @@ Player::Player(const Player &p)
     territoriesDefend = new std::vector<Territory>(*p.territoriesDefend);
     cards = new Hand(*p.cards);
     orders = new OrdersList(*p.orders);
+    negotiators = new std::vector<Player*>(*p.negotiators);
+    conqueredTerritory = new bool(*p.conqueredTerritory);
 }
 /**
  * This is the assignment operator for the Player object
@@ -78,6 +87,8 @@ Player &Player::operator=(const Player &player)
     *this->territoriesDefend = *player.territoriesDefend;
     *this->cards = *player.cards;
     *this->orders = *player.orders;
+    *this->negotiators = *player.negotiators;
+    *this->conqueredTerritory = *player.conqueredTerritory;
     return *this;
 }
 
@@ -102,6 +113,23 @@ OrdersList &Player::getOrders()
 std::string &Player::getPlayerName()
 {
     return *playerName;
+}
+
+void Player::addToNegotiatorsList(Player* player)const
+{
+    Player *ptr = player;
+    this->negotiators->push_back(ptr);
+}
+
+bool Player::isNegotiator(const Player* player) const {
+    for (auto it = (this->negotiators)->cbegin(); it != (this->negotiators)->cend(); ++it)
+    {
+        if (*it == player)
+        {
+            return true;
+        }
+    }
+    return false;
 }
 /**
  * This is the stream insertion operator
