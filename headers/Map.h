@@ -177,6 +177,7 @@ class Territory
 public:
     Territory();                                              // Default constructor
     Territory(int id, const std::string &name, int numberOfTerritories, int x, int y, Player &player ); // Constructor
+    Territory(int id, const std::string &name,int x, int y);
     Territory(const Territory &territory);                    // Copy constructor
     ~Territory();                                             // Destructor
     Territory &operator=(const Territory &territory);         // Copy assignment

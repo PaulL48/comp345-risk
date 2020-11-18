@@ -15,6 +15,16 @@ Territory::Territory() :
 {
 }
 
+Territory::Territory(int id, const std::string &name,int x, int y) :
+    id(new int(id)),
+    name(new std::string(name)),
+    x(new int(x)),
+    y(new int(y)),
+    occupyingArmies(new int(0)),
+    ownedBy(nullptr)
+{
+}
+
 Territory::Territory(int id, const std::string &name, int numberOfTerritories, int x, int y, Player &player) :
     id(new int(id)),
     name(new std::string(name)),
