@@ -347,6 +347,19 @@ void Map::connectTerritories(int territoryId1, int territoryId2)
     }
 }
 
+std::vector<Territory> Map::getPlayersTerritories(const Player& player)
+{
+    std::vector<Territory> ownedTerritories;
+    for (const auto& territory : *this->territories)
+    {
+        if (territory.getOwningPlayer() == player)
+        {
+            ownedTerritories.push_back(territory);
+        }
+    }
+    return ownedTerritories;
+}
+
 std::ostream &operator<<(std::ostream &output, const Map &map)
 {
     output << "(territories: " << *map.territories

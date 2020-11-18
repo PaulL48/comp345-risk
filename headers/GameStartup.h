@@ -10,7 +10,7 @@
 
 class GameStartup{
     private:
-        int numPlayers;
+        int* numPlayers;
         std::vector<Player>* players;
         Map* map;
         std::vector<int>* orderPlayers;

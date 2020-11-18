@@ -9,7 +9,7 @@
 
 
 GameStartup::GameStartup(const int numPlayer, const Map& map) :
-    numPlayers(numPlayer),
+    numPlayers(new int(numPlayer)),
     map( new Map(map))
 {
 }
@@ -25,7 +25,7 @@ std::vector<Player> &GameStartup::getPlayers(){
 }
 
 int GameStartup::getNumberOfArmies(int numPlayer){
-    switch(numPlayers){
+    switch(*numPlayers){
         case 2:
           return 40;
         case 3:
@@ -41,13 +41,13 @@ int GameStartup::getNumberOfArmies(int numPlayer){
 
 
 void GameStartup::startupPhase(){
-    int numArmies = getNumberOfArmies(numPlayers);
+    int numArmies = getNumberOfArmies(*numPlayers);
     *this->players = intializePlayers(numArmies);
-    *this->orderPlayers = intitializeOrderPlayers(numPlayers);
+    *this->orderPlayers = intitializeOrderPlayers(*numPlayers);
     return;
 }
 std::vector<int>& GameStartup::intitializeOrderPlayers(const int numPlayers){
-     std::vector<int>* orderPlayers = new std::vector<int>(numPlayers,10);
+     std::vector<int>* orderPlayers = new std::vector<int>(numPlayers,-1);
      std::vector<int> numTerritoriesOwned = std::vector<int>(numPlayers,0);
      for(int i = 0; i < numTerritoriesOwned.size(); i++){
          numTerritoriesOwned.push_back(i);
@@ -63,12 +63,12 @@ std::vector<int>& GameStartup::intitializeOrderPlayers(const int numPlayers){
 
 
 std::vector<Player>& GameStartup::intializePlayers(const int numArmies){
-    Graph<Territory> territories = map->getGraph();
-    std::vector<Player>* playerList  = new std::vector<Player>(numPlayers);
-    std::vector<int> numTerritoriesOwned = std::vector<int>(numPlayers,0);
+    Graph<Territory>& territories = map->getGraph();
+    std::vector<Player>* playerList  = new std::vector<Player>(*numPlayers);
+    std::vector<int> numTerritoriesOwned = std::vector<int>(*numPlayers,0);
     int territoriesLeft = territories.size();
-    int territoriesPerPlayer = territoriesLeft/numPlayers;
-    for (int i = 0; i < numPlayers; i++){
+    int territoriesPerPlayer = territoriesLeft/(*numPlayers);
+    for (int i = 0; i < *numPlayers; i++){
         std::string *playerName = new std::string("Player " + std::to_string(i + 1));
         Hand hand;
         OrdersList orderlist;
@@ -77,14 +77,14 @@ std::vector<Player>& GameStartup::intializePlayers(const int numArmies){
         Player p = Player(*playerName,*toAttack,*toDefend, hand, orderlist,numArmies);
         playerList->push_back(p);
     }
-    std::vector<int> numTerritoriesOwned = std::vector<int>(numPlayers);
+    std::vector<int> numTerritoriesOwned = std::vector<int>(*numPlayers);
     int index= 0;
     for(Territory territory: territories ){
         bool validInsert = true;
         
         while(validInsert){
-            index = (rand() % numPlayers);
-            if(territoriesLeft == 1 && territories.size() % numPlayers != 0 ){
+            index = (rand() % *numPlayers);
+            if(territoriesLeft == 1 && territories.size() % *numPlayers != 0 ){
                 territory.setPlayer(playerList->at(index));
                 validInsert= false;
                 territoriesLeft--;
@@ -99,7 +99,7 @@ std::vector<Player>& GameStartup::intializePlayers(const int numArmies){
             }
         }
     }
-    for (int i = 0; i < numPlayers; i++){
+    for (int i = 0; i < *numPlayers; i++){
         Player player = playerList->at(i);
         std::vector<Territory> ownedTerritories = map->getPlayersTerritories(player);
         for(Territory territory: ownedTerritories){
@@ -107,7 +107,7 @@ std::vector<Player>& GameStartup::intializePlayers(const int numArmies){
             for(Territory neighborTerritory : neighborTerritories){
                 if( !(neighborTerritory.getOwningPlayer() == player)){
                     player.toDefend().push_back(territory);
-                    if(!(std::find(player.toAttack().begin(), player.toAttack().end(), neighborTerritory) != player.toAttack().end())) {
+                    if((std::find(player.toAttack().begin(), player.toAttack().end(), neighborTerritory) == player.toAttack().end())) {
                          player.toAttack().push_back(neighborTerritory);
                     }
                 }
@@ -115,6 +115,5 @@ std::vector<Player>& GameStartup::intializePlayers(const int numArmies){
         }
         playerList->at(i) = player;
     }
-
     return *playerList;
  }
