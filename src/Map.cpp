@@ -206,6 +206,7 @@ Map &Map::operator=(const Map &map)
     *this->continents = *map.continents;
     return *this;
 }
+
 const std::unordered_set<Territory>* Map::getNeighbors(const Territory& t)
 {
     return this->territories->getNeighbors(t);

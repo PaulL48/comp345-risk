@@ -27,7 +27,7 @@ std::vector<Player> &GameStartup::getPlayers(){
     return *players;
 }
 
-int GameStartup::getNumberOfArmies(int numPlayer){
+int GameStartup::getNumberOfArmies(){
     switch(*numPlayers){
         case 2:
           return 40;
@@ -44,7 +44,7 @@ int GameStartup::getNumberOfArmies(int numPlayer){
 
 
 void GameStartup::startupPhase(){
-    int numArmies = getNumberOfArmies(*numPlayers);
+    int numArmies = getNumberOfArmies();
     *this->orderPlayers = intitializeOrderPlayers(*numPlayers);
     *this->players = intializePlayers(numArmies,*this->orderPlayers);
     return;
@@ -52,11 +52,11 @@ void GameStartup::startupPhase(){
 std::vector<int>& GameStartup::intitializeOrderPlayers(const int numPlayers){
      std::vector<int>* orderPlayers = new std::vector<int>(numPlayers,-1);
      std::vector<int> numTerritoriesOwner = std::vector<int>(numPlayers,0);
-     for(int i = 0; i < numTerritoriesOwner.size(); i++){
+     for(int i = 0; i < numPlayers; i++){
          numTerritoriesOwner.push_back(i);
      }
      int index= 0;
-     for(int i = 0 ; i < orderPlayers->size();i ++){
+     for(int i = 0 ; i < numPlayers;i ++){
          index = (rand() % numTerritoriesOwner.size());
          int val = numTerritoriesOwner.at(index);
          orderPlayers->at(i) = val;
@@ -81,7 +81,6 @@ std::vector<Player>& GameStartup::intializePlayers(const int numArmies, const st
         Player p = Player(*playerName,*toAttack,*toDefend, hand, orderlist,numArmies,playerOrder);
         playerList->push_back(p);
     }
-    std::vector<int> numTerritoriesOwned = std::vector<int>(*numPlayers);
     int index= 0;
     for(Territory territory: territories ){
         bool validInsert = true;

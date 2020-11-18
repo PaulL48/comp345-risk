@@ -148,22 +148,10 @@ public:
     void erase(const T &vertex);
 
     void merge(const T &vertex1, const T &vertex2);
+    const std::unordered_set<T>* getNeighbors(const T& vertex) const;
 
     std::size_t size() const;
-    template <typename T>
-    const std::unordered_set<T>* Graph::getNeighbors(const T& vertex) const
-    {
-        for (const auto &[currentVertex, neighbors] : *this->adjacencyList)
-        {
-            if (currentVertex == vertex)
-            {
-                return &neighbors;
-            }
-        }
-        return nullptr;
-    }
-
-
+   
     // Return iterator to the start of the container
     DepthFirstIterator<T> begin() const;
 
@@ -206,7 +194,7 @@ public:
     int getId() const;
 
     void setPlayer(const Player &player);
-    const Player& Territory::getOwningPlayer() const;
+    const Player& getOwningPlayer() const;
     // Adding std::hash is necessary to allow Territory to be a key of an
     // associative container
     friend class std::hash<Territory>;
@@ -784,6 +772,20 @@ void Graph<T>::merge(const T &vertex1, const T &vertex2)
     this->adjacencyList->at(vertex1).merge(this->adjacencyList->at(vertex2));
     this->erase(vertex2);
 }
+template <typename T>
+const std::unordered_set<T>* Graph<T>::getNeighbors(const T& vertex) const
+{
+        for (const auto &[currentVertex, neighbors] : *this->adjacencyList)
+        {
+            if (currentVertex == vertex)
+            {
+                return &neighbors;
+            }
+        }
+        return nullptr;
+}
+
+
 
 template <typename T>
 std::size_t Graph<T>::size() const

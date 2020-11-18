@@ -33,7 +33,7 @@ class Player{
         OrdersList& getOrders();
         std::string& getPlayerName();
         void issueOrder();
-        int &Player::getNumArmies();
+        int& getNumArmies();
 
 };
 #endif
