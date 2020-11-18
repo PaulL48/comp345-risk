@@ -5,7 +5,11 @@
 #include <vector>
 #include "Map.h"
 
-int totalPlayers; 
+static int totalPlayers; 
+static std::size_t selectedMap;
+static int phaseObserver;
+static int statObserver; 
+static std::vector<std::string> mapNames; 
 
 class GameEngine
 {
@@ -20,8 +24,7 @@ class MapSelect
 public: 
     MapSelect(); 
     ~MapSelect(); 
-    std::vector<Map *> *maps;
-    std::vector<std::string> mapNames; 
+    
 }; 
 
 class PlayerAmount
@@ -32,5 +35,13 @@ public:
     int getPlayers();
     void setPlayers(int totalPlayers); 
 };
+
+class ControlObservers
+{
+public: 
+    ControlObservers();
+    ~ControlObservers();
+
+}; 
 
 #endif

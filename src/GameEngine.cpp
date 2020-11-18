@@ -2,9 +2,12 @@
 #include <vector>
 #include <filesystem>
 #include <fstream>
+
 #include "GameEngine.h"
 #include "Map.h"
 #include "MapLoader.h"
+//#include "GameStartup.h"
+//#include "MapObserver.h"
 
 
 GameEngine::GameEngine()
@@ -15,28 +18,27 @@ GameEngine::~GameEngine(){}
 
 MapSelect::MapSelect()
 {
-    int totalMaps = mapNames.size(); 
-    int selectedMap; 
-
     for (auto &directoryEntry : std::filesystem::directory_iterator("./maps"))
     {
         std::string fileName = directoryEntry.path().string();
-        
         mapNames.push_back(fileName); 
     }
 
-    for(int i=1; i<=totalMaps; i++)
+    std::cout << "Maps Selection: " << std::endl; 
+    std::cout << std::endl;
+
+    for(std::size_t i=0; i<mapNames.size(); i++)
     {
-        std::cout << i << ") " << mapNames[i] << std::endl;    
+        std::cout << (i+1) << ") " << mapNames[i] << std::endl;    
     }
+
+    std::cout << std::endl; 
    
     std::cout << "Please enter the index number of one of the maps in the list above" << std::endl;
 
-    std::cout << "There are currently " << totalMaps << " to choose from" <<  std::endl;  
-
     std::cin >> selectedMap;
 
-    while(selectedMap < 1 || selectedMap > totalMaps)
+    while(selectedMap < 1 || selectedMap > mapNames.size())
     {
         std::cout << "Please try again, you can only chose from the list above" << std::endl; 
 
@@ -44,18 +46,17 @@ MapSelect::MapSelect()
     }
 
     std::cout << "Loading the selected map..." << std::endl; 
-
-    MapLoader::loadMap(mapNames[selectedMap]);
-
-
+    std::cout << "---------------------------------------------------------------" << std::endl;
+    std::cout << std::endl;   
 }
 
 MapSelect::~MapSelect(){}
 
-
 PlayerAmount::PlayerAmount()
 {
     int totalPlayers;
+
+    std::cout << "---------------------------------------------------------------" << std::endl;
 
     std::cout << "Please select the number of players in your game" << std::endl; 
 
@@ -67,6 +68,7 @@ PlayerAmount::PlayerAmount()
 
         std::cin >> totalPlayers; 
     }
+    std::cout << std::endl; 
 
     setPlayers(totalPlayers); 
 } 
@@ -83,8 +85,49 @@ int PlayerAmount::getPlayers()
     return totalPlayers; 
 }
 
-int main()
+ControlObservers::ControlObservers()
 {
-    PlayerAmount amount; 
-    MapSelect maps; 
+    std::cout << "---------------------------------------------------------------" << std::endl;
+    std::cout << "Please select if you want the Phase observers ON or OFF" << std::endl; 
+    std::cout << "1) Phase observers ON" << std::endl;
+    std::cout << "2) Phase observers OFF" << std::endl;
+
+    std::cin >> phaseObserver;
+
+    while(phaseObserver < 1 || phaseObserver > 2)
+    {
+        std::cout << "Please try again, you can only choose between 1) On or 2) Off" << std::endl; 
+        std::cin >> phaseObserver;
+    }
+    std::cout << "---------------------------------------------------------------" << std::endl;
+    std::cout << "Please select if you want the Game Statistic Observers ON or OFF" << std::endl; 
+    std::cout << "1) Game Statistic Observers ON" << std::endl;
+    std::cout << "2) Game Statistic Observers OFF" << std::endl;
+
+    std::cin >> statObserver;
+
+    while(statObserver < 1 || statObserver > 2)
+    {
+        std::cout << "Please try again, you can only choose between 1) On or 2) Off" << std::endl; 
+        std::cin >> statObserver;
+    }
+    std::cout << "---------------------------------------------------------------" << std::endl;
+
+    //Need to handle observers here
+    
+    // if(phaseObserver == 1)
+    // {
+    //     Map *model = new Map (MapLoader::createMap(mapNames[selectedMap-1])); 
+    //     MapObserver *view = new MapObserver(model);
+    //     MapContoller *contoller = new MapContoller(view, model);
+    //     contoller->controlMap();
+
+    //     delete view;
+    //     delete model;
+    //     delete contoller;
+    // }
+
+    MapLoader::loadMap(mapNames[selectedMap-1]);
 }
+    
+ControlObservers::~ControlObservers(){}
