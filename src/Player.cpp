@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 /**
  * This is the main constructor for the Player Class.
@@ -19,7 +20,9 @@ Player::Player(const std::string &playerName,
     cards(new Hand(cards)),
     orders(new OrdersList(orders)),
     numArmies(new int(numArmies)),
-    playerOrder(new std::vector<int>(playerOrder))
+    playerOrder(new std::vector<int>(playerOrder)),
+    negotiators(new std::vector<Player*>),
+    conqueredTerritory(new bool(false))
 {
 }
 
@@ -30,7 +33,9 @@ Player::Player() :
     cards(new Hand),
     orders(new OrdersList),
     numArmies(new int),
-    playerOrder(new std::vector<int>)
+    playerOrder(new std::vector<int>),
+    negotiators(new std::vector<Player*>),
+    conqueredTerritory(new bool(false))
 {
 }
 /**
@@ -57,6 +62,8 @@ Player::~Player()
     delete orders;
     delete numArmies;
     delete playerOrder;
+    delete negotiators;
+    delete conqueredTerritory;
 }
 
 /**
@@ -71,6 +78,8 @@ Player::Player(const Player &p)
     orders = new OrdersList(*p.orders);
     numArmies = new int(*p.numArmies);
     playerOrder = new std::vector<int>(*p.playerOrder);
+    negotiators = new std::vector<Player*>(*p.negotiators);
+    conqueredTerritory = new bool(*p.conqueredTerritory);
 }
 /**
  * This is the assignment operator for the Player object
@@ -86,6 +95,8 @@ Player &Player::operator=(const Player &player)
     *this->territoriesDefend = *player.territoriesDefend;
     *this->cards = *player.cards;
     *this->orders = *player.orders;
+    *this->negotiators = *player.negotiators;
+    *this->conqueredTerritory = *player.conqueredTerritory;
     return *this;
 }
 
@@ -111,6 +122,7 @@ std::string &Player::getPlayerName()const
 {
     return *playerName;
 }
+
 int &Player::getNumArmies() const{
     return *numArmies;
 }
@@ -120,6 +132,23 @@ std::vector<int>& Player::getPlayerOrder() const {
 bool Player::operator==(const Player& player) const
 {
     return *this->playerName == *player.playerName;
+}
+
+void Player::addToNegotiatorsList(Player* player)const
+{
+    Player *ptr = player;
+    this->negotiators->push_back(ptr);
+}
+
+bool Player::isNegotiator(const Player* player) const {
+    for (auto it = (this->negotiators)->cbegin(); it != (this->negotiators)->cend(); ++it)
+    {
+        if (*it == player)
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 /**
