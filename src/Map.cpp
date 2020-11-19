@@ -55,6 +55,14 @@ Territory::~Territory()
     delete this->occupyingArmies;
 }
 
+void Territory::setOwningPlayer(const Player &player){
+    this->ownedBy = new Player(player);
+}
+const Player* Territory::getOwningPlayer() const
+{
+    return this->ownedBy;
+}
+
 Territory &Territory::operator=(const Territory &territory)
 {
     if (&territory == this)
@@ -189,6 +197,23 @@ DepthFirstIterator<Territory> Continent::end() const
     return this->territories->end();
 }
 
+void Continent::updateTerritory(const Territory& current, const Territory& replacement)
+{
+    this->territories->update(current, replacement);
+}
+
+void Continent::setTerritoryOwner(const Territory& territory, const Player& owner)
+{
+    const Territory* t = this->territories->findIf([territory](const Territory& t){ return t == territory; });
+
+    if (t != nullptr)
+    {
+        Territory replacement = *t;
+        replacement.setOwningPlayer(owner);
+        this->updateTerritory(*t, replacement);
+    }
+}
+
 std::ostream &operator<<(std::ostream &output, const Continent &continent)
 {
     output << "( name: " << *continent.name;
@@ -232,6 +257,10 @@ Map &Map::operator=(const Map &map)
     return *this;
 }
 
+const std::unordered_set<Territory>* Map::getNeighbors(const Territory& t)
+{
+    return this->territories->getNeighbors(t);
+}
 MapState Map::validate() const
 {
     if (!this->territories->isConnected())
@@ -302,6 +331,16 @@ MapState Map::validate() const
     return MapState::VALID;
 }
 
+Graph<Territory>& Map::getGraph(){
+    return *this->territories;
+}
+
+std::vector<Continent>& Map::getContinents(){
+    return *this->continents;
+}
+
+
+
 std::string Map::getErrorString(MapState mapState) const
 {
     switch (mapState)
@@ -358,6 +397,52 @@ void Map::connectTerritories(int territoryId1, int territoryId2)
         continent.connectTerritories(*territory1, *territory2);
     }
 }
+
+std::vector<Territory> Map::getPlayersTerritories(const Player& player)
+{
+    std::vector<Territory> ownedTerritories;
+    for (const auto& territory : *this->territories)
+    {
+
+        if (territory.getOwningPlayer() != nullptr &&*territory.getOwningPlayer() == player)
+        {
+            ownedTerritories.push_back(territory);
+        }
+    }
+    return ownedTerritories;
+}
+
+void Map::updateTerritory(const Territory& current, const Territory& replacement)
+{
+    // copy the current vertex
+    Territory copy = current;
+
+    this->territories->update(copy, replacement);
+    for (auto& continent : *this->continents)
+    {
+        continent.updateTerritory(copy, replacement);
+    }
+}
+
+void Map::setTerritoryOwner(const Territory& territory, const Player& owner)
+{
+
+    const Territory* t = this->territories->findIf([territory](const Territory& t){return t == territory;});
+    Territory copy = *t;
+
+    if (t != nullptr)
+    {
+        Territory replacement = *t;
+        replacement.setOwningPlayer(owner);
+        this->updateTerritory(copy, replacement);
+    }
+    
+    for (auto& continent : *this->continents)
+    {
+        continent.setTerritoryOwner(copy, owner);
+    }
+}
+
 
 std::ostream &operator<<(std::ostream &output, const Map &map)
 {
