@@ -37,9 +37,9 @@ class Territory;
 
 struct OrderDataPayload
 {
-    OrderDataPayload(); // allocate numArmies
-    ~OrderDataPayload(); // Free numArmies
-    OrderDataPayload(const OrderDataPayload& orderDataPayload);
+    // OrderDataPayload(); // allocate numArmies
+    // ~OrderDataPayload(); // Free numArmies
+    //OrderDataPayload(const OrderDataPayload& orderDataPayload);
     // TODO: Other required methods
 
     Player* player;
@@ -89,6 +89,7 @@ public:
                                     const Order &order); // stream insertion operator
     virtual void validate() = 0;      // validates an order, virtual method
     virtual void execute() = 0;       // executes an order, virtual method
+    //virtual void execute(OrderDataPayload& dataPayload);
     virtual Order *clone() const = 0; // clones an Order object and returns Order
                                       // pointer, virtual method
     int getUniqueId() const;

@@ -15,6 +15,9 @@ namespace MenuUtilities
     const T& getValidatedMenuChoice(const std::string& headerMessage, const std::vector<T>& list);
 
     template <typename T>
+    T& getMutableValidatedMenuChoice(const std::string& headerMessage, std::vector<T>& list);
+
+    template <typename T>
     std::size_t getValidatedNumericalChoice(const std::string& headerMessage, const std::vector<T>& list);
 
     int getRangeValidatedInput(int lowerBound, int upperBound);
@@ -26,15 +29,6 @@ namespace MenuUtilities
     void executeMenuActionWithExit(const std::string& headerMessage, const std::vector<T>& list,  const std::vector<std::function<void(void)>>& actions, const std::string& exitString, bool& exit);
 
 
-}
-
-namespace GameLogic
-{
-
-}
-
-namespace GameData
-{
 }
 
 class Player{
@@ -70,7 +64,7 @@ class Player{
 
         void specifyDeploymentOrder(const Map& map);
         void specifyOrderDeletion();
-        void specifyAttackOrder();
+        void specifyAttackOrder(const Map& map);
         void specifyDefendOrder();
         void chooseCardToPlay();
 
@@ -139,7 +133,64 @@ const T& MenuUtilities::getValidatedMenuChoice(const std::string& headerMessage,
 }
 
 template <typename T>
-std::size_t getValidatedNumericalChoice(const std::string& headerMessage, const std::vector<T>& list)
+T& MenuUtilities::getMutableValidatedMenuChoice(const std::string& headerMessage, std::vector<T>& list)
+{
+    if (list.size() == 0)
+    {
+        std::exit(1); // Nothing meaningful or valid can be returned here.
+    }
+
+    bool inputInvalid = true;
+    std::size_t convertedInput;
+    while (inputInvalid)
+    {
+        if (headerMessage.size() != 0)
+        {
+            std::cout << headerMessage << std::endl;
+        }
+        
+        
+        for (std::size_t i = 0; i < list.size(); ++i)
+        {
+            std::cout << i + 1 << ") " << list.at(i) << std::endl;
+        }
+        std::cout << "Please enter a value between 1 and " << list.size() << ": ";
+
+        std::string input;
+        std::getline(std::cin, input);
+
+        if (input.empty())
+        {
+            inputInvalid= true;
+            std::cout << "No input received" << std::endl << std::endl;
+            continue;
+        }
+
+        try
+        {
+            inputInvalid = false;
+            convertedInput = std::stoull(input);
+        }
+        catch(const std::exception& e)
+        {
+            inputInvalid = true;
+            std::cout << "Invalid input" << std::endl << std::endl;
+            continue;
+        }
+
+        if (convertedInput < 1 || convertedInput > list.size())
+        {
+            inputInvalid = true;
+            std::cout << "Input out of range" << std::endl << std::endl;
+            continue;
+        }
+    }
+
+    return list.at(convertedInput - 1);
+}
+
+template <typename T>
+std::size_t MenuUtilities::getValidatedNumericalChoice(const std::string& headerMessage, const std::vector<T>& list)
 {
     if (list.size() == 0)
     {
@@ -196,7 +247,7 @@ std::size_t getValidatedNumericalChoice(const std::string& headerMessage, const 
 }
 
 template <typename T>
-void executeMenuAction(const std::string& headerMessage, const std::vector<T>& choiceList, const std::vector<std::function<void(void)>>& actions)
+void MenuUtilities::executeMenuAction(const std::string& headerMessage, const std::vector<T>& choiceList, const std::vector<std::function<void(void)>>& actions)
 {
     if (choiceList.size() == 0 || choiceList.size() != actions.size())
     {
@@ -241,7 +292,7 @@ void executeMenuAction(const std::string& headerMessage, const std::vector<T>& c
             continue;
         }
 
-        if (convertedInput < 1 || convertedInput > list.size())
+        if (convertedInput < 1 || convertedInput > choiceList.size())
         {
             inputInvalid = true;
             std::cout << "Input out of range" << std::endl << std::endl;

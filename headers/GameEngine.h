@@ -2,6 +2,8 @@
 #define GAME_ENGINE_H
 
 #include <vector>
+#include <unordered_set>
+#include <typeindex>
 #include "Player.h"
 #include "Map.h"
 #include "Cards.h"
@@ -31,7 +33,16 @@ namespace GameLogic
     bool playerIsDefeated(const Map& map, const Player& player);
 }
 
+template <typename... Types>
+void Fill(std::vector<std::type_index>& vec)
+{
+    vec.insert(vec.end(), {typeid(Types)...});
+}
 
+void addNextPhasedOrderOrNothing(std::vector<Order*>& masterList, const std::vector<Order*>& playerList, std::vector<Order*>::const_iterator& cursor, const std::vector<std::type_index>& selectedTypes);
+
+// For the given set of selected types, distribute the 
+void fillRoundRobinOrders(std::vector<Order*> masterList, const std::vector<Player>& players, const std::vector<std::type_index>& selectedTypes);
 
 class GameEngine
 {

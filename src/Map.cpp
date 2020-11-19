@@ -83,7 +83,7 @@ const Player& Territory::getOwningPlayer() const
 
 void Territory::setOwningPlayer(const Player& player)
 {
-    this->ownedBy = &player;
+    this->ownedBy = new Player(player);
 }
 
 int Territory::getOccupyingArmies() const

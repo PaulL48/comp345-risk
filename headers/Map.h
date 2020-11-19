@@ -166,6 +166,8 @@ public:
 
     std::unordered_set<T> getVertices() const;
 
+    std::unordered_set<T>* getNeighbors(const T &vertex);
+
     //std::unordered_set<T> getNeighbors(const T& vertex);
 
 private:
@@ -332,7 +334,6 @@ public:
     void updateTerritory(const Territory& current, const Territory& replacement);
 
     void setTerritoryOwner(const Territory& territory, const Player& owner);
-
 
 private:
     Graph<Territory> *territories;
@@ -871,6 +872,17 @@ std::unordered_set<T> Graph<T>::getVertices() const
 {
     return SetUtilities::getKeys(*this->adjacencyList);
 }
+
+template <typename T>
+std::unordered_set<T>* Graph<T>::getNeighbors(const T &vertex)
+{
+    if (this->adjacencyList->count(vertex) == 0)
+    {
+        return nullptr;
+    }
+    &this->adjacencyList->at(vertex);
+}
+
 
 // template <typename T>
 // const std::unordered_set<T>* Graph<T>::getNeighbors(const T& vertex) const

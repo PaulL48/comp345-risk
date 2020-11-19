@@ -42,29 +42,29 @@ Player::Player() :
 {
 }
 
-void playerAddDeployOrder(Player& player, const Map& map)
+void playerAddDeployOrder(Player&, const Map&)
 {
     // Switch to toDefend
-    std::size_t choice = MenuUtilities::getValidatedNumericalChoice("Choose a territory to reinforce", map.getPlayersTerritories(player));
+    //std::size_t choice = MenuUtilities::getValidatedNumericalChoice("Choose a territory to reinforce", map.getPlayersTerritories(player));
 
     // Create the deploy order
     // Preload the data payload
-    Deploy deploy;
+    //Deploy deploy;
     //deploy.getMutableDataPayload().targetTerritory
 
 }
 
-void Player::specifyDeploymentOrder(const Map& map)
+void Player::specifyDeploymentOrder(const Map&)
 {
     // Switch to toDefend
-    std::size_t choice = MenuUtilities::getValidatedNumericalChoice("Choose a territory to reinforce", map.getPlayersTerritories(*this));
+    //std::size_t choice = MenuUtilities::getValidatedNumericalChoice("Choose a territory to reinforce", map.getPlayersTerritories(*this));
 
     // Create the deploy order
     // Preload the data payload
-    Deploy deploy;
+    //Deploy deploy;
     //deploy.getMutableDataPayload().targetTerritory
 
-    this->orders->addToList(deploy);
+    //this->orders->addToList(deploy);
 }
 
 void Player::specifyOrderDeletion()
@@ -73,19 +73,46 @@ void Player::specifyOrderDeletion()
     this->getOrders().remove(*this->getOrders().getList().at(choice));
 }
 
-void Player::specifyAttackOrder()
+void Player::specifyAttackOrder(const Map&)
 {
     //TODO: FILL IN
+    // Present UI choices,
+    // Get input
+    // Create orders
+    // load payload
+
+    // OrderDataPayload payload;
+    // payload.player = this;
+    
+    // payload.targetTerritory = &MenuUtilities::getMutableValidatedMenuChoice("Choose a territory to attack: ", this->toAttack());
+
+    // Intersect the toDefend and targetTerritory neighbors
+    // std::vector<Territory*> intersect;
+
+    //auto& neighbors = map.
 }
 
 void Player::specifyDefendOrder()
 {
     // TODO: FILL IN
+    // Present UI choices,
+    // Get input
+    // Create orders
+    // load payload
 }
 
 void Player::chooseCardToPlay()
 {
     // TODO: FILL IN
+    // Present UI choices,
+    // Get input
+    // Create orders
+    // load payload
+}
+
+int Player::getReinforcementsPendingDeployment()
+{
+    return 1;
 }
 
 /**
@@ -117,7 +144,7 @@ void Player::issueOrder(const Map& map)
         MenuUtilities::executeMenuActionWithExit(
             "Choose a type of order to create (Or stop creating orders by entering 'q'): ", 
             std::vector<std::string>{"Attack", "Defend", "Play a Card"},
-            std::vector<std::function<void(void)>>{std::bind(&Player::specifyAttackOrder, *this), std::bind(&Player::specifyDefendOrder, *this), std::bind(&Player::chooseCardToPlay, *this)},
+            std::vector<std::function<void(void)>>{std::bind(&Player::specifyAttackOrder, *this, map), std::bind(&Player::specifyDefendOrder, *this), std::bind(&Player::chooseCardToPlay, *this)},
             exitString,
             stopOrders
         );
@@ -216,12 +243,14 @@ std::ostream &operator<<(std::ostream &output, const Player &p)
 
 void Player::addArmies(int add)
 {
+    // TODO: fill in
     // stub
     add++;
 }
 
 int Player::getReinforcementPool() const
 {
+    // TODO: Fill in
     return 10;
 }
 

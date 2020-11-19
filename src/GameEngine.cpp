@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <functional>
 #include <cmath>
+#include <typeindex>
 
 int GameLogic::territoryArmyBonus(const Map& map, const Player& player)
 {
@@ -42,6 +43,42 @@ bool GameLogic::playerIsDefeated(const Map& map, const Player& player)
     return map.getPlayersTerritories(player).size() == 0;
 }
 
+void addNextPhasedOrderOrNothing(std::vector<Order*>& masterList, const std::vector<Order*>& playerList, std::vector<Order*>::const_iterator& cursor,  const std::vector<std::type_index>& selectedTypes)
+{
+    for (; cursor != playerList.end(); ++cursor)
+    {
+        if (std::find(selectedTypes.begin(), selectedTypes.end(), std::type_index(typeid(*cursor))) != selectedTypes.end())
+        {
+            masterList.push_back(*cursor);
+            return;
+        }
+    }
+}
+
+void fillRoundRobinOrders(std::vector<Order*>& masterList, std::vector<Player>& players, const std::vector<std::type_index>& selectedTypes)
+{
+    std::vector<std::vector<Order*>::const_iterator> cursors;
+    for (auto& player : players)
+    {
+        cursors.push_back(player.getOrders().getList().begin());
+    }
+
+    bool allListsScanned = false;
+    while (!allListsScanned)
+    {
+        for (std::size_t i = 0; i < cursors.size(); ++i)
+        {
+            addNextPhasedOrderOrNothing(masterList, players.at(i).getOrders().getList(), cursors.at(i), selectedTypes);
+        }
+
+        allListsScanned = true;
+        for (std::size_t i = 0; i < cursors.size(); ++i)
+        {
+            allListsScanned &= cursors.at(i) == players.at(i).getOrders().getList().end();
+        }
+    }
+}
+
 GameEngine::GameEngine(const Map& map, const std::vector<Player>& players) : 
     map(new Map(map)), 
     players(new std::vector<Player>(players)), 
@@ -78,8 +115,33 @@ void GameEngine::issueOrdersPhase(Player& player)
 
 void GameEngine::executeOrdersPhase()
 {
-    // TODO: Fill
     *this->currentPhase = GamePhase::EXECUTE_ORDERS;
+    // TODO: Notify observer
+
+    this->players->at(0).getOrders();
+
+    std::vector<Order*> masterList;
+    std::vector<std::type_index> deployPriority;
+    Fill<Deploy>(deployPriority);
+    fillRoundRobinOrders(masterList, *this->players, deployPriority);
+
+    std::vector<std::type_index> airliftPriority;
+    Fill<Airlift>(airliftPriority);
+    fillRoundRobinOrders(masterList, *this->players, airliftPriority);
+
+    std::vector<std::type_index> blockadePriority;
+    Fill<Blockade>(blockadePriority);
+    fillRoundRobinOrders(masterList, *this->players, blockadePriority);
+
+    std::vector<std::type_index> remainingPriorities;
+    Fill<Advance, Bomb, Airlift, Negotiate>(remainingPriorities);
+    fillRoundRobinOrders(masterList, *this->players, remainingPriorities);
+
+    for (Order* order : masterList)
+    {
+        // TODO: Print some stuff so the TA sees all deploys are executed first
+        order->execute();
+    }
 }
 
 const Player& GameEngine::getCurrentPlayer() const
