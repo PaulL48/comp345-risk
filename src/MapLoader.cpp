@@ -73,8 +73,8 @@ Map MapLoader::loadMap(Map &map, const std::string &path)
         std::cout << "Testing successful \nBuilding Map\n";
     else
     {
-        std::cout << "Invalid Map\n";
-        return map;
+        std::cout << "Invalid Map, please start again.\n";
+         return map;
     }
 
     // Load continents

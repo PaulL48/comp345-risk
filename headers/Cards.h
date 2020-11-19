@@ -8,7 +8,7 @@
 
 class Deck;
 const std::size_t decksize = 30;
-
+class OrdersList;
 class Card
 {
 public:
