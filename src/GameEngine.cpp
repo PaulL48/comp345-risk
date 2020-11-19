@@ -58,7 +58,6 @@ void GameEngine::mainGameLoop()
             *this->currentPlayer = i;
             this->reinforcementPhase(this->players->at(i));
             this->issueOrdersPhase(this->players->at(i));
-            
         }
         this->executeOrdersPhase();
         cullDefeatedPlayers();
@@ -74,11 +73,12 @@ void GameEngine::reinforcementPhase(Player& player)
 void GameEngine::issueOrdersPhase(Player& player)
 {
     *this->currentPhase = GamePhase::ISSUE_ORDERS;
-    std::cout << player;
+    player.issueOrder(*this->map);
 }
 
 void GameEngine::executeOrdersPhase()
 {
+    // TODO: Fill
     *this->currentPhase = GamePhase::EXECUTE_ORDERS;
 }
 

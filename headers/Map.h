@@ -196,7 +196,7 @@ public:
 
     int getId() const;
     const Player& getOwningPlayer() const;
-    void setOwningPlayer(Player& player);
+    void setOwningPlayer(const Player& player);
 
     int getOccupyingArmies() const;
     const std::string& getName() const;
@@ -279,6 +279,8 @@ public:
 
     void updateTerritory(const Territory& current, const Territory& replacement);
 
+    void setTerritoryOwner(const Territory& territory, const Player& owner);
+
 
 private:
     std::string *name;
@@ -328,6 +330,9 @@ public:
     void setTerritoryOwnerByName(Player& player, const std::string& territoryName);
 
     void updateTerritory(const Territory& current, const Territory& replacement);
+
+    void setTerritoryOwner(const Territory& territory, const Player& owner);
+
 
 private:
     Graph<Territory> *territories;

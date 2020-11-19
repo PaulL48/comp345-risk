@@ -81,7 +81,7 @@ const Player& Territory::getOwningPlayer() const
     return *this->ownedBy;
 }
 
-void Territory::setOwningPlayer(Player& player)
+void Territory::setOwningPlayer(const Player& player)
 {
     this->ownedBy = &player;
 }
@@ -198,6 +198,18 @@ int Continent::getBonusArmyValue() const
 void Continent::updateTerritory(const Territory& current, const Territory& replacement)
 {
     this->territories->update(current, replacement);
+}
+
+void Continent::setTerritoryOwner(const Territory& territory, const Player& owner)
+{
+    const Territory* t = this->territories->findIf([territory](const Territory& t){ return t == territory; });
+
+    if (t != nullptr)
+    {
+        Territory replacement = *t;
+        replacement.setOwningPlayer(owner);
+        this->updateTerritory(*t, replacement);
+    }
 }
 
 //============================================================================================================================================================
@@ -357,8 +369,6 @@ void Map::connectTerritories(int territoryId1, int territoryId2)
 
 std::vector<Territory> Map::getPlayersTerritories(const Player& player) const
 {
-    // TODO: TEST
-
     std::vector<Territory> ownedTerritories;
     for (const auto& territory : *this->territories)
     {
@@ -416,6 +426,24 @@ void Map::updateTerritory(const Territory& current, const Territory& replacement
     for (auto& continent : *this->continents)
     {
         continent.updateTerritory(copy, replacement);
+    }
+}
+
+void Map::setTerritoryOwner(const Territory& territory, const Player& owner)
+{
+    const Territory* t = this->territories->findIf([territory](const Territory& t){return t == territory;});
+    Territory copy = *t;
+
+    if (t != nullptr)
+    {
+        Territory replacement = *t;
+        replacement.setOwningPlayer(owner);
+        this->updateTerritory(copy, replacement);
+    }
+    
+    for (auto& continent : *this->continents)
+    {
+        continent.setTerritoryOwner(copy, owner);
     }
 }
 

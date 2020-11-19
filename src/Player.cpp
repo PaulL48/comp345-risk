@@ -49,13 +49,43 @@ void playerAddDeployOrder(Player& player, const Map& map)
 
     // Create the deploy order
     // Preload the data payload
+    Deploy deploy;
+    //deploy.getMutableDataPayload().targetTerritory
 
 }
 
-void playerDeleteOrder(Player& player)
+void Player::specifyDeploymentOrder(const Map& map)
 {
-    std::size_t choice = MenuUtilities::getValidatedNumericalChoice("Choose an order to delete: ", player.getOrders().getList());
+    // Switch to toDefend
+    std::size_t choice = MenuUtilities::getValidatedNumericalChoice("Choose a territory to reinforce", map.getPlayersTerritories(*this));
 
+    // Create the deploy order
+    // Preload the data payload
+    Deploy deploy;
+    //deploy.getMutableDataPayload().targetTerritory
+
+    this->orders->addToList(deploy);
+}
+
+void Player::specifyOrderDeletion()
+{
+    std::size_t choice = MenuUtilities::getValidatedNumericalChoice("Choose an order to delete: ", this->getOrders().getList());
+    this->getOrders().remove(*this->getOrders().getList().at(choice));
+}
+
+void Player::specifyAttackOrder()
+{
+    //TODO: FILL IN
+}
+
+void Player::specifyDefendOrder()
+{
+    // TODO: FILL IN
+}
+
+void Player::chooseCardToPlay()
+{
+    // TODO: FILL IN
 }
 
 /**
@@ -67,23 +97,30 @@ void Player::issueOrder(const Map& map)
     // Issue deploy orders until all reinforcements are deployed
     while (this->getReinforcementsPendingDeployment() < *this->reinforcementPool)
     {
-        std::cout << "Issue deployment orders to distribute your reinforcements" << std::endl;
+        std::cout << "Issue deployment orders to distribute all your reinforcements" << std::endl;
         std::cout << "Current orders are:" << std::endl;
         std::cout << this->orders << std::endl;
 
         MenuUtilities::executeMenuAction(
             "Actions: ",
             std::vector<std::string>{"Issue deploy order", "Delete deploy order"},
-            std::vector<std::function<void(void)>>{std::bind(&Player::specifyDeploymentOrder, *this, map), std::bind(playerDeleteOrder, *this)}
+            std::vector<std::function<void(void)>>{std::bind(&Player::specifyDeploymentOrder, *this, map), std::bind(&Player::specifyOrderDeletion, *this)}
         );
     }
 
     // Issue attack and defense orders
     // OR at the same time play a card
     bool stopOrders = false;
+    std::string exitString = "q";
     while (!stopOrders)
     {
-        MenuUtilities::getValidatedNumericalChoiceWithExit("")
+        MenuUtilities::executeMenuActionWithExit(
+            "Choose a type of order to create (Or stop creating orders by entering 'q'): ", 
+            std::vector<std::string>{"Attack", "Defend", "Play a Card"},
+            std::vector<std::function<void(void)>>{std::bind(&Player::specifyAttackOrder, *this), std::bind(&Player::specifyDefendOrder, *this), std::bind(&Player::chooseCardToPlay, *this)},
+            exitString,
+            stopOrders
+        );
     }
 }
 

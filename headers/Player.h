@@ -23,7 +23,7 @@ namespace MenuUtilities
     void executeMenuAction(const std::string& headerMessage, const std::vector<T>& choiceList, const std::vector<std::function<void(void)>>& actions);
 
     template <typename T>
-    std::size_t executeMenuActionWithExit(const std::string& headerMessage, const std::vector<T>& list, const std::string& exitString, bool& exit);
+    void executeMenuActionWithExit(const std::string& headerMessage, const std::vector<T>& list,  const std::vector<std::function<void(void)>>& actions, const std::string& exitString, bool& exit);
 
 
 }
@@ -69,6 +69,10 @@ class Player{
         bool getConqueredTerritory() const;
 
         void specifyDeploymentOrder(const Map& map);
+        void specifyOrderDeletion();
+        void specifyAttackOrder();
+        void specifyDefendOrder();
+        void chooseCardToPlay();
 
         // Player fills their order list and plays any cards
 
@@ -249,7 +253,7 @@ void executeMenuAction(const std::string& headerMessage, const std::vector<T>& c
 }
 
 template <typename T>
-std::size_t MenuUtilities::executeMenuActionWithExit(const std::string& headerMessage, const std::vector<T>& list, const std::string& exitString, bool& exit)
+void MenuUtilities::executeMenuActionWithExit(const std::string& headerMessage, const std::vector<T>& list, const std::vector<std::function<void(void)>>& actions, const std::string& exitString, bool& exit)
 {
     if (list.size() == 0)
     {
@@ -285,7 +289,7 @@ std::size_t MenuUtilities::executeMenuActionWithExit(const std::string& headerMe
         if (input == exitString)
         {
             exit = true;
-            return -1; // This produces a very large unsigned integer
+            return; // This produces a very large unsigned integer
         }
 
         try
@@ -308,7 +312,7 @@ std::size_t MenuUtilities::executeMenuActionWithExit(const std::string& headerMe
         }
     }
 
-    return convertedInput - 1;
+    actions.at(convertedInput - 1)();
 }
 
 
