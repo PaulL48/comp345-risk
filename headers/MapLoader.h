@@ -9,7 +9,8 @@
 
 namespace MapLoader
 {
-    Map loadMap(const std::string &path);
+    Map createMap(const std::string &path);
+    Map loadMap(Map &map, const std::string &path);
     void addTerritories(Map &map, const std::vector<std::string> &v);
     void addBorders(Map &map, const std::vector<std::string> &v);
     void addContinents(Map &map, const std::vector<std::string> &v);
