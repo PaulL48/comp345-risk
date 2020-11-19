@@ -1,9 +1,11 @@
 #ifndef GAMEENGINE_H
 #define GAMEENGINE_H
 
-#include <iostream>
+#include <string>
 #include <vector>
+#include <iostream>
 #include "Map.h"
+#include "Player.h"
 
 extern int totalPlayers; 
 extern std::size_t selectedMap;
@@ -44,4 +46,25 @@ public:
 
 }; 
 
+class GameStartup{
+    private:
+        int* numPlayers;
+        std::vector<Player>* players;
+        Map* map;
+        std::vector<int>* orderPlayers;
+        int getNumberOfArmies();
+        std::vector<Player>& intializePlayers(const int numArmies);
+        std::vector<int>& intitializeOrderPlayers(const int numPlayers);
+        
+        
+
+    public:
+        GameStartup(const int numPlayer, const Map& map);                          // Constructor
+        GameStartup();
+        ~GameStartup();              
+        void startupPhase();
+        std::vector<Player>& getPlayers();
+        Map& getMap();
+        std::vector<int>& getOrderPlayers();
+};
 #endif
