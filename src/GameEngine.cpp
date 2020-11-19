@@ -11,6 +11,16 @@
 //#include "MapObserver.h"
 
 
+
+int totalPlayers = 0; 
+std::size_t selectedMap;
+int phaseObserver = 0;
+int statObserver = 0; 
+std::vector<std::string> mapNames = std::vector<std::string>(); 
+
+
+
+
 GameEngine::GameEngine()
 {
     PlayerAmount amount; 
