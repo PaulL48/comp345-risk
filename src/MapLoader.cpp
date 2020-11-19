@@ -10,7 +10,7 @@
 #include <sstream>
 #include <vector>
 
-Map MapLoader::loadMap(const std::string &path)
+Map MapLoader::createMap(const std::string &path)
 {
     Map map;
 
@@ -31,13 +31,50 @@ Map MapLoader::loadMap(const std::string &path)
     std::vector<std::string> v = MapLoader::readFile(input);
 
     // check if valid map file
-    std::cout << "Testing : " << path;
+    std::cout << "Testing : " << path << "\n";
     if (MapLoader::validateFile(v))
         std::cout << "Testing successful \nBuilding Map\n";
     else
     {
         std::cout << "Invalid Map\n";
         return map;
+    }
+
+    // Load continents
+    MapLoader::addContinents(map, v);
+    MapLoader::addTerritories(map, v);
+    MapLoader::addBorders(map, v);
+
+    return map;
+}
+
+Map MapLoader::loadMap(Map &map, const std::string &path)
+{
+
+    // Check the path is valid
+    if (!std::filesystem::exists(path) || !std::filesystem::is_regular_file(path))
+    {
+        std::cout << "Invalid file path supplied\n";
+        return map;
+    }
+
+    std::ifstream input(path);
+    if (input.fail())
+    {
+        std::cout << path << " opening failed.\n";
+        exit(1);
+    }
+
+    std::vector<std::string> v = MapLoader::readFile(input);
+
+    // check if valid map file
+    std::cout << "Testing : " << path << "\n";
+    if (MapLoader::validateFile(v))
+        std::cout << "Testing successful \nBuilding Map\n";
+    else
+    {
+        std::cout << "Invalid Map, please start again.\n";
+         return map;
     }
 
     // Load continents
@@ -55,7 +92,7 @@ Map MapLoader::loadMap(const std::string &path)
  */
 void MapLoader::addContinents(Map &map, const std::vector<std::string> &v)
 {
-    std::cout << "\nextraction continents\n";
+    std::cout << "Extraction Continents\n";
     bool flag = false;
     std::string first;
     std::string item;
@@ -71,6 +108,8 @@ void MapLoader::addContinents(Map &map, const std::vector<std::string> &v)
         line << v[i];
         line >> first;
         // if empty line or comment, skip
+
+
 
         if (v[i].length() == 0 || v[i].at(0) == ';')
             continue;
@@ -100,7 +139,7 @@ void MapLoader::addContinents(Map &map, const std::vector<std::string> &v)
  */
 void MapLoader::addTerritories(Map &map, const std::vector<std::string> &v)
 {
-    std::cout << "\nextraction territories\n";
+    std::cout << "Extraction Territories\n";
     // std::vector<Territory> territories;
     bool flag = false;
     std::string first;
@@ -149,7 +188,7 @@ void MapLoader::addTerritories(Map &map, const std::vector<std::string> &v)
  */
 void MapLoader::addBorders(Map &map, const std::vector<std::string> &v)
 {
-    std::cout << "\nconnecting territories\n";
+    std::cout << "Connecting Territories\n";
     bool flag = false;
     std::string first;
     std::string item;
@@ -208,7 +247,7 @@ std::vector<std::string> MapLoader::readFile(std::ifstream &file)
  */
 bool MapLoader::validateFile(const std::vector<std::string> &v)
 {
-    std::cout << "\nVerifing Map\n";
+    std::cout << "Verifing Map\n";
     bool continentsSwitch = false;
     bool countriesSwitch = false;
     bool bordersSwitch = false;

@@ -1,37 +1,48 @@
 #include "Map.h"
 #include "Player.h"
+#include "MapLoader.h"
 
 //============================================================================================================================================================
 // CLASS DEFINITIONS: Territory
 //============================================================================================================================================================
 
 Territory::Territory() :
-    id(new int(-1)),
-    name(new std::string()),
-    x(new int(0)),
-    y(new int(0)),
-    occupyingArmies(new int(0)),
-    ownedBy(nullptr)
+        id(new int(-1)),
+        name(new std::string()),
+        x(new int(0)),
+        y(new int(0)),
+        occupyingArmies(new int(0)),
+        ownedBy(nullptr)
 {
 }
 
 Territory::Territory(int id, const std::string &name, int x, int y) :
+        id(new int(id)),
+        name(new std::string(name)),
+        x(new int(x)),
+        y(new int(y)),
+        occupyingArmies(new int(0)),
+        ownedBy(nullptr)
+{
+}
+
+Territory::Territory(int id, const std::string &name, int numberOfTerritories, int x, int y, Player &player) :
     id(new int(id)),
     name(new std::string(name)),
     x(new int(x)),
     y(new int(y)),
-    occupyingArmies(new int(0)),
-    ownedBy(nullptr)
+    occupyingArmies(new int(numberOfTerritories)),
+    ownedBy(&player)
 {
 }
 
 Territory::Territory(const Territory &territory) :
-    id(new int(*territory.id)),
-    name(new std::string(*territory.name)),
-    x(new int(*territory.x)),
-    y(new int(*territory.y)),
-    occupyingArmies(new int(*territory.occupyingArmies)),
-    ownedBy(territory.ownedBy)
+        id(new int(*territory.id)),
+        name(new std::string(*territory.name)),
+        x(new int(*territory.x)),
+        y(new int(*territory.y)),
+        occupyingArmies(new int(*territory.occupyingArmies)),
+        ownedBy(territory.ownedBy)
 {
 }
 
@@ -43,6 +54,14 @@ Territory::~Territory()
     delete this->x;
     delete this->y;
     delete this->occupyingArmies;
+}
+
+void Territory::setOwningPlayer(const Player &player){
+    this->ownedBy = new Player(player);
+}
+const Player* Territory::getOwningPlayer() const
+{
+    return this->ownedBy;
 }
 
 Territory &Territory::operator=(const Territory &territory)
@@ -71,6 +90,11 @@ bool Territory::operator!=(const Territory &territory) const
     return !(*this == territory);
 }
 
+void Territory::setId(int *id)
+{
+    Territory::id = id;
+}
+
 int Territory::getId() const
 {
     return *this->id;
@@ -95,15 +119,78 @@ const std::string& Territory::getName() const
     return *this->name;
 }
 
+std::string *Territory::getName() const
+{
+    return name;
+}
+void Territory::setName(std::string &name)
+{
+    *Territory::name = name;
+}
+int *Territory::getX() const
+{
+    return x;
+}
+void Territory::setX(int *x)
+{
+    Territory::x = x;
+}
+int *Territory::getY() const
+{
+    return y;
+}
+void Territory::setY(int *y)
+{
+    Territory::y = y;
+}
+int *Territory::getOccupyingArmies() const
+{
+    return occupyingArmies;
+}
+void Territory::setOccupyingArmies(int *occupyingArmies)
+{
+    Territory::occupyingArmies = occupyingArmies;
+}
+Player *Territory::getOwnedBy() const
+{
+    return ownedBy;
+}
+void Territory::setOwnedBy(Player *ownedBy)
+{
+    Territory::ownedBy = ownedBy;
+}
+void Territory::setOwner(const Player& newOwner){
+    *(this->ownedBy) = newOwner; 
+}
+
+const Player& Territory::getOwner() const
+{
+    return *this->ownedBy;
+}
+
+void Territory::setNumberOfOccupyingArmies(int newNumberOfArmies){
+    if(newNumberOfArmies >= 0){
+        *(this->occupyingArmies) = newNumberOfArmies; 
+    }
+    else{
+        std::cout << "Cannot assign negative value to number of armies." << std::endl;
+    }
+}
+
+int Territory::getNumberOfOccupyingArmies()
+{
+    return *occupyingArmies;
+}
+
 std::ostream &operator<<(std::ostream &output, const Territory &territory)
 {
-    output << "(id:" << *territory.id << ", name:" << *territory.name;
+    output << "(id: " << *territory.id << ", name: " << *territory.name;
     if (territory.ownedBy != nullptr)
     {
         output << ", owning player:" << *territory.ownedBy;
         output << ", armies:" << *territory.occupyingArmies;
     }
-    output << ")";
+    output << ")\n";
     return output;
 }
 
@@ -112,18 +199,18 @@ std::ostream &operator<<(std::ostream &output, const Territory &territory)
 //============================================================================================================================================================
 
 Continent::Continent(const std::string &name, int armyValue, const std::string &color) :
-    name(new std::string(name)),
-    armyValue(new int(armyValue)),
-    color(new std::string(color)),
-    territories(new Graph<Territory>())
+        name(new std::string(name)),
+        armyValue(new int(armyValue)),
+        color(new std::string(color)),
+        territories(new Graph<Territory>())
 {
 }
 
 Continent::Continent(const Continent &continent) :
-    name(new std::string(*continent.name)),
-    armyValue(new int(*continent.armyValue)),
-    color(new std::string(*continent.color)),
-    territories(new Graph<Territory>(*continent.territories))
+        name(new std::string(*continent.name)),
+        armyValue(new int(*continent.armyValue)),
+        color(new std::string(*continent.color)),
+        territories(new Graph<Territory>(*continent.territories))
 {
 }
 
@@ -147,6 +234,35 @@ Continent &Continent::operator=(const Continent &continent)
     *this->armyValue = *continent.armyValue;
     *this->color = *continent.color;
     return *this;
+}
+
+std::string *Continent::getName() const
+{
+    return name;
+}
+void Continent::setName(std::string &name)
+{
+    *Continent::name = name;
+}
+int *Continent::getArmyValue() const
+{
+    return armyValue;
+}
+void Continent::setArmyValue(int *armyValue)
+{
+    Continent::armyValue = armyValue;
+}
+std::string *Continent::getColor() const
+{
+    return color;
+}
+void Continent::setColor(std::string *color)
+{
+    Continent::color = color;
+}
+void Continent::setTerritories(Graph<Territory> *territories)
+{
+    Continent::territories = territories;
 }
 
 bool Continent::isValidContinent(const Graph<Territory> &territories) const
@@ -175,13 +291,32 @@ DepthFirstIterator<Territory> Continent::end() const
     return this->territories->end();
 }
 
+void Continent::updateTerritory(const Territory& current, const Territory& replacement)
+{
+    this->territories->update(current, replacement);
+}
+
+void Continent::setTerritoryOwner(const Territory& territory, const Player& owner)
+{
+    const Territory* t = this->territories->findIf([territory](const Territory& t){ return t == territory; });
+
+    if (t != nullptr)
+    {
+        Territory replacement = *t;
+        replacement.setOwningPlayer(owner);
+        this->updateTerritory(*t, replacement);
+    }
+}
+
 std::ostream &operator<<(std::ostream &output, const Continent &continent)
 {
-    output << "( name: " << *continent.name;
-    output << ", territories: " << *continent.territories;
-    output << ", army value: " << *continent.armyValue;
-    output << ", color: " << *continent.color;
-    output << ")";
+    output << "\nName: " << *continent.name << "\n";
+    output << "Color: " << *continent.color << "\n";
+    output << "Army Value: " << *continent.armyValue << "\n";
+    output << "Territories: \n";
+    for (auto &entry : *continent.territories){
+        output << entry;
+    }
     return output;
 }
 
@@ -217,13 +352,13 @@ void Continent::setTerritoryOwner(const Territory& territory, const Player& owne
 //============================================================================================================================================================
 
 Map::Map() :
-    territories(new Graph<Territory>()), continents(new std::vector<Continent>())
+        territories(new Graph<Territory>()), continents(new std::vector<Continent>())
 {
 }
 
 Map::Map(const Map &map) :
-    territories(new Graph<Territory>(*map.territories)),
-    continents(new std::vector<Continent>(*map.continents))
+        territories(new Graph<Territory>(*map.territories)),
+        continents(new std::vector<Continent>(*map.continents))
 {
 }
 
@@ -240,6 +375,27 @@ Map &Map::operator=(const Map &map)
     return *this;
 }
 
+Graph<Territory> *Map::getTerritories() const
+{
+    return territories;
+}
+void Map::setTerritories(Graph<Territory> *territories)
+{
+    Map::territories = territories;
+}
+std::vector<Continent> *Map::getContinents() const
+{
+    return continents;
+}
+void Map::setContinents(std::vector<Continent> *continents)
+{
+    Map::continents = continents;
+}
+
+const std::unordered_set<Territory>* Map::getNeighbors(const Territory& t)
+{
+    return this->territories->getNeighbors(t);
+}
 MapState Map::validate() const
 {
     if (!this->territories->isConnected())
@@ -310,20 +466,30 @@ MapState Map::validate() const
     return MapState::VALID;
 }
 
+Graph<Territory>& Map::getGraph(){
+    return *this->territories;
+}
+
+std::vector<Continent>& Map::getContinents(){
+    return *this->continents;
+}
+
+
+
 std::string Map::getErrorString(MapState mapState) const
 {
     switch (mapState)
     {
-    case MapState::VALID:
-        return "Map contains no errors";
-    case MapState::NOT_CONNECTED_GRAPH:
-        return "Map is not a connected graph";
-    case MapState::CONTINENTS_NOT_CONNECTED_SUBGRAPHS:
-        return "Map continents are not all connected subgraphs of the territories";
-    case MapState::TERRITORY_DOES_NOT_BELONG_TO_ONE_CONTINET:
-        return "Some map territories do not belong to only one continent";
-    default:
-        return "Invalid MapState Error code";
+        case MapState::VALID:
+            return "Map contains no errors";
+        case MapState::NOT_CONNECTED_GRAPH:
+            return "Map is not a connected graph";
+        case MapState::CONTINENTS_NOT_CONNECTED_SUBGRAPHS:
+            return "Map continents are not all connected subgraphs of the territories";
+        case MapState::TERRITORY_DOES_NOT_BELONG_TO_ONE_CONTINET:
+            return "Some map territories do not belong to only one continent";
+        default:
+            return "Invalid MapState Error code";
     }
 }
 
@@ -367,15 +533,14 @@ void Map::connectTerritories(int territoryId1, int territoryId2)
     }
 }
 
-std::vector<Territory> Map::getPlayersTerritories(const Player& player) const
+
+std::vector<Territory> Map::getPlayersTerritories(const Player& player)
 {
     std::vector<Territory> ownedTerritories;
     for (const auto& territory : *this->territories)
     {
-        std::cout << "Comparing players: " << territory.getOwningPlayer() << " " << player << std::endl;
-        if (territory.getOwningPlayer() == player)
+        if (territory.getOwningPlayer() != nullptr &&*territory.getOwningPlayer() == player)
         {
-            std::cout << "Compared true" << std::endl;
             ownedTerritories.push_back(territory);
         }
     }
@@ -447,11 +612,20 @@ void Map::setTerritoryOwner(const Territory& territory, const Player& owner)
     }
 }
 
-
-
 std::ostream &operator<<(std::ostream &output, const Map &map)
 {
-    output << "(territories: " << *map.territories
-           << ", continents: " << *map.continents << ")";
+    for (auto &entry : *map.continents){
+        output << entry;
+    }
     return output;
+}
+
+void Map::setTerritoryOwner(const Territory &territory, Player *player)
+{
+    for (Territory currentTerritory: *this->territories){
+        if (currentTerritory == territory){
+            currentTerritory.setOwnedBy(player);
+            Notify();
+        }
+    }
 }

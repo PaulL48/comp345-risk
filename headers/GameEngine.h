@@ -2,11 +2,19 @@
 #define GAME_ENGINE_H
 
 #include <vector>
+#include <string>
 #include <unordered_set>
 #include <typeindex>
+#include <iostream>
 #include "Player.h"
 #include "Map.h"
 #include "Cards.h"
+
+extern int totalPlayers; 
+extern std::size_t selectedMap;
+extern int phaseObserver;
+extern int statObserver; 
+extern std::vector<std::string> mapNames; 
 
 enum class GamePhase
 {
@@ -47,6 +55,8 @@ void fillRoundRobinOrders(std::vector<Order*> masterList, const std::vector<Play
 class GameEngine
 {
 public:
+    GameEngine();
+    ~GameEngine(); 
     // TODO: required methods
     GameEngine(const Map& map, const std::vector<Player>& players);
 
@@ -76,4 +86,51 @@ private:
     Deck* deck; // TODO: Initialize
 };
 
+
+class MapSelect
+{
+public: 
+    MapSelect(); 
+    ~MapSelect(); 
+    
+}; 
+
+class PlayerAmount
+{
+public:
+    PlayerAmount();
+    ~PlayerAmount(); 
+    int getPlayers();
+    void setPlayers(int totalPlayers); 
+};
+
+class ControlObservers
+{
+public: 
+    ControlObservers();
+    ~ControlObservers();
+
+}; 
+
+class GameStartup{
+    private:
+        int* numPlayers;
+        std::vector<Player>* players;
+        Map* map;
+        std::vector<int>* orderPlayers;
+        int getNumberOfArmies();
+        std::vector<Player>& intializePlayers(const int numArmies);
+        std::vector<int>& intitializeOrderPlayers(const int numPlayers);
+        
+        
+
+    public:
+        GameStartup(const int numPlayer, const Map& map);                          // Constructor
+        GameStartup();
+        ~GameStartup();              
+        void startupPhase();
+        std::vector<Player>& getPlayers();
+        Map& getMap();
+        std::vector<int>& getOrderPlayers();
+};
 #endif

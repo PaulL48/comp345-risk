@@ -1,6 +1,7 @@
 #ifndef MAP_H
 #define MAP_H
 
+#include "Subject.h"
 #include <iostream>
 #include <ostream>
 #include <stack>
@@ -106,6 +107,9 @@ private:
     const AdjacencyList<T> *adjacencyList;
 };
 
+
+
+
 //============================================================================================================================================================
 // TEMPLATE CLASS DECLARATION: Graph
 //============================================================================================================================================================
@@ -147,9 +151,11 @@ public:
     void update(const T &vertex, const T &replace);
 
     void merge(const T &vertex1, const T &vertex2);
+    const std::unordered_set<T>* getNeighbors(const T& vertex) const;
+    void update(const T &vertex, const T &replace);
 
     std::size_t size() const;
-
+   
     // Return iterator to the start of the container
     DepthFirstIterator<T> begin() const;
 
@@ -185,7 +191,8 @@ class Territory
 {
 public:
     Territory();                                              // Default constructor
-    Territory(int id, const std::string &name, int x, int y); // Constructor
+    Territory(int id, const std::string &name, int numberOfTerritories, int x, int y, Player &player ); // Constructor
+    Territory(int id, const std::string &name,int x, int y);
     Territory(const Territory &territory);                    // Copy constructor
     ~Territory();                                             // Destructor
     Territory &operator=(const Territory &territory);         // Copy assignment
@@ -197,16 +204,28 @@ public:
     bool operator!=(const Territory &territory) const;
 
     int getId() const;
-    const Player& getOwningPlayer() const;
-    void setOwningPlayer(const Player& player);
+    void setId(int *id);
+    std::string *getName() const;
+    void setName(std::string &name);
+    int *getX() const;
+    void setX(int *x);
+    int *getY() const;
+    void setY(int *y);
+    int *getOccupyingArmies() const;
+    void setOccupyingArmies(int *occupyingArmies);
+    Player *getOwnedBy() const;
+    void setOwnedBy(Player *ownedBy);
+    void setOwner(const Player& newOwner);
+    const Player& getOwner() const;
+    void setNumberOfOccupyingArmies(int newNumberOfArmies);
+    int getNumberOfOccupyingArmies();
 
-    int getOccupyingArmies() const;
-    const std::string& getName() const;
-
-
+    void setOwningPlayer(const Player &player);
+    const Player* getOwningPlayer() const;
     // Adding std::hash is necessary to allow Territory to be a key of an
     // associative container
     friend class std::hash<Territory>;
+    
 
 private:
     int *id;
@@ -274,6 +293,16 @@ public:
 
     // Return a past-the-end iterator to this continent
     DepthFirstIterator<Territory> end() const;
+    std::string *getName() const;
+    void setName(std::string &name);
+    int *getArmyValue() const;
+    void setArmyValue(int *armyValue);
+    std::string *getColor() const;
+    void setColor(std::string *color);
+    void setTerritories(Graph<Territory> *territories);
+
+    void updateTerritory(const Territory& current, const Territory& replacement);
+    void setTerritoryOwner(const Territory& territory, const Player& owner);
 
     int getBonusArmyValue() const;
 
@@ -303,7 +332,7 @@ enum class MapState
     TERRITORY_DOES_NOT_BELONG_TO_ONE_CONTINET
 };
 
-class Map
+class Map: public Subject
 {
 public:
     Map();                          // Constructor
@@ -316,14 +345,26 @@ public:
     // Validate the map and return the state of validation
     MapState validate() const;
 
+    Graph<Territory>& getGraph();
+    std::vector<Territory> getPlayersTerritories(const Player& player);
+    const std::unordered_set<Territory>* getNeighbors(const Territory& t);
+    std::vector<Continent>& getContinents();
+
     std::string getErrorString(MapState mapState) const;
 
     void addContinent(const Continent &continent);
+    void updateTerritory(const Territory& current, const Territory& replacement);
+    void setTerritoryOwner(const Territory& territory, const Player& owner);   
 
     void addTerritory(const Territory &territory, int continentId);
 
     // Connect territories on this map
     void connectTerritories(int territoryId1, int territoryId2);
+    Graph<Territory> *getTerritories() const;
+    void setTerritories(Graph<Territory> *territories);
+    std::vector<Continent> *getContinents() const;
+    void setContinents(std::vector<Continent> *continents);
+    void setTerritoryOwner(const Territory& territory, Player *player);
 
     std::vector<Territory> getPlayersTerritories(const Player& player) const;
     std::vector<Continent> getPlayersContinents(const Player& player) const;
@@ -818,6 +859,43 @@ void Graph<T>::merge(const T &vertex1, const T &vertex2)
     this->adjacencyList->at(vertex1).merge(this->adjacencyList->at(vertex2));
     this->erase(vertex2);
 }
+template <typename T>
+const std::unordered_set<T>* Graph<T>::getNeighbors(const T& vertex) const
+{
+        for (const auto &[currentVertex, neighbors] : *this->adjacencyList)
+        {
+            if (currentVertex == vertex)
+            {
+                return &neighbors;
+            }
+        }
+        return nullptr;
+}
+
+template <typename T>
+void Graph<T>::update(const T &vertex, const T &replace)
+{
+    if (vertex != replace || this->adjacencyList->count(vertex) == 0)
+    {
+        return; // The update should not change either the output hash or the equality of a vertex
+    }
+
+    // Search all neighbors and replace the vertex
+    for (auto &[vertexKey, neighbors] : *this->adjacencyList)
+    {
+        if (neighbors.count(vertex) != 0)
+        {
+            neighbors.erase(vertex);
+            neighbors.insert(replace);
+        }
+    }
+
+    // Replace the original vertex
+    NeighborList<T> temp = this->adjacencyList->at(vertex);
+    this->adjacencyList->erase(vertex);
+    this->adjacencyList->insert(std::make_pair(replace, temp));
+}
+
 
 template <typename T>
 std::size_t Graph<T>::size() const
@@ -836,6 +914,7 @@ DepthFirstIterator<T> Graph<T>::end() const
 {
     return DepthFirstIterator<T>(nullptr);
 }
+
 
 template <typename T>
 template <typename F>

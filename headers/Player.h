@@ -31,6 +31,9 @@ namespace MenuUtilities
 
 }
 
+class Hand;
+class OrdersList;
+
 class Player{
     private:
         std::string* playerName;
@@ -38,25 +41,35 @@ class Player{
         std::vector<Territory>* territoriesDefend;
         Hand* cards;
         OrdersList* orders;
-        int* reinforcementPool;
+        int* reinforcementPool;    
+        int* numArmies;
+        std::vector<int>* playerOrder;
+        std::vector<Player*>* negotiators; // the negotiate will set this value to true when a valid negotiate order is executed for territories involved in the negotiation 
         bool* conqueredTerritory;
     public:
-        // Create a named player with an empty hand
         Player(const std::string& name); 
         Player(const std::string& playerName,const std::vector<Territory>& territoriesAttack, const std::vector<Territory>& territoriesDefend, const Hand& cards, const OrdersList& orders);
+        Player(const std::string& playerName,const std::vector<Territory>& territoriesAttack, const std::vector<Territory>& 
+        territoriesDefend, const Hand& cards, const OrdersList& orders, const int& numArmies,const std::vector<int>& playerOrder);
         Player(const Player& player);
         Player();
         Player& operator= (const Player& player);
         bool operator==(const Player& player) const;
-        bool operator!=(const Player& player) const;
         ~Player();
-        friend std::ostream& operator<<( std::ostream &output, const Player& player);
-        std::vector<Territory>& toAttack();
-        std::vector<Territory>& toDefend();
-        Hand& getCards();
-        OrdersList& getOrders();
-        std::string& getPlayerName();
+        bool operator!=(const Player& player) const;
+        friend std::ostream& operator<<( std::ostream &output, const Player& player);  
+        std::vector<Territory>& toAttack() const;
+        std::vector<Territory>& toDefend() const;
+        std::vector<int>& getPlayerOrder() const;
+        Hand& getCards() const;
+        OrdersList& getOrders() const;
+        std::string& getPlayerName() const;
         void issueOrder(const Map& map);
+        int& getNumArmies() const ;
+        void addToNegotiatorsList(Player* player) const;
+        bool isNegotiator(const Player* player) const;
+        void setConqueredTerritory(bool status);
+        bool getConqueredTerritory();
         void addArmies(int add);
         int getReinforcementPool() const;
         void setConqueredTerritory(bool conqueredTerritory);
@@ -72,7 +85,6 @@ class Player{
 
         // Return the number of armies queued to reinforce various territories
         int getReinforcementsPendingDeployment();
-
 };
 
 template <typename T>
