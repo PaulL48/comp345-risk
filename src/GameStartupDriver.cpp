@@ -3,6 +3,7 @@
 #include <iostream>
 #include <random>
 
+
 int main()
 {
     std::vector<Continent> testContinents(
@@ -17,7 +18,6 @@ int main()
          Territory(7, "Territory 7", 13, 14), Territory(8, "Territory 8", 15, 16),
          Territory(9, "Territory 9", 17, 18), Territory(10, "Territory 10", 19, 20)});
 
-    std::cout<< "IM HERE";
     Map map;
     for (Continent continent : testContinents)
     {
@@ -38,31 +38,35 @@ int main()
         validMap.connectTerritories(i + 1, i + 2);
     }
 
-    std::cout<< "IM HERE";
     GameStartup game = GameStartup(4,validMap);
     game.startupPhase();
-    //for(Territory terr : game.getMap().getGraph() ){
-    //    if(terr.getOwningPlayer() == nullptr){
-    //         std::cout << terr;
-    //    }
-    //    else{
-    //       std::cout << "TERRITORIES ASSIGNMENT HAS FAILED \n";
-    //    }
-    //}
+    for(Territory terr : game.getMap().getGraph()){
+        if(terr.getOwningPlayer() != nullptr){
+             const Player& p = *(terr.getOwningPlayer());
+             std::cout<< p.getPlayerName() + " OWNS THE FOLLOWING TERRITORY : \n";
+             std::cout << terr;
+             std::cout<< std::endl;
+        }
+        else{
+           std::cout << "TERRITORIES ASSIGNMENT HAS FAILED \n";
+        }
+    }
     for(Player player : game.getPlayers()){
+        std::string s = player.getPlayerName();
+    
         std::cout<< player.getPlayerName() + " has the following amount of Armies " + std::to_string(player.getNumArmies()) + " \n";
     }
 
     for(Player player: game.getPlayers()){
 
-        std::cout << "OUTPUTING THE PLAYING ORDER CONTAINED IN THE FOLLOWING PLAYER : " + player.getPlayerName();
+        std::cout << "OUTPUTING THE PLAYING ORDER CONTAINED IN THE FOLLOWING PLAYER : " + player.getPlayerName() + " \n";
         int count =  0;
         for(int index: player.getPlayerOrder()){
-            std::cout<<  std::to_string(count+1) + ":  PLAYER " + std::to_string(index+1);
+            std::cout<<  std::to_string(count+1) + ":  PLAYER " + std::to_string(index+1) + "  ";
             count++;
 
         } 
-
+        std::cout<< std::endl;
 
         
     }

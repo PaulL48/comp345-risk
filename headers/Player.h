@@ -27,14 +27,14 @@ class Player{
         bool operator==(const Player& player) const;
         ~Player();
         friend std::ostream& operator<<( std::ostream &output, const Player& player);
-        std::vector<Territory>& toAttack();
-        std::vector<Territory>& toDefend();
-        std::vector<int>& getPlayerOrder();
-        Hand& getCards();
-        OrdersList& getOrders();
-        std::string& getPlayerName();
-        void issueOrder();
-        int& getNumArmies();
+        std::vector<Territory>& toAttack() const;
+        std::vector<Territory>& toDefend() const;
+        std::vector<int>& getPlayerOrder() const;
+        Hand& getCards() const;
+        OrdersList& getOrders() const;
+        std::string& getPlayerName() const;
+        void issueOrder() const;
+        int& getNumArmies() const ;
 
 };
 #endif
