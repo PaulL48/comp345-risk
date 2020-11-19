@@ -131,7 +131,8 @@ Order::Order(const Order &order) :
     uniqueId(new int(*order.uniqueId)),
     executed(new bool(*order.executed)),
     description(new std::string(*order.description)),
-    effect(new std::string(*order.effect))
+    effect(new std::string(*order.effect)),
+    dataPayload(new OrderDataPayload(*order.dataPayload))
 {
 }
 
@@ -141,6 +142,7 @@ Order::~Order()
     delete this->effect;
     delete this->uniqueId;
     delete this->executed;
+    delete this->dataPayload;
 }
 
 Order &Order::operator=(const Order &order)
@@ -154,6 +156,7 @@ Order &Order::operator=(const Order &order)
     effect = new string(*order.effect);
     executed = new bool(*order.executed);
     uniqueId = new int(counter++);
+    dataPayload = new OrderDataPayload(*order.dataPayload);
 
     return *this;
 }
@@ -161,7 +164,8 @@ Order &Order::operator=(const Order &order)
 Order::Order(const string &description, const string &effect) :
     uniqueId(new int(counter++)),
     description(new string(description)),
-    effect(new string(effect))
+    effect(new string(effect)),
+    dataPayload(new OrderDataPayload())
 {
 }
 

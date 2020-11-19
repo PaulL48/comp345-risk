@@ -100,6 +100,25 @@ int Territory::getId() const
     return *this->id;
 }
 
+const Player& Territory::getOwningPlayer() const
+{
+    return *this->ownedBy;
+}
+
+void Territory::setOwningPlayer(const Player& player)
+{
+    this->ownedBy = new Player(player);
+}
+
+int Territory::getOccupyingArmies() const
+{
+    return *this->occupyingArmies;
+}
+const std::string& Territory::getName() const
+{
+    return *this->name;
+}
+
 std::string *Territory::getName() const
 {
     return name;
@@ -306,6 +325,28 @@ std::unordered_set<Territory> Continent::getTerritories() const
     return this->territories->getVertices();
 }
 
+int Continent::getBonusArmyValue() const
+{
+    return *this->armyValue;
+}
+
+void Continent::updateTerritory(const Territory& current, const Territory& replacement)
+{
+    this->territories->update(current, replacement);
+}
+
+void Continent::setTerritoryOwner(const Territory& territory, const Player& owner)
+{
+    const Territory* t = this->territories->findIf([territory](const Territory& t){ return t == territory; });
+
+    if (t != nullptr)
+    {
+        Territory replacement = *t;
+        replacement.setOwningPlayer(owner);
+        this->updateTerritory(*t, replacement);
+    }
+}
+
 //============================================================================================================================================================
 // CLASS DEFINITIONS: Map
 //============================================================================================================================================================
@@ -492,18 +533,53 @@ void Map::connectTerritories(int territoryId1, int territoryId2)
     }
 }
 
+
 std::vector<Territory> Map::getPlayersTerritories(const Player& player)
 {
     std::vector<Territory> ownedTerritories;
     for (const auto& territory : *this->territories)
     {
-
         if (territory.getOwningPlayer() != nullptr &&*territory.getOwningPlayer() == player)
         {
             ownedTerritories.push_back(territory);
         }
     }
     return ownedTerritories;
+}
+
+std::vector<Continent> Map::getPlayersContinents(const Player& player) const
+{
+    std::vector<Continent> ownedContinents;
+    for (const auto& continent : *this->continents)
+    {
+        bool hasFullOwnership = true;
+        for (const auto& territory : continent.getTerritories())
+        {
+            if (territory.getOwningPlayer() != player)
+            {
+                hasFullOwnership = false;
+            }
+        }
+
+        if (hasFullOwnership)
+        {
+            ownedContinents.push_back(continent);
+        }
+    }
+    return ownedContinents;
+}
+
+void Map::setTerritoryOwnerByName(Player& player, const std::string& territoryName)
+{
+    const Territory* t = this->territories->findIf([territoryName](const Territory& t){return t.getName() == territoryName;});
+
+    if (t == nullptr)
+    {
+        return;
+    }
+    Territory replacement = *t;
+    replacement.setOwningPlayer(player);
+    this->updateTerritory(*t, replacement);
 }
 
 void Map::updateTerritory(const Territory& current, const Territory& replacement)
@@ -520,7 +596,6 @@ void Map::updateTerritory(const Territory& current, const Territory& replacement
 
 void Map::setTerritoryOwner(const Territory& territory, const Player& owner)
 {
-
     const Territory* t = this->territories->findIf([territory](const Territory& t){return t == territory;});
     Territory copy = *t;
 
@@ -536,7 +611,6 @@ void Map::setTerritoryOwner(const Territory& territory, const Player& owner)
         continent.setTerritoryOwner(copy, owner);
     }
 }
-
 
 std::ostream &operator<<(std::ostream &output, const Map &map)
 {
