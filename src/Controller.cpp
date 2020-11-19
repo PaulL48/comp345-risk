@@ -16,16 +16,3 @@ PhaseController::PhaseController(PhaseObserver* newView, GameENgine* newModel) {
     phaseModel = newModel;
 }
 
-//                      TO BE DELECTED!
-//int main()
-//{
-//    Map *model = new Map (MapLoader::createMap("../maps/europe.map")); // This should prob be in the main game loop.
-//    MapObserver *view = new MapObserver(model);
-//    MapController *contoller = new MapController(view, model);
-//
-//    delete view;
-//    delete model;
-//    delete contoller;
-//
-//    return 0;
-//}
