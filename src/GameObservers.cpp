@@ -120,18 +120,17 @@ void PhaseObserver::Update(){
 };
 
 void PhaseObserver::displayPhase(){
-    int currentPhase;
-    currentPhase = _subject.getCurrentPhase();
+    GamePhase phase = _subject.getCurrentPhase();
 
     switch (currentPhase)
     {
-    case 1:
+    case GamePhase::REINFORCEMENT:
         displayReinforcementPhase();
         break;
-    case 2:
+    case GamePhase::ISSUE_ORDERS:
         displayissuingOrdersPhase();
         break;
-    case 3:
+    case GamePhase::EXECUTE_ORDERS:
         displayOrdersExecutionPhase();
         break;
     }
