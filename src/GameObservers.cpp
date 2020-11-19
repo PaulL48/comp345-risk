@@ -11,13 +11,11 @@
 #include "GameEngine.h"
 
 MapObserver::MapObserver(Map* s){
-    //Upon instantiation, attaches itself to a ClockTimer
     _subject = s;
     _subject->Attach(this);
 };
 
 MapObserver::~MapObserver(){
-    //Upon destruction, detaches itself from its ClockTimer��
     _subject->Detach(this);
 };
 
@@ -109,13 +107,11 @@ void MapObserver::displayPlayers(){
 
 
 PhaseObserver::PhaseObserver(GameEngine* s){
-    //Upon instantiation, attaches itself to a ClockTimer
     _subject = s;
     _subject->Attach(this);
 };
 
 PhaseObserver::~PhaseObserver(){
-    //Upon destruction, detaches itself from its ClockTimer��
     _subject->Detach(this);
 };
 
