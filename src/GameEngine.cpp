@@ -195,9 +195,9 @@ void StartupUtilities::assignStartingArmies(std::vector<Player>& players)
 
     for (auto& player : players)
     {   
-        std::cout << "Adding " << startingArmies << " armies to player: " << std::endl;
+        std::cout << "Adding " << startingArmies << " armies to player: " << player << std::endl;
         player.addArmies(startingArmies);
-        std::cout << player << std::endl;
+        std::cout << "Result" << player << std::endl;
     }
 }
 
@@ -230,6 +230,7 @@ void StartupUtilities::assignTerritories(std::vector<Player>& players, Map& map)
     int playerIndex = 0;
     for (const Territory& territory : shuffledTerritories)
     {
+        std::cout << "Assinging player (" << &players.at(playerIndex) << ") " << players.at(playerIndex) << std::endl;
         changes.push_back(std::make_pair(territory, &players.at(playerIndex)));
         ++playerIndex;
         playerIndex %= players.size();
@@ -389,11 +390,7 @@ void GameEngine::startupPhase()
     StartupUtilities::assignTerritories(*this->players, *this->map);
     StartupUtilities::playersDrawCards(*this->players, *this->deck, 5);
 
-    for (auto& player : *this->players)
-    {
-        player.updateToAttack(*this->map);
-        player.updateToDefend(*this->map);
-    }
+    GameLogic::playersRecomputeAttackDefend(*this->players, *this->map);
 
     std::cout << "================================================================================" << std::endl;
     std::cout << "Game Start Phase Complete. Game details: " << std::endl;
@@ -438,6 +435,7 @@ void GameEngine::reinforcementPhase(std::vector<Player>& players)
         std::cout << "Player owns " << this->map->getPlayersContinents(player).size() << " continents" << std::endl;
         std::cout << "Adding " << GameLogic::totalArmyBonus(*this->map, player) << " armies to player" << std::endl;
         player.addArmies(GameLogic::totalArmyBonus(*this->map, player));
+        std::cout << "Result: " << player << std::endl;
     }
 }
 

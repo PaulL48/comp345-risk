@@ -56,8 +56,13 @@ Territory::~Territory()
     delete this->occupyingArmies;
 }
 
-void Territory::setOwningPlayer(const Player &player){
-    this->ownedBy = new Player(player);
+// void Territory::setOwningPlayer(const Player &player){
+//     this->ownedBy = &player;
+// }
+
+void Territory::setOwningPlayer(const Player& player)
+{
+    this->ownedBy = &player;
 }
 
 const Player* Territory::getOwningPlayer() const
@@ -131,7 +136,7 @@ std::ostream &operator<<(std::ostream &output, const Territory &territory)
     output << "Territory (id: " << *territory.id << ", name: " << *territory.name << ", armies:" << *territory.occupyingArmies;
     if (territory.ownedBy != nullptr)
     {
-        output << ", owning player: " << *territory.ownedBy;
+        output << ", owning player: (" << territory.ownedBy << ") " << *territory.ownedBy;
     }
     else
     {

@@ -55,18 +55,6 @@ Player::Player() :
 {
 }
 
-void playerAddDeployOrder(Player&, const Map&)
-{
-    // Switch to toDefend
-    //std::size_t choice = MenuUtilities::getValidatedNumericalChoice("Choose a territory to reinforce", map.getPlayersTerritories(player));
-
-    // Create the deploy order
-    // Preload the data payload
-    //Deploy deploy;
-    //deploy.getMutableDataPayload().targetTerritory
-
-}
-
 void Player::specifyDeploymentOrder(const Map&)
 {
     // Switch to toDefend
@@ -78,6 +66,9 @@ void Player::specifyDeploymentOrder(const Map&)
     //deploy.getMutableDataPayload().targetTerritory
 
     //this->orders->addToList(deploy);
+
+     MenuUtilities::getValidatedNumericalChoice("Choose a territory to reinforce", this->toDefend());
+
 }
 
 void Player::specifyOrderDeletion()

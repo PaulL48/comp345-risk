@@ -225,7 +225,7 @@ private:
     int *x;
     int *y;
     int *occupyingArmies;
-    Player *ownedBy;
+    const Player *ownedBy;
 };
 
 // Taken from Boost::hash_combine.
