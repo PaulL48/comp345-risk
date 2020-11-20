@@ -285,13 +285,8 @@ public:
 
     // Return a past-the-end iterator to this continent
     DepthFirstIterator<Territory> end() const;
-    std::string *getName() const;
-    void setName(std::string &name);
-    int *getArmyValue() const;
-    void setArmyValue(int *armyValue);
-    std::string *getColor() const;
-    void setColor(std::string *color);
-    void setTerritories(Graph<Territory> *territories);
+
+    const std::string &getName() const;
 
     void updateTerritory(const Territory& current, const Territory& replacement);
     void setTerritoryOwner(const Territory& territory, const Player& owner);
@@ -299,10 +294,6 @@ public:
     int getBonusArmyValue() const;
 
     void setTerritoryOwnerByName(Player& player, const std::string& territoryName);
-
-
-
-
 private:
     std::string *name;
     int *armyValue;
@@ -350,10 +341,12 @@ public:
 
     // Connect territories on this map
     void connectTerritories(int territoryId1, int territoryId2);
-    Graph<Territory> *getTerritories() const;
-    void setTerritories(Graph<Territory> *territories);
-    std::vector<Continent> *getContinents() const;
-    void setContinents(std::vector<Continent> *continents);
+
+    const Graph<Territory> &getTerritories() const;
+
+
+    const std::vector<Continent> &getContinents() const;
+
     void setTerritoryOwner(const Territory& territory, Player *player);
 
     std::vector<Territory> getPlayersTerritories(const Player& player) const;
@@ -921,7 +914,7 @@ std::unordered_set<T>* Graph<T>::getNeighbors(const T &vertex)
     {
         return nullptr;
     }
-    &this->adjacencyList->at(vertex);
+    return &this->adjacencyList->at(vertex);
 }
 
 

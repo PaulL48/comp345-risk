@@ -60,8 +60,8 @@ bool MapObserver::victory(){
         return false;
     else
     {
-        for (auto &cont : _subject->getContinents())
-            for (auto &terr : cont.getTerritories())
+        for (const auto &cont : _subject->getContinents())
+            for (const auto &terr : cont.getTerritories())
                 if (terr.getOwningPlayer() != nullptr && *first != *terr.getOwningPlayer())
                     return false;
 

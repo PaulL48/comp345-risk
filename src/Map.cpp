@@ -180,33 +180,9 @@ Continent &Continent::operator=(const Continent &continent)
     return *this;
 }
 
-std::string *Continent::getName() const
+const std::string &Continent::getName() const
 {
-    return name;
-}
-void Continent::setName(std::string &name)
-{
-    *Continent::name = name;
-}
-int *Continent::getArmyValue() const
-{
-    return armyValue;
-}
-void Continent::setArmyValue(int *armyValue)
-{
-    Continent::armyValue = armyValue;
-}
-std::string *Continent::getColor() const
-{
-    return color;
-}
-void Continent::setColor(std::string *color)
-{
-    Continent::color = color;
-}
-void Continent::setTerritories(Graph<Territory> *territories)
-{
-    Continent::territories = territories;
+    return *name;
 }
 
 bool Continent::isValidContinent(const Graph<Territory> &territories) const
@@ -233,23 +209,6 @@ DepthFirstIterator<Territory> Continent::begin() const
 DepthFirstIterator<Territory> Continent::end() const
 {
     return this->territories->end();
-}
-
-void Continent::updateTerritory(const Territory& current, const Territory& replacement)
-{
-    this->territories->update(current, replacement);
-}
-
-void Continent::setTerritoryOwner(const Territory& territory, const Player& owner)
-{
-    const Territory* t = this->territories->findIf([territory](const Territory& t){ return t == territory; });
-
-    if (t != nullptr)
-    {
-        Territory replacement = *t;
-        replacement.setOwningPlayer(owner);
-        this->updateTerritory(*t, replacement);
-    }
 }
 
 std::ostream &operator<<(std::ostream &output, const Continent &continent)
@@ -319,27 +278,21 @@ Map &Map::operator=(const Map &map)
     return *this;
 }
 
-Graph<Territory> *Map::getTerritories() const
+const Graph<Territory> &Map::getTerritories() const
 {
-    return territories;
+    return *territories;
 }
-void Map::setTerritories(Graph<Territory> *territories)
+
+const std::vector<Continent> &Map::getContinents() const
 {
-    Map::territories = territories;
-}
-std::vector<Continent> *Map::getContinents() const
-{
-    return continents;
-}
-void Map::setContinents(std::vector<Continent> *continents)
-{
-    Map::continents = continents;
+    return *continents;
 }
 
 const std::unordered_set<Territory>* Map::getNeighbors(const Territory& t)
 {
     return this->territories->getNeighbors(t);
 }
+
 MapState Map::validate() const
 {
     if (!this->territories->isConnected())
@@ -499,7 +452,7 @@ std::vector<Continent> Map::getPlayersContinents(const Player& player) const
         bool hasFullOwnership = true;
         for (const auto& territory : continent.getTerritories())
         {
-            if (territory.getOwningPlayer() != player)
+            if (territory.getOwningPlayer() != nullptr && *territory.getOwningPlayer() != player)
             {
                 hasFullOwnership = false;
             }
@@ -554,6 +507,7 @@ void Map::setTerritoryOwner(const Territory& territory, const Player& owner)
     {
         continent.setTerritoryOwner(copy, owner);
     }
+    Notify();
 }
 
 std::ostream &operator<<(std::ostream &output, const Map &map)
@@ -562,14 +516,4 @@ std::ostream &operator<<(std::ostream &output, const Map &map)
         output << entry;
     }
     return output;
-}
-
-void Map::setTerritoryOwner(const Territory &territory, Player *player)
-{
-    for (Territory currentTerritory: *this->territories){
-        if (currentTerritory == territory){
-            currentTerritory.setOwningPlayer(player);
-            Notify();
-        }
-    }
 }
