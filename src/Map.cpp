@@ -59,6 +59,7 @@ Territory::~Territory()
 void Territory::setOwningPlayer(const Player &player){
     this->ownedBy = new Player(player);
 }
+
 const Player* Territory::getOwningPlayer() const
 {
     return this->ownedBy;
@@ -100,83 +101,29 @@ int Territory::getId() const
     return *this->id;
 }
 
-const Player& Territory::getOwningPlayer() const
-{
-    return *this->ownedBy;
-}
-
-void Territory::setOwningPlayer(const Player& player)
-{
-    this->ownedBy = new Player(player);
-}
-
 int Territory::getOccupyingArmies() const
 {
     return *this->occupyingArmies;
 }
+
 const std::string& Territory::getName() const
 {
     return *this->name;
 }
 
-std::string *Territory::getName() const
-{
-    return name;
-}
 void Territory::setName(std::string &name)
 {
-    *Territory::name = name;
-}
-int *Territory::getX() const
-{
-    return x;
-}
-void Territory::setX(int *x)
-{
-    Territory::x = x;
-}
-int *Territory::getY() const
-{
-    return y;
-}
-void Territory::setY(int *y)
-{
-    Territory::y = y;
-}
-int *Territory::getOccupyingArmies() const
-{
-    return occupyingArmies;
-}
-void Territory::setOccupyingArmies(int *occupyingArmies)
-{
-    Territory::occupyingArmies = occupyingArmies;
+    *this->name = name;
 }
 
-void Territory::setOwnedBy(Player *ownedBy)
+void Territory::setOccupyingArmies(int occupyingArmies)
 {
-    Territory::ownedBy = ownedBy;
-}
-void Territory::setOwner(const Player& newOwner){
-    *(this->ownedBy) = newOwner; 
-}
-
-const Player& Territory::getOwner() const
-{
-    return *this->ownedBy;
-}
-
-void Territory::setNumberOfOccupyingArmies(int newNumberOfArmies){
-    if(newNumberOfArmies >= 0){
-        *(this->occupyingArmies) = newNumberOfArmies; 
+    if(occupyingArmies >= 0){
+        *(this->occupyingArmies) = occupyingArmies; 
     }
     else{
         std::cout << "Cannot assign negative value to number of armies." << std::endl;
     }
-}
-
-int Territory::getNumberOfOccupyingArmies()
-{
-    return *occupyingArmies;
 }
 
 std::ostream &operator<<(std::ostream &output, const Territory &territory)
@@ -621,7 +568,7 @@ void Map::setTerritoryOwner(const Territory &territory, Player *player)
 {
     for (Territory currentTerritory: *this->territories){
         if (currentTerritory == territory){
-            currentTerritory.setOwnedBy(player);
+            currentTerritory.setOwningPlayer(player);
             Notify();
         }
     }

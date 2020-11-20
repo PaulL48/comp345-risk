@@ -204,22 +204,16 @@ public:
 
     int getId() const;
     void setId(int *id);
-    std::string *getName() const;
+
+    const std::string& getName() const;
     void setName(std::string &name);
-    int *getX() const;
-    void setX(int *x);
-    int *getY() const;
-    void setY(int *y);
-    int *getOccupyingArmies() const;
-    void setOccupyingArmies(int *occupyingArmies);
-    void setOwnedBy(Player *ownedBy);
-    void setOwner(const Player& newOwner);
-    const Player& getOwner() const;
-    void setNumberOfOccupyingArmies(int newNumberOfArmies);
-    int getNumberOfOccupyingArmies();
+
+    int getOccupyingArmies() const;
+    void setOccupyingArmies(int occupyingArmies);
 
     void setOwningPlayer(const Player &player);
     const Player* getOwningPlayer() const;
+
     // Adding std::hash is necessary to allow Territory to be a key of an
     // associative container
     friend class std::hash<Territory>;

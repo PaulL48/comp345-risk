@@ -19,14 +19,14 @@
 //     Deploy deploy;
    
 //     cout << "Executing INVALID deploy order" << endl;
-//     cout << "\tArmies before deploying" << t21->getNumberOfOccupyingArmies() << endl;
+//     cout << "\tArmies before deploying" << t21->getOccupyingArmies() << endl;
 //     deploy.execute(p1, 2, t21);
-//     cout << "\tArmies after deploying" << t21->getNumberOfOccupyingArmies() << endl;
+//     cout << "\tArmies after deploying" << t21->getOccupyingArmies() << endl;
 
 //     cout << "Executing VALID deploy order" << endl;
-//     cout << "\tArmies before deploying" << t11->getNumberOfOccupyingArmies() << endl;
+//     cout << "\tArmies before deploying" << t11->getOccupyingArmies() << endl;
 //     deploy.execute(p1, 2, t11);
-//     cout << "\tArmies after deploying" << t11->getNumberOfOccupyingArmies() << endl;
+//     cout << "\tArmies after deploying" << t11->getOccupyingArmies() << endl;
 //     cout << endl;
 
 //      // Testing advance
@@ -36,19 +36,19 @@
 //     advance.execute(p1, 10, t12, t21);
 
 //     cout << "Executing VALID advance order - target territory belongs to player" << endl;
-//     cout << "\tSource territory armies before advancing" << t11->getNumberOfOccupyingArmies() << endl;
-//     cout << "\tTarget territory armies before advancing" << t12->getNumberOfOccupyingArmies() << endl;
+//     cout << "\tSource territory armies before advancing" << t11->getOccupyingArmies() << endl;
+//     cout << "\tTarget territory armies before advancing" << t12->getOccupyingArmies() << endl;
 //     advance.execute(p1, 10, t12, t11 );
-//     cout << "\tSource territory armies after advancing" << t11->getNumberOfOccupyingArmies() << endl;
-//     cout << "\tTarget territory armies after advancing" << t12->getNumberOfOccupyingArmies() << endl;
+//     cout << "\tSource territory armies after advancing" << t11->getOccupyingArmies() << endl;
+//     cout << "\tTarget territory armies after advancing" << t12->getOccupyingArmies() << endl;
 //     cout << endl;
 
 //     cout << "Executing VALID advance order - target territory belongs to enemy player" << endl;
-//     cout << "\tTarget territory owner before advancing" << t22->getOwner() << endl;
-//     cout << "\tTarget territory armies before advancing" << t22->getNumberOfOccupyingArmies() << endl;
+//     cout << "\tTarget territory owner before advancing" << *t22->getOwningPlayer() << endl;
+//     cout << "\tTarget territory armies before advancing" << t22->getOccupyingArmies() << endl;
 //     advance.execute(p1, 10, t22, t11);
-//     cout << "\\target territory owner after advancing" << t22->getOwner() << endl;
-//     cout << "\tTarget territory armies after advancing" << t22->getNumberOfOccupyingArmies() << endl;
+//     cout << "\\target territory owner after advancing" << *t22->getOwningPlayer() << endl;
+//     cout << "\tTarget territory armies after advancing" << t22->getOccupyingArmies() << endl;
 //     cout << endl;
 
 
@@ -57,32 +57,32 @@
 //     Bomb bomb;
    
 //     cout << "Executing INVALID bomb order" << endl;
-//     cout << "\tArmies before bombing" << t12->getNumberOfOccupyingArmies() << endl;
+//     cout << "\tArmies before bombing" << t12->getOccupyingArmies() << endl;
 //     bomb.execute(p1, t12);
-//     cout << "\tArmies after bombing" << t12->getNumberOfOccupyingArmies() << endl;
+//     cout << "\tArmies after bombing" << t12->getOccupyingArmies() << endl;
 
 //     cout << "Executing VALID bomb order" << endl;
-//     cout << "\tArmies before bombing" << t21->getNumberOfOccupyingArmies() << endl; 
+//     cout << "\tArmies before bombing" << t21->getOccupyingArmies() << endl; 
 //     bomb.execute(p1, t21);
-//     cout << "\tArmies after bombing" << t21->getNumberOfOccupyingArmies() << endl;
+//     cout << "\tArmies after bombing" << t21->getOccupyingArmies() << endl;
 //     cout << endl;
 
 //     // Testing blockade
 //     Blockade blockade;
    
 //     cout << "Executing INVALID blockade order" << endl;
-//     cout << "\tOwner before blockading" << (t22->getOwner()) << endl;
-//     cout << "\tArmies before blockading" << t22->getNumberOfOccupyingArmies() << endl;
+//     cout << "\tOwner before blockading" << (*t22->getOwningPlayer()) << endl;
+//     cout << "\tArmies before blockading" << t22->getOccupyingArmies() << endl;
 //     blockade.execute(p1, t22);
-//     cout << "\tOwner after blockading" << (t22->getOwner()) << endl;
-//     cout << "\tArmies after blockading" << t22->getNumberOfOccupyingArmies() << endl;
+//     cout << "\tOwner after blockading" << (*t22->getOwningPlayer()) << endl;
+//     cout << "\tArmies after blockading" << t22->getOccupyingArmies() << endl;
 
 //     cout << "Executing VALID blockade order" << endl;
-//     cout << "\tOwner before blockading" << (t12->getOwner()) << endl;
-//     cout << "\tArmies before blockading" << t12->getNumberOfOccupyingArmies() << endl;
+//     cout << "\tOwner before blockading" << (*t12->getOwningPlayer()) << endl;
+//     cout << "\tArmies before blockading" << t12->getOccupyingArmies() << endl;
 //     blockade.execute(p1, t12);
-//     cout << "\tOwner after blockading" << (t12->getOwner()) << endl;
-//     cout << "\tArmies after blockading" << t12->getNumberOfOccupyingArmies() << endl;
+//     cout << "\tOwner after blockading" << (*t12->getOwningPlayer()) << endl;
+//     cout << "\tArmies after blockading" << t12->getOccupyingArmies() << endl;
 
 //     // Testing negotiate
 //     Negotiate negotiate;
@@ -110,11 +110,11 @@
 //     airlift.execute(p1, 5, t11, t21);
    
 //     cout << "Executing VALID airlift order" << endl;
-//     cout << "\tArmies source territory before airlifting" << t12->getNumberOfOccupyingArmies() << endl;
-//     cout << "\tArmies target territory before airlifting" << t11->getNumberOfOccupyingArmies() << endl;
+//     cout << "\tArmies source territory before airlifting" << t12->getOccupyingArmies() << endl;
+//     cout << "\tArmies target territory before airlifting" << t11->getOccupyingArmies() << endl;
 //     airlift.execute(p1, 5, t11, t12);
-//     cout << "\tArmies source territory after airlifting" << t12->getNumberOfOccupyingArmies() << endl;
-//     cout << "\tArmies target territory after airlifting" << t11->getNumberOfOccupyingArmies() << endl;
+//     cout << "\tArmies source territory after airlifting" << t12->getOccupyingArmies() << endl;
+//     cout << "\tArmies target territory after airlifting" << t11->getOccupyingArmies() << endl;
 
 //     delete p1;
 //     delete p2;

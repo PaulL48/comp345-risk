@@ -229,7 +229,7 @@ Deploy::~Deploy()
 
 bool Deploy::validate(const Player* const player, const Player* const, const Territory* const targetTerritory, const Territory* const)
 {
-   return &(targetTerritory->getOwner()) == &*player ? true : false;
+   return targetTerritory->getOwningPlayer() == &*player ? true : false;
 }
 
 void Deploy::execute(Player* player, int numberOfArmies, Territory* targetTerritory){
@@ -240,7 +240,7 @@ void Deploy::execute(Player* player, int numberOfArmies, Territory* targetTerrit
 void Deploy::execute(Player* player, int numberOfArmies, Territory* targetTerritory, Territory*, Player*)
 {
     if(this->validate(player, nullptr, targetTerritory, nullptr)){
-        targetTerritory->setNumberOfOccupyingArmies(targetTerritory->getNumberOfOccupyingArmies()+numberOfArmies);
+        targetTerritory->setOccupyingArmies(targetTerritory->getOccupyingArmies()+numberOfArmies);
         this->setExecutedStatus(true);
     }
     else{
@@ -277,9 +277,9 @@ Advance::~Advance()
 
 bool Advance::validate(const Player* const player, const Player* const, const Territory* const targetTerritory, const Territory* const sourceTerritory)
 {
-   if(&(sourceTerritory->getOwner()) == &*player){
-       if(&(targetTerritory->getOwner()) != &*player){
-           if(player->isNegotiator(&(targetTerritory->getOwner()))){
+   if(sourceTerritory->getOwningPlayer() == &*player){
+       if(targetTerritory->getOwningPlayer() != &*player){
+           if(player->isNegotiator(targetTerritory->getOwningPlayer())){
                return false;
            }
        }
@@ -295,17 +295,17 @@ void Advance::execute(Player* player, int numberOfArmies, Territory* targetTerri
 void Advance::execute( Player* player, int numberOfArmies, Territory* targetTerritory, Territory* sourceTerritory, Player*)
 {
     if(this->validate(player, nullptr, targetTerritory, sourceTerritory)){
-        sourceTerritory->setNumberOfOccupyingArmies(sourceTerritory->getNumberOfOccupyingArmies()-numberOfArmies);
-        if(&(targetTerritory->getOwner()) == &*player){
+        sourceTerritory->setOccupyingArmies(sourceTerritory->getOccupyingArmies()-numberOfArmies);
+        if(targetTerritory->getOwningPlayer() == &*player){
             /*  Target territory belongs to player -> move from source to target */  
-            targetTerritory->setNumberOfOccupyingArmies(targetTerritory->getNumberOfOccupyingArmies()+numberOfArmies);
+            targetTerritory->setOccupyingArmies(targetTerritory->getOccupyingArmies()+numberOfArmies);
         }
         else{
             /* Target territory belongs to enemy -> Attack */ 
             std::default_random_engine generator(static_cast<unsigned int>(time(0)));
             std::uniform_int_distribution<int> distribution(1,100);
             auto killProbability = std::bind( distribution, generator );
-            int enemyTerritoryArmyUnits = targetTerritory->getNumberOfOccupyingArmies();
+            int enemyTerritoryArmyUnits = targetTerritory->getOccupyingArmies();
 
             while(numberOfArmies != 0 && enemyTerritoryArmyUnits != 0){
                 // player attacks
@@ -322,11 +322,11 @@ void Advance::execute( Player* player, int numberOfArmies, Territory* targetTerr
             } 
 
             if(numberOfArmies != 0){
-                targetTerritory->setOwner(*player);
-                targetTerritory->setNumberOfOccupyingArmies(numberOfArmies);
+                targetTerritory->setOwningPlayer(*player);
+                targetTerritory->setOccupyingArmies(numberOfArmies);
             }
             else{
-                targetTerritory->setNumberOfOccupyingArmies(enemyTerritoryArmyUnits);
+                targetTerritory->setOccupyingArmies(enemyTerritoryArmyUnits);
             }
         }
         this->setExecutedStatus(true);
@@ -365,7 +365,7 @@ Bomb::~Bomb()
 
 bool Bomb::validate(const Player* const player, const Player* const, const Territory* const targetTerritory, const Territory* const)
 {
-    if(&(targetTerritory->getOwner()) == &*player || (player->isNegotiator(&(targetTerritory->getOwner())))){
+    if(targetTerritory->getOwningPlayer() == &*player || (player->isNegotiator(targetTerritory->getOwningPlayer()))){
         return false;
     }
 
@@ -380,7 +380,7 @@ void Bomb::execute(Player* player, Territory* targetTerritory)
 void Bomb::execute(Player* player, int, Territory* targetTerritory, Territory*, Player*)
 {
     if(this->validate(player, nullptr, targetTerritory, nullptr)){
-        targetTerritory->setNumberOfOccupyingArmies((targetTerritory->getNumberOfOccupyingArmies())/2);
+        targetTerritory->setOccupyingArmies((targetTerritory->getOccupyingArmies())/2);
         this->setExecutedStatus(true);
     }
     else{
@@ -419,7 +419,7 @@ Blockade::~Blockade()
 
 bool Blockade::validate(const Player* const player, const Player* const, const Territory* const targetTerritory, const Territory* const)
 {
-    return (&(targetTerritory->getOwner()) == &*player) ? true : false;
+    return (targetTerritory->getOwningPlayer() == &*player) ? true : false;
 }
 
 void Blockade::execute(Player* player, Territory* targetTerritory)
@@ -431,8 +431,8 @@ void Blockade::execute(Player *player, int, Territory* targetTerritory, Territor
 {
     if(this->validate(player, nullptr, targetTerritory, nullptr)){
         Player* neutralPlayer = new Player("Neutral", vector<Territory>(), vector<Territory>(), Hand(), OrdersList(),0 , vector<int>());
-        targetTerritory->setNumberOfOccupyingArmies(targetTerritory->getNumberOfOccupyingArmies()*2);
-        targetTerritory->setOwner(*neutralPlayer);
+        targetTerritory->setOccupyingArmies(targetTerritory->getOccupyingArmies()*2);
+        targetTerritory->setOwningPlayer(*neutralPlayer);
         delete neutralPlayer;
         neutralPlayer = nullptr;
         this->setExecutedStatus(true);
@@ -471,7 +471,7 @@ Airlift::~Airlift()
 
 bool Airlift::validate(const Player* const player, const Player* const, const Territory* const targetTerritory, const Territory* const sourceTerritory)
 {
-   return ((&(targetTerritory->getOwner()) == &*player) && (&(sourceTerritory->getOwner()) == &*player))? true : false;
+   return ((targetTerritory->getOwningPlayer() == &*player) && (sourceTerritory->getOwningPlayer() == &*player))? true : false;
 }
 
 void Airlift::execute(Player* player, int numberOfArmies, Territory* targetTerritory, Territory* sourceTerritory){
@@ -481,8 +481,8 @@ void Airlift::execute(Player* player, int numberOfArmies, Territory* targetTerri
 void Airlift::execute(Player* player, int numberOfArmies, Territory* targetTerritory, Territory* sourceTerritory, Player*)
 {
     if(this->validate(player, nullptr, targetTerritory, sourceTerritory)){
-        sourceTerritory->setNumberOfOccupyingArmies(sourceTerritory->getNumberOfOccupyingArmies()-numberOfArmies);
-        targetTerritory->setNumberOfOccupyingArmies(targetTerritory->getNumberOfOccupyingArmies()+numberOfArmies);
+        sourceTerritory->setOccupyingArmies(sourceTerritory->getOccupyingArmies()-numberOfArmies);
+        targetTerritory->setOccupyingArmies(targetTerritory->getOccupyingArmies()+numberOfArmies);
         this->setExecutedStatus(true);
     }
     else{

@@ -91,7 +91,7 @@ void MapObserver::displayMap(){
                   << std::left << std::setw(20)  << "Continents" << "Territory Ownership\n"
                   << "-----------------------------------------------------------------------------------------------------------------------\n";
         for (auto &cont: _subject->getContinents()){
-            std::cout << std::left << std::setw(20) << *cont.getName() + ":";
+            std::cout << std::left << std::setw(20) << cont.getName() + ":";
             for (auto &terr: cont.getTerritories()){
                 if (terr.getOwningPlayer() == nullptr)
                     std::cout << std::setw(15) << "[Neutral]";
