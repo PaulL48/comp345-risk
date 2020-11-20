@@ -7,6 +7,20 @@ using std::ostream;
 using std::string;
 using std::vector;
 
+OrderDataPayload::OrderDataPayload() :
+    player(nullptr),
+    enemyPlayer(nullptr),
+    numberOfArmies(new int(0)),
+    sourceTerritory(nullptr),
+    targetTerritory(nullptr)
+{
+}
+
+OrderDataPayload::~OrderDataPayload()
+{
+    delete this->numberOfArmies;
+}
+
 OrdersList::OrdersList() : orders(new vector<Order *>())
 {
 }
@@ -232,8 +246,8 @@ bool Deploy::validate(const Player* const player, const Player* const, const Ter
    return targetTerritory->getOwningPlayer() == &*player ? true : false;
 }
 
-void Deploy::execute(Player* player, int numberOfArmies, Territory* targetTerritory){
-    this->execute(player, numberOfArmies, targetTerritory, nullptr, nullptr);
+void Deploy::execute(){
+    this->execute(this->dataPayload->player, *this->dataPayload->numberOfArmies, this->dataPayload->targetTerritory, nullptr, nullptr);
 }
 
 
@@ -288,8 +302,8 @@ bool Advance::validate(const Player* const player, const Player* const, const Te
    return false;
 }
 
-void Advance::execute(Player* player, int numberOfArmies, Territory* targetTerritory, Territory* sourceTerritory){
-    this->execute(player, numberOfArmies, targetTerritory, sourceTerritory, nullptr);
+void Advance::execute(){
+    this->execute(this->dataPayload->player, *this->dataPayload->numberOfArmies, this->dataPayload->targetTerritory, this->dataPayload->sourceTerritory, nullptr);
 }
 
 void Advance::execute( Player* player, int numberOfArmies, Territory* targetTerritory, Territory* sourceTerritory, Player*)
@@ -372,9 +386,9 @@ bool Bomb::validate(const Player* const player, const Player* const, const Terri
     return true;
 }
 
-void Bomb::execute(Player* player, Territory* targetTerritory)
+void Bomb::execute()
 {
-    this->execute(player, 0, targetTerritory, nullptr, nullptr);
+    this->execute(this->dataPayload->player, 0, this->dataPayload->targetTerritory, nullptr, nullptr);
 }
 
 void Bomb::execute(Player* player, int, Territory* targetTerritory, Territory*, Player*)
@@ -422,9 +436,9 @@ bool Blockade::validate(const Player* const player, const Player* const, const T
     return (targetTerritory->getOwningPlayer() == &*player) ? true : false;
 }
 
-void Blockade::execute(Player* player, Territory* targetTerritory)
+void Blockade::execute()
 {
-    this->execute(player, 0, targetTerritory, nullptr, nullptr);
+    this->execute(this->dataPayload->player, 0, this->dataPayload->targetTerritory, nullptr, nullptr);
 }
 
 void Blockade::execute(Player *player, int, Territory* targetTerritory, Territory*, Player*)
@@ -474,8 +488,8 @@ bool Airlift::validate(const Player* const player, const Player* const, const Te
    return ((targetTerritory->getOwningPlayer() == &*player) && (sourceTerritory->getOwningPlayer() == &*player))? true : false;
 }
 
-void Airlift::execute(Player* player, int numberOfArmies, Territory* targetTerritory, Territory* sourceTerritory){
-    this->execute(player, numberOfArmies, targetTerritory, sourceTerritory, nullptr);
+void Airlift::execute(){
+    this->execute(this->dataPayload->player, *this->dataPayload->numberOfArmies, this->dataPayload->targetTerritory, this->dataPayload->sourceTerritory, nullptr);
 }
 
 void Airlift::execute(Player* player, int numberOfArmies, Territory* targetTerritory, Territory* sourceTerritory, Player*)
@@ -523,9 +537,9 @@ bool Negotiate::validate(const Player* const player, const Player* const enemyPl
     return (&*player == &*enemyPlayer) ? false : true;
 }
 
-void Negotiate::execute(Player* player, Player* enemyPlayer)
+void Negotiate::execute()
 {
-    this->execute(player, 0, nullptr, nullptr, enemyPlayer);
+    this->execute(this->dataPayload->player, 0, nullptr, nullptr, this->dataPayload->enemyPlayer);
 }
 
 // sets doNotAttack to true for the territores inside attack lists both for player and enemy where owner of territory equals the opposing party  
