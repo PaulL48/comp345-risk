@@ -85,6 +85,47 @@ Map MapLoader::loadMap(Map &map, const std::string &path)
     return map;
 }
 
+Map MapLoader::loadMapValidated(const std::string &path, bool& valid)
+{
+    Map map;
+    // Check the path is valid
+    if (!std::filesystem::exists(path) || !std::filesystem::is_regular_file(path))
+    {
+        std::cout << "Invalid file path supplied\n";
+        valid = false;
+        return map;
+    }
+
+    std::ifstream input(path);
+    if (input.fail())
+    {
+        std::cout << path << " opening failed.\n";
+        valid = false;
+        exit(1);
+    }
+
+    std::vector<std::string> v = MapLoader::readFile(input);
+
+    // check if valid map file
+    std::cout << "Testing : " << path << "\n";
+    if (MapLoader::validateFile(v))
+        std::cout << "Testing successful \nBuilding Map\n";
+    else
+    {
+        std::cout << "Invalid Map, please start again.\n";
+        valid = false;
+        return map;
+    }
+
+    // Load continents
+    MapLoader::addContinents(map, v);
+    MapLoader::addTerritories(map, v);
+    MapLoader::addBorders(map, v);
+    valid = true;
+
+    return map;
+}
+
 /**
  * Extracting continents from input vector
  * @param v
@@ -247,7 +288,7 @@ std::vector<std::string> MapLoader::readFile(std::ifstream &file)
  */
 bool MapLoader::validateFile(const std::vector<std::string> &v)
 {
-    std::cout << "Verifing Map\n";
+    std::cout << "Verifing Map file\n";
     bool continentsSwitch = false;
     bool countriesSwitch = false;
     bool bordersSwitch = false;

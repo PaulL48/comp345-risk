@@ -128,12 +128,16 @@ void Territory::setOccupyingArmies(int occupyingArmies)
 
 std::ostream &operator<<(std::ostream &output, const Territory &territory)
 {
-    output << "(id: " << *territory.id << ", name: " << *territory.name;
+    output << "Territory (id: " << *territory.id << ", name: " << *territory.name << ", armies:" << *territory.occupyingArmies;
     if (territory.ownedBy != nullptr)
     {
-        output << ", owning player:" << *territory.ownedBy;
-        output << ", armies:" << *territory.occupyingArmies;
+        output << ", owning player: " << *territory.ownedBy;
     }
+    else
+    {
+        output << ", owning player: " << "None";
+    }
+    
     output << ")\n";
     return output;
 }

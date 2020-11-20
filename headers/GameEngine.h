@@ -29,6 +29,9 @@ namespace ConfigurationUtilities
 {
     std::vector<Player> getPlayers();
     void getPlayerNames(std::vector<Player>& players);
+    Map getMap();
+    bool getPhaseObserverSwitch();
+    bool getStatisticsObserverSwitch();
 }
 
 void GameInitialization(GameEngine& gameEngine);

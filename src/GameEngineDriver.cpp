@@ -10,7 +10,8 @@ int main()
 
    while(startAgain == 1)
    {
-       std::vector<Player> p = ConfigurationUtilities::getPlayers();
+       GameEngine gameEngine;
+       gameEngine.configure();
 
        // GameEngine Start;  
 

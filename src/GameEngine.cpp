@@ -49,11 +49,12 @@ std::vector<Player> ConfigurationUtilities::getPlayers()
 
 void ConfigurationUtilities::getPlayerNames(std::vector<Player>& players)
 {
+    std::unordered_set<std::string> usedNames;
     std::size_t i = 0;
     for (auto& player : players)
     {
         std::string name;
-        while (name.empty())
+        while (name.empty() || usedNames.count(name) != 0)
         {
             std::cout << "Player " << i + 1<< " set your name: ";
             std::getline(std::cin, name);
@@ -62,13 +63,99 @@ void ConfigurationUtilities::getPlayerNames(std::vector<Player>& players)
             {
                 std::cout << "No input" << std::endl;
             }
+
+            if (usedNames.count(name) != 0)
+            {
+                std::cout << "Name is already taken" << std::endl;
+            }
         }
         player.setPlayerName(name);
+        usedNames.insert(name);
         ++i;
     }
 }
 
+Map ConfigurationUtilities::getMap()
+{
+    std::vector<std::string> maps;
+    for (auto &directoryEntry : std::filesystem::directory_iterator("./maps"))
+    {
+        std::string fileName = directoryEntry.path().string();
+        maps.push_back(fileName); 
+    }
 
+    bool valid = false;
+    Map m;
+    while (!valid)
+    {
+        std::string choice = MenuUtilities::getValidatedMenuChoice("Map Selection. Please choose from the following maps: ", maps);
+        m = MapLoader::loadMapValidated(choice, valid);
+        std::cout << "Checking map integrity" << std::endl;
+        MapState state = m.validate();
+        if (state != MapState::VALID)
+        {
+            std::cout << "Map structure error: " << m.getErrorString(state) << std::endl;
+        }
+        else
+        {
+            std::cout << "Map integrity good" << std::endl;
+        }
+        
+    }
+    std::cout << "Map contents: " << std::endl;
+    std::cout << m << std::endl;
+    return m;
+}
+
+bool ConfigurationUtilities::getPhaseObserverSwitch()
+{
+    int switchValue = 0;
+    std::cout << "---------------------------------------------------------------" << std::endl;
+    std::cout << "Please select if you want the Phase observers ON or OFF" << std::endl; 
+    std::cout << "1) Phase observers ON" << std::endl;
+    std::cout << "2) Phase observers OFF" << std::endl;
+
+    std::cin >> switchValue;
+
+    while(switchValue < 1 || switchValue > 2)
+    {
+        std::cout << "Please try again, you can only choose between 1) On or 2) Off" << std::endl; 
+        std::cin >> switchValue;
+    }
+    
+    if (switchValue == 1)
+        return true;
+    else if (switchValue == 2)
+        return false;
+    else
+        return false;
+}
+
+bool ConfigurationUtilities::getStatisticsObserverSwitch()
+{
+    int switchValue = 0;
+
+    std::cout << "---------------------------------------------------------------" << std::endl;
+    std::cout << "Please select if you want the Game Statistic Observers ON or OFF" << std::endl; 
+    std::cout << "1) Game Statistic Observers ON" << std::endl;
+    std::cout << "2) Game Statistic Observers OFF" << std::endl;
+
+    std::cin >> switchValue;
+
+    while(switchValue < 1 || switchValue > 2)
+    {
+        std::cout << "Please try again, you can only choose between 1) On or 2) Off" << std::endl; 
+        std::cin >> switchValue;
+    }
+    std::cout << "---------------------------------------------------------------" << std::endl;
+
+    if (switchValue == 1)
+        return true;
+    else if (switchValue == 2)
+        return false;
+    else
+        return false;
+}
 
 int GameLogic::territoryArmyBonus(const Map& map, const Player& player)
 {
@@ -152,18 +239,35 @@ void fillRoundRobinOrders(std::vector<Order*>& masterList, std::vector<Player>& 
 // {}
 
 GameEngine::GameEngine() :
-    phaseObserver(nullptr),
-    stateObserver(nullptr),
-    map(nullptr),
-    players(nullptr),
-    currentPhase(nullptr),
-    currentPlayer(nullptr)
+    phaseObserver(new bool(false)),
+    stateObserver(new bool(false)),
+    map(new Map()),
+    players(new std::vector<Player>()),
+    currentPhase(new GamePhase()),
+    currentPlayer(new std::size_t()),
+    deck(new Deck())
 {
 }
 
 void GameEngine::configure()
 {
+    *this->phaseObserver = ConfigurationUtilities::getPhaseObserverSwitch();
+    *this->stateObserver = ConfigurationUtilities::getStatisticsObserverSwitch();
+    *this->players = ConfigurationUtilities::getPlayers();
+    *this->map = ConfigurationUtilities::getMap();
 
+    std::cout << "================================================================================" << std::endl;
+    std::cout << "Game Configuration Phase Complete. Configured settings: " << std::endl;
+    std::cout << "Phase observer on? " << *this->phaseObserver << std::endl;
+    std::cout << "Statistics observer on? " << *this->stateObserver << std::endl;
+    std::cout << this->players->size() << " Players participating: " << std::endl;
+    for (const auto& player : *this->players)
+    {
+        std::cout << player << std::endl;
+    }
+    std::cout << "Selected Map: " << std::endl;
+    std::cout << *this->map << std::endl;
+    std::cout << "================================================================================" << std::endl;
 }
 
 void GameEngine::mainGameLoop()
