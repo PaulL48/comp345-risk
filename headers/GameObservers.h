@@ -2,14 +2,33 @@
 // Created by Ruslan Dallin on 2020-11-03.
 //
 
-#ifndef COMP345_RISK_GAMEOBSERVERS_H
-#define COMP345_RISK_GAMEOBSERVERS_H
+#ifndef GAME_OBSERVERS_H
+#define GAME_OBSERVERS_H
 
-#include "Map.h"
-#include "Observer.h"
 #include <set>
+#include <list>
+
+class Observer {
+public:
+    ~Observer();
+    virtual void Update() = 0;
+protected:
+    Observer();
+};
+
+class Subject {
+public:
+    virtual void Attach(Observer* o);
+    virtual void Detach(Observer* o);
+    virtual void Notify();
+    Subject();
+    ~Subject();
+private:
+    std::list<Observer*> *_observers;
+};
 
 class GameEngine;
+class Map;
 
 class MapObserver : public Observer {
 public:
@@ -52,4 +71,4 @@ private:
     void displayOrdersExecutionPhase();
 };
 
-#endif //COMP345_RISK_GAMEOBSERVERS_H
+#endif //GAME_OBSERVERS_H

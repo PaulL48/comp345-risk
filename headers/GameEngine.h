@@ -41,18 +41,20 @@ namespace GameLogic
     bool playerIsDefeated(const Map& map, const Player& player);
 }
 
+// This function packs an array with type information supplied via template
 template <typename... Types>
 void Fill(std::vector<std::type_index>& vec)
 {
     vec.insert(vec.end(), {typeid(Types)...});
 }
 
+// Add the next order in a list that matches one of the selected types to a master list, following the supplied cursor. If the cursor is at the end of the container, nothing happens
 void addNextPhasedOrderOrNothing(std::vector<Order*>& masterList, const std::vector<Order*>& playerList, std::vector<Order*>::const_iterator& cursor, const std::vector<std::type_index>& selectedTypes);
 
-// For the given set of selected types, distribute the 
+// Go one by one through the supplied players adding orders matching a set of types until all these orders are in a master queue
 void fillRoundRobinOrders(std::vector<Order*> masterList, const std::vector<Player>& players, const std::vector<std::type_index>& selectedTypes);
 
-class GameEngine
+class GameEngine : public Subject
 {
 public:
     GameEngine();

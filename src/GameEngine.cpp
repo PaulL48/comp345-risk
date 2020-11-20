@@ -489,7 +489,7 @@ std::vector<Player> &GameStartup::intializePlayers(const int numArmies)
                 *map->getNeighbors(territory);
             for (Territory neighborTerritory : neighborTerritories)
             {
-                if (!(*neighborTerritory.getOwningPlayer() == player))
+                if (neighborTerritory.getOwningPlayer() != nullptr && *neighborTerritory.getOwningPlayer() != player)
                 {
                     player.toDefend().push_back(territory);
                     if ((std::find(player.toAttack().begin(), player.toAttack().end(),

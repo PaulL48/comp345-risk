@@ -10,6 +10,35 @@
 #include <set>
 #include "GameEngine.h"
 
+Observer::Observer(){
+}
+
+Observer::~Observer(){
+}
+
+Subject::Subject(){
+    _observers = new std::list<Observer*>;
+}
+
+Subject::~Subject(){
+    delete _observers;
+}
+
+void Subject::Attach(Observer* o){
+    _observers->push_back(o);
+}
+
+void Subject::Detach(Observer* o){
+    _observers->remove(o);
+}
+
+void Subject::Notify()
+{
+    std::list<Observer *>::iterator i = _observers->begin();
+    for (; i != _observers->end(); ++i)
+        (*i)->Update();
+}
+
 MapObserver::MapObserver(Map* s){
     _subject = s;
     _subject->Attach(this);
@@ -25,15 +54,15 @@ void MapObserver::Update(){
 }
 
 bool MapObserver::victory(){
-    Player *first = _subject->getContinents()->at(0).getTerritories().begin()->getOwnedBy();
+    const Player *first = _subject->getContinents().at(0).getTerritories().begin()->getOwningPlayer();
 
     if (first == nullptr)
         return false;
     else
     {
-        for (auto &cont : *_subject->getContinents())
+        for (auto &cont : _subject->getContinents())
             for (auto &terr : cont.getTerritories())
-                if (first != terr.getOwnedBy())
+                if (terr.getOwningPlayer() != nullptr && *first != *terr.getOwningPlayer())
                     return false;
 
         std::cout << congratulations << "\n";
@@ -41,15 +70,15 @@ bool MapObserver::victory(){
 
     }
     return true;
-};
+}
 
 std::set<std::string> MapObserver::getPlayerList (){
     std::set<std::string> playerSet;
 
-    for (auto &cont: *_subject->getContinents()){
+    for (auto &cont: _subject->getContinents()){
         for (auto &terr: cont.getTerritories()){
-            if (terr.getOwnedBy() != nullptr)
-                playerSet.insert(terr.getOwnedBy()->getPlayerName());
+            if (terr.getOwningPlayer() != nullptr)
+                playerSet.insert(terr.getOwningPlayer()->getPlayerName());
         }
     }
     return playerSet;
@@ -61,18 +90,18 @@ void MapObserver::displayMap(){
         std::cout << "-----------------------------------------------------------------------------------------------------------------------\n"
                   << std::left << std::setw(20)  << "Continents" << "Territory Ownership\n"
                   << "-----------------------------------------------------------------------------------------------------------------------\n";
-        for (auto &cont: *_subject->getContinents()){
+        for (auto &cont: _subject->getContinents()){
             std::cout << std::left << std::setw(20) << *cont.getName() + ":";
             for (auto &terr: cont.getTerritories()){
-                if (terr.getOwnedBy() == nullptr)
+                if (terr.getOwningPlayer() == nullptr)
                     std::cout << std::setw(15) << "[Neutral]";
                 else
-                    std::cout << std::setw(15) << "[" << terr.getOwnedBy()->getPlayerName() <<"]";
+                    std::cout << std::setw(15) << "[" << terr.getOwningPlayer()->getPlayerName() <<"]";
             }
             std::cout << "\n";
         }
     }
-};
+}
 
 void MapObserver::displayPlayers(){
     std::set<std::string> playerSet = getPlayerList();
@@ -87,9 +116,9 @@ void MapObserver::displayPlayers(){
             std::cout << std::left << std::setw(20) << player + ":" << "[";
             ownedCount = 0;
             count = 0;
-            for (auto &cont: *_subject->getContinents()){
+            for (auto &cont: _subject->getContinents()){
                 for (auto &terr: cont.getTerritories()){
-                    if (terr.getOwnedBy()->getPlayerName() == player){
+                    if (terr.getOwningPlayer()->getPlayerName() == player){
                         std::cout << std::setw(1) << "+";
                         ownedCount++;
                     }
@@ -103,26 +132,26 @@ void MapObserver::displayPlayers(){
         }
         std::cout << "-----------------------------------------------------------------------------------------------------------------------\n";
     }
-};
+}
 
 
 PhaseObserver::PhaseObserver(GameEngine* s){
     _subject = s;
     _subject->Attach(this);
-};
+}
 
 PhaseObserver::~PhaseObserver(){
     _subject->Detach(this);
-};
+}
 
 void PhaseObserver::Update(){
     displayPhase();
-};
+}
 
 void PhaseObserver::displayPhase(){
-    GamePhase phase = _subject.getCurrentPhase();
+    GamePhase phase = _subject->getCurrentPhase();
 
-    switch (currentPhase)
+    switch (phase)
     {
     case GamePhase::REINFORCEMENT:
         displayReinforcementPhase();
@@ -138,21 +167,21 @@ void PhaseObserver::displayPhase(){
 
 void PhaseObserver::displayReinforcementPhase(){
     Player currentPlayer;
-    currentPlayer = _subject.getCurrentPlayer();
+    currentPlayer = _subject->getCurrentPlayer();
 
     std::cout << "-----------------------------------------------------------------------------------------------------------------------\n"
               << std::left << std::setw(20)  << currentPlayer << " - Reinforcement Phase\n"
               << "-----------------------------------------------------------------------------------------------------------------------\n";
-    std::cout << std::setw(10) << "Your Territories: " << _subject.getOwnedTerritories();
-    std::cout << std::setw(10) << "\nYour Continents: " << _subject.getOwnedContinents();
-    std::cout << std::setw(10) << "\nContinent Control Bonus: " << _subject.getOwnedContientControlBonus();
-    std::cout << std::setw(10) << "\nTotal Available Armies: " << _subject.getTotalAvailableArmies() << "\n";
+    std::cout << std::setw(10) << "Your Territories: " << _subject->getCurrentPlayerOwnedTerritories();
+    std::cout << std::setw(10) << "\nYour Continents: " << _subject->getCurrentPlayerOwnedContinents();
+    std::cout << std::setw(10) << "\nContinent Control Bonus: " << _subject->getCurrentPlayerOwnedContinentControlBonus();
+    std::cout << std::setw(10) << "\nTotal Available Armies: " << _subject->getCurrentPlayerTotalAvailableArmies() << "\n";
 
 }
 
 void PhaseObserver::displayissuingOrdersPhase(){
     Player currentPlayer;
-    currentPlayer = _subject.getCurrentPlayer();
+    currentPlayer = _subject->getCurrentPlayer();
 
     std::cout << "-----------------------------------------------------------------------------------------------------------------------\n"
               << std::left << std::setw(20)  << currentPlayer << " - Issuing Orders Phase\n"
@@ -172,14 +201,14 @@ void PhaseObserver::displayissuingOrdersPhase(){
 
 void PhaseObserver::displayOrdersExecutionPhase(){
     Player currentPlayer;
-    currentPlayer = _subject.getCurrentPlayer();
+    currentPlayer = _subject->getCurrentPlayer();
 
     std::cout << "-----------------------------------------------------------------------------------------------------------------------\n"
               << std::left << std::setw(25)  << currentPlayer << " - Orders Execution Phase\n"
               << "-----------------------------------------------------------------------------------------------------------------------\n";
     std::cout << std::setw(10) << "\nYour orders: ";
-    for (auto order: currentPlayer.getOrders()){
-        std::cout << order.getName() << "\n";
+    for (Order* order: currentPlayer.getOrders().getList()){
+        std::cout << order << "\n";
     }
 
 }

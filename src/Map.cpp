@@ -151,10 +151,7 @@ void Territory::setOccupyingArmies(int *occupyingArmies)
 {
     Territory::occupyingArmies = occupyingArmies;
 }
-Player *Territory::getOwnedBy() const
-{
-    return ownedBy;
-}
+
 void Territory::setOwnedBy(Player *ownedBy)
 {
     Territory::ownedBy = ownedBy;

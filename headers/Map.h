@@ -1,7 +1,6 @@
 #ifndef MAP_H
 #define MAP_H
 
-#include "Subject.h"
 #include <iostream>
 #include <ostream>
 #include <stack>
@@ -9,6 +8,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+#include "GameObservers.h"
 
 //============================================================================================================================================================
 // TEMPLATE FUNCTION DECLARATIONS: OutputUtilities
@@ -212,7 +212,8 @@ public:
     void setY(int *y);
     int *getOccupyingArmies() const;
     void setOccupyingArmies(int *occupyingArmies);
-    Player *getOwnedBy() const;
+    Player &getOwnedBy();
+    const Player& getOwnedBy() const;
     void setOwnedBy(Player *ownedBy);
     void setOwner(const Player& newOwner);
     const Player& getOwner() const;
