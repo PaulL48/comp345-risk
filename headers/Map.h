@@ -212,8 +212,6 @@ public:
     void setY(int *y);
     int *getOccupyingArmies() const;
     void setOccupyingArmies(int *occupyingArmies);
-    Player &getOwnedBy();
-    const Player& getOwnedBy() const;
     void setOwnedBy(Player *ownedBy);
     void setOwner(const Player& newOwner);
     const Player& getOwner() const;
