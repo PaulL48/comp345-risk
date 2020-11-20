@@ -4,6 +4,7 @@
 #include <functional>
 #include <cmath>
 #include <typeindex>
+#include <random>
 #include <algorithm>
 #include <iostream>
 #include <string>
@@ -157,6 +158,116 @@ bool ConfigurationUtilities::getStatisticsObserverSwitch()
         return false;
 }
 
+void StartupUtilities::shufflePlayers(std::vector<Player>& players)
+{
+    std::cout << "Randomizing player order." << std::endl;
+    auto rd = std::random_device(); 
+    auto rng = std::default_random_engine {rd()};
+    std::shuffle(std::begin(players), std::end(players), rng);
+
+    std::cout << "Randomized order is: " << std::endl;
+    for (const auto& player : players)
+    {
+        std::cout << player << std::endl;
+    }
+}
+
+int StartupUtilities::startingArmies(int playerCount)
+{
+    switch (playerCount)
+    {
+    case 2:
+        return 40;
+    case 3:
+        return 35;
+    case 4:
+        return 30;
+    case 5:
+        return 25;
+    default:
+        return 0;
+    }
+}
+
+void StartupUtilities::assignStartingArmies(std::vector<Player>& players)
+{
+    int startingArmies = StartupUtilities::startingArmies(players.size());
+
+    for (auto& player : players)
+    {   
+        std::cout << "Adding " << startingArmies << " armies to player: " << std::endl;
+        player.addArmies(startingArmies);
+        std::cout << player << std::endl;
+    }
+}
+
+void StartupUtilities::playersDrawCards(std::vector<Player>& players, Deck& deck, int cardsPerHand)
+{
+    for (auto& player : players)
+    {
+        std::cout << "Drawing initial cards for player: " << player << std::endl;
+        for (int i = 0; i < cardsPerHand; ++i)
+        {
+            player.getCards().addToHand(deck.draw());
+        }
+    }
+}
+
+void StartupUtilities::assignTerritories(std::vector<Player>& players, Map& map)
+{
+    std::cout << "Randomly assigning territories to players" << std::endl;
+
+
+    Graph<Territory>& territories = map.getGraph();
+
+    std::vector<Territory> shuffledTerritories;
+    for (const Territory& territory : territories)
+    {
+        shuffledTerritories.push_back(territory);
+    }
+    auto rd = std::random_device(); 
+    auto rng = std::default_random_engine {rd()};
+    std::shuffle(std::begin(shuffledTerritories), std::end(shuffledTerritories), rng);
+    std::vector<std::pair< Territory , const Player *>> changes;
+    int playerIndex = 0;
+    for (const Territory& territory : shuffledTerritories)
+    {
+        changes.push_back(std::make_pair(territory, &players.at(playerIndex)));
+        ++playerIndex;
+        playerIndex %= players.size();
+    }
+    for (auto &[territoryObj, playerObj] : changes)
+    {
+        std::cout << "Setting ownership: "<< std::endl;
+        std::cout << territoryObj << " to " << *playerObj << std::endl;
+        map.setTerritoryOwner(territoryObj, *playerObj);
+    }
+
+    // for (int i = 0; i < players.size(); i++)
+    // {
+    //     Player player = playerList->at(i);
+    //     std::vector<Territory> ownedTerritories = map.getPlayersTerritoriesNonConst(player);
+    //     for (Territory territory : ownedTerritories)
+    //     {
+    //         std::unordered_set<Territory> neighborTerritories =
+    //             *map.getNeighbors(territory);
+    //         for (Territory neighborTerritory : neighborTerritories)
+    //         {
+    //             if (neighborTerritory.getOwningPlayer() != nullptr && *neighborTerritory.getOwningPlayer() != player)
+    //             {
+    //                 player.toDefend().push_back(territory);
+    //                 if ((std::find(player.toAttack().begin(), player.toAttack().end(),
+    //                                neighborTerritory) == player.toAttack().end()))
+    //                 {
+    //                     player.toAttack().push_back(neighborTerritory);
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     playerList->at(i) = player;
+    // }
+}
+
 int GameLogic::territoryArmyBonus(const Map& map, const Player& player)
 {
     std::vector<Territory> territoriesOwned = map.getPlayersTerritories(player);
@@ -268,6 +379,33 @@ void GameEngine::configure()
     std::cout << "Selected Map: " << std::endl;
     std::cout << *this->map << std::endl;
     std::cout << "================================================================================" << std::endl;
+    std::cout << "Press any enter to continue" << std::endl;
+    std::string wait;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::getline(std::cin, wait);
+}
+
+void GameEngine::startupPhase()
+{
+    StartupUtilities::assignStartingArmies(*this->players);
+    StartupUtilities::shufflePlayers(*this->players);
+    StartupUtilities::assignTerritories(*this->players, *this->map);
+    StartupUtilities::playersDrawCards(*this->players, *this->deck, 5);
+
+    std::cout << "================================================================================" << std::endl;
+    std::cout << "Game Start Phase Complete. Game details: " << std::endl;
+    std::cout << "Player order, armies and starting hands: " << std::endl;
+    for (const auto& player : *this->players)
+    {
+        std::cout << player << std::endl;
+    }
+    std::cout << "Map distribution: " << std::endl;
+    std::cout << *this->map << std::endl;
+    std::cout << "================================================================================" << std::endl;
+    std::cout << "Press any enter to continue" << std::endl;
+    std::string wait;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    std::getline(std::cin, wait);
 }
 
 void GameEngine::mainGameLoop()
@@ -375,14 +513,6 @@ void GameEngine::cullDefeatedPlayers()
     }
 }
 
-//#include "GameStartup.h"
-//#include "MapObserver.h"
-
-int totalPlayers = 0; 
-std::size_t selectedMap;
-int phaseObserver = 0;
-int statObserver = 0; 
-std::vector<std::string> mapNames = std::vector<std::string>(); 
 
 // GameEngine::GameEngine()
 // {
@@ -397,141 +527,70 @@ std::vector<std::string> mapNames = std::vector<std::string>();
 
 GameEngine::~GameEngine(){}
 
-MapSelect::MapSelect()
-{
-    for (auto &directoryEntry : std::filesystem::directory_iterator("./maps"))
-    {
-        std::string fileName = directoryEntry.path().string();
-        mapNames.push_back(fileName); 
-    }
+// ControlObservers::ControlObservers()
+// {
+//     std::cout << "---------------------------------------------------------------" << std::endl;
+//     std::cout << "Please select if you want the Phase observers ON or OFF" << std::endl; 
+//     std::cout << "1) Phase observers ON" << std::endl;
+//     std::cout << "2) Phase observers OFF" << std::endl;
 
-    std::cout << "Maps Selection: " << std::endl; 
-    std::cout << std::endl;
+//     std::cin >> phaseObserver;
 
-    for(std::size_t i=0; i<mapNames.size(); i++)
-    {
-        std::cout << (i+1) << ") " << mapNames[i] << std::endl;    
-    }
+//     while(phaseObserver < 1 || phaseObserver > 2)
+//     {
+//         std::cout << "Please try again, you can only choose between 1) On or 2) Off" << std::endl; 
+//         std::cin >> phaseObserver;
+//     }
+//     std::cout << "---------------------------------------------------------------" << std::endl;
+//     std::cout << "Please select if you want the Game Statistic Observers ON or OFF" << std::endl; 
+//     std::cout << "1) Game Statistic Observers ON" << std::endl;
+//     std::cout << "2) Game Statistic Observers OFF" << std::endl;
 
-    std::cout << std::endl; 
-   
-    std::cout << "Please enter the index number of one of the maps in the list above" << std::endl;
+//     std::cin >> statObserver;
 
-    std::cin >> selectedMap;
+//     while(statObserver < 1 || statObserver > 2)
+//     {
+//         std::cout << "Please try again, you can only choose between 1) On or 2) Off" << std::endl; 
+//         std::cin >> statObserver;
+//     }
+//     std::cout << "---------------------------------------------------------------" << std::endl;
 
-    while(selectedMap < 1 || selectedMap > mapNames.size())
-    {
-        std::cout << "Please try again, you can only chose from the list above" << std::endl; 
+//     // ***  Handle observers here  ***
 
-        std::cin >> selectedMap;
-    }
+//     // if(phaseObserver == 1)
+//     // {
+//     //     Map *model = new Map (MapLoader::createMap(mapNames[selectedMap-1])); 
+//     //     MapObserver *view = new MapObserver(model);
+//     //     MapContoller *contoller = new MapContoller(view, model);
+//     //     contoller->controlMap();
+//     //     delete view;
+//     //     delete model;
+//     //     delete contoller;
+//     // }
 
-    std::cout << "Loading the selected map..." << std::endl; 
-    std::cout << std::endl;   
-}
-
-MapSelect::~MapSelect(){}
-
-PlayerAmount::PlayerAmount()
-{
-    int totalPlayers;
-
-    std::cout << "---------------------------------------------------------------" << std::endl;
-
-    std::cout << "Please select the number of players in your game" << std::endl; 
-
-    std::cin >> totalPlayers; 
-
-    while(totalPlayers < 2 || totalPlayers > 5){
-        
-        std::cout << "Please try again. You can only choose 2-5 players" << std::endl; 
-
-        std::cin >> totalPlayers; 
-    }
-
-    std::cout << "---------------------------------------------------------------" << std::endl;
-    std::cout << std::endl; 
-
-    setPlayers(totalPlayers); 
-} 
-
-PlayerAmount::~PlayerAmount(){}
-
-void PlayerAmount::setPlayers(int players)
-{
-    totalPlayers = players; 
-}
-
-int PlayerAmount::getPlayers()
-{
-    return totalPlayers; 
-}
-
-ControlObservers::ControlObservers()
-{
-    std::cout << "---------------------------------------------------------------" << std::endl;
-    std::cout << "Please select if you want the Phase observers ON or OFF" << std::endl; 
-    std::cout << "1) Phase observers ON" << std::endl;
-    std::cout << "2) Phase observers OFF" << std::endl;
-
-    std::cin >> phaseObserver;
-
-    while(phaseObserver < 1 || phaseObserver > 2)
-    {
-        std::cout << "Please try again, you can only choose between 1) On or 2) Off" << std::endl; 
-        std::cin >> phaseObserver;
-    }
-    std::cout << "---------------------------------------------------------------" << std::endl;
-    std::cout << "Please select if you want the Game Statistic Observers ON or OFF" << std::endl; 
-    std::cout << "1) Game Statistic Observers ON" << std::endl;
-    std::cout << "2) Game Statistic Observers OFF" << std::endl;
-
-    std::cin >> statObserver;
-
-    while(statObserver < 1 || statObserver > 2)
-    {
-        std::cout << "Please try again, you can only choose between 1) On or 2) Off" << std::endl; 
-        std::cin >> statObserver;
-    }
-    std::cout << "---------------------------------------------------------------" << std::endl;
-
-    // ***  Handle observers here  ***
-
-    // if(phaseObserver == 1)
-    // {
-    //     Map *model = new Map (MapLoader::createMap(mapNames[selectedMap-1])); 
-    //     MapObserver *view = new MapObserver(model);
-    //     MapContoller *contoller = new MapContoller(view, model);
-    //     contoller->controlMap();
-    //     delete view;
-    //     delete model;
-    //     delete contoller;
-    // }
-
-    //if(statObserver == 1) 
-    //{
-    //}
+//     //if(statObserver == 1) 
+//     //{
+//     //}
     
-    std::ifstream input(mapNames[selectedMap-1]);
-    std::vector<std::string> v = MapLoader::readFile(input);
+//     std::ifstream input(mapNames[selectedMap-1]);
+//     std::vector<std::string> v = MapLoader::readFile(input);
 
-    if(MapLoader::validateFile(v))
-    {
-        //MapLoader::loadMap(mapNames[selectedMap-1]);
-        Deck gameDeck;
-    }
-    else
-    {
-        std::cout << std::endl;
-        std::cout << "The selected map is invalid, please start again." << std::endl;
-    }
+//     if(MapLoader::validateFile(v))
+//     {
+//         //MapLoader::loadMap(mapNames[selectedMap-1]);
+//         Deck gameDeck;
+//     }
+//     else
+//     {
+//         std::cout << std::endl;
+//         std::cout << "The selected map is invalid, please start again." << std::endl;
+//     }
     
-    std::cout << "---------------------------------------------------------------" << std::endl;
+//     std::cout << "---------------------------------------------------------------" << std::endl;
 
-    mapNames.clear();
-}
+//     mapNames.clear();
+// }
     
-ControlObservers::~ControlObservers(){}
 
 
 GameStartup::GameStartup(const int numPlayer, const Map &map) :

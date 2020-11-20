@@ -9,10 +9,14 @@
 
 Player::Player(const std::string& name) : 
     playerName(new std::string(name)),     
-    territoriesAttack(new std::vector<Territory>()),
-    territoriesDefend(new std::vector<Territory>()),
-    cards(new Hand()),
-    orders(new OrdersList()),
+    territoriesAttack(new std::vector<Territory>),
+    territoriesDefend(new std::vector<Territory>),
+    cards(new Hand),
+    orders(new OrdersList),
+    reinforcementPool(new int(0)),
+    numArmies(new int(0)),
+    playerOrder(new std::vector<int>),
+    negotiators(new std::vector<Player*>),
     conqueredTerritory(new bool(false))
 {
 }
@@ -29,6 +33,7 @@ Player::Player(const std::string &playerName,
     territoriesDefend(new std::vector<Territory>(territoriesDefend)),
     cards(new Hand(cards)),
     orders(new OrdersList(orders)),
+    reinforcementPool(new int(numArmies)),
     numArmies(new int(numArmies)),
     playerOrder(new std::vector<int>(playerOrder)),
     negotiators(new std::vector<Player*>),
@@ -42,7 +47,8 @@ Player::Player() :
     territoriesDefend(new std::vector<Territory>),
     cards(new Hand),
     orders(new OrdersList),
-    numArmies(new int),
+    reinforcementPool(new int(0)),
+    numArmies(new int(0)),
     playerOrder(new std::vector<int>),
     negotiators(new std::vector<Player*>),
     conqueredTerritory(new bool(false))
@@ -169,6 +175,7 @@ Player::~Player()
     delete playerOrder;
     delete negotiators;
     delete conqueredTerritory;
+    delete reinforcementPool;
 }
 
 /**
@@ -185,6 +192,7 @@ Player::Player(const Player &p)
     playerOrder = new std::vector<int>(*p.playerOrder);
     negotiators = new std::vector<Player*>(*p.negotiators);
     conqueredTerritory = new bool(*p.conqueredTerritory);
+    reinforcementPool = new int(*p.reinforcementPool);
 }
 /**
  * This is the assignment operator for the Player object
@@ -202,6 +210,7 @@ Player &Player::operator=(const Player &player)
     *this->orders = *player.orders;
     *this->negotiators = *player.negotiators;
     *this->conqueredTerritory = *player.conqueredTerritory;
+    *this->reinforcementPool = *player.reinforcementPool;
     return *this;
 }
 
@@ -234,7 +243,7 @@ std::string &Player::getPlayerName()const
 }
 
 int &Player::getNumArmies() const{
-    return *numArmies;
+    return *reinforcementPool;
 }
 std::vector<int>& Player::getPlayerOrder() const {
     return *playerOrder;
@@ -266,33 +275,31 @@ bool Player::isNegotiator(const Player* player) const {
  * */
 std::ostream &operator<<(std::ostream &output, const Player &p)
 {
-    output << "( Player Name: " << *p.playerName << ", Orders : " << *p.orders;
-    output << "Territories Attack: ";
+    output << "(Player Name: " << *p.playerName << ", Reinforcement Pool: " << *p.reinforcementPool << ", Orders: " << *p.orders;
+    output << ", Territories Attack: ";
     for (const auto &territory : *p.territoriesAttack)
     {
         output << territory << ",";
     }
-    output << "Territories Defend: ";
+    output << ", Territories Defend: ";
     for (const auto &territory : *p.territoriesDefend)
     {
         output << territory << ",";
     }
-    output << "Cards : " << *p.cards;
+    output << ", Cards: " << *p.cards;
     output << ")";
     return output;
 }
 
 void Player::addArmies(int add)
 {
-    // TODO: fill in
-    // stub
-    add++;
+    *this->reinforcementPool += add;
 }
 
 int Player::getReinforcementPool() const
 {
     // TODO: Fill in
-    return 10;
+    return *this->reinforcementPool;
 }
 
 void Player::setConqueredTerritory(bool conqueredTerritory)

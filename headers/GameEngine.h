@@ -10,12 +10,6 @@
 #include "Map.h"
 #include "Cards.h"
 
-extern int totalPlayers; 
-extern std::size_t selectedMap;
-extern int phaseObserver;
-extern int statObserver; 
-extern std::vector<std::string> mapNames;
-
 enum class GamePhase
 {
     REINFORCEMENT,
@@ -32,6 +26,15 @@ namespace ConfigurationUtilities
     Map getMap();
     bool getPhaseObserverSwitch();
     bool getStatisticsObserverSwitch();
+}
+
+namespace StartupUtilities
+{
+    void shufflePlayers(std::vector<Player>& player);
+    int startingArmies(int playerCount);
+    void assignStartingArmies(std::vector<Player>& player);
+    void assignTerritories(std::vector<Player>& players, Map& map);
+    void playersDrawCards(std::vector<Player>& players, Deck& deck, int cardsPerHand);
 }
 
 void GameInitialization(GameEngine& gameEngine);
@@ -76,6 +79,7 @@ public:
 
     // Phase methods
     void configure();
+    void startupPhase();
     void mainGameLoop();
     void reinforcementPhase(Player& player);
     void issueOrdersPhase(Player& player);
@@ -101,34 +105,6 @@ private:
     std::size_t* currentPlayer;
     Deck* deck; // TODO: Initialize
 };
-
-
-class MapSelect
-{
-public: 
-    MapSelect(); 
-    ~MapSelect(); 
-    
-}; 
-
-class PlayerAmount
-{
-public:
-    PlayerAmount();
-    ~PlayerAmount(); 
-    int getPlayers();
-    void setPlayers(int totalPlayers); 
-};
-
-class ControlObservers
-{
-public: 
-    ControlObservers();
-    ~ControlObservers();
-
-};
-
-
 
 class GameStartup{
     private:

@@ -151,7 +151,7 @@ std::ostream &operator<<(std::ostream &out, const Hand &hand)
 
     for (const Card *card : *hand.hand)
     {
-        out << card << ", ";
+        out << *card << ", ";
     }
 
     return out;

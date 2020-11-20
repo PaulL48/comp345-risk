@@ -12,8 +12,9 @@ int main()
    {
        GameEngine gameEngine;
        gameEngine.configure();
+       gameEngine.startupPhase();
 
-       // GameEngine Start;  
+       // GameEngine Start;
 
        std::cout << "Would you like the restart the startup phase?" << std::endl;
        std::cout << "1) YES" << std::endl;
