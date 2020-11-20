@@ -54,6 +54,9 @@ namespace GameLogic
     int totalArmyBonus(const Map& map, const Player& player);
     int playerTotalAvailableArmies(const Map& map, const Player& player);
     bool playerIsDefeated(const Map& map, const Player& player);
+
+    void addCardToConqueringPlayers(std::vector<Player>& players, Deck& deck);
+    void playersRecomputeAttackDefend(std::vector<Player>& players, const Map& map);
 }
 
 // This function packs an array with type information supplied via template
@@ -81,8 +84,8 @@ public:
     void configure();
     void startupPhase();
     void mainGameLoop();
-    void reinforcementPhase(Player& player);
-    void issueOrdersPhase(Player& player);
+    void reinforcementPhase(std::vector<Player>& players);
+    void issueOrdersPhase();
     void executeOrdersPhase();
 
     // Methods based on current player

@@ -137,9 +137,10 @@ void Player::issueOrder(const Map& map)
     // Issue deploy orders until all reinforcements are deployed
     while (this->getReinforcementsPendingDeployment() < *this->reinforcementPool)
     {
+        std::cout << "================================================================================" << std::endl;
         std::cout << "Issue deployment orders to distribute all your reinforcements" << std::endl;
         std::cout << "Current orders are:" << std::endl;
-        std::cout << this->orders << std::endl;
+        std::cout << *this->orders << std::endl;
 
         MenuUtilities::executeMenuAction(
             "Actions: ",

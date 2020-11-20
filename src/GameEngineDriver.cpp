@@ -13,6 +13,7 @@ int main()
        GameEngine gameEngine;
        gameEngine.configure();
        gameEngine.startupPhase();
+       gameEngine.mainGameLoop();
 
        // GameEngine Start;
 
@@ -29,8 +30,6 @@ int main()
            std::cin >> startAgain;
        }
    }
-
-   std::cout << "The game has been initialized" << std::endl; 
 
    //std::vector<Player> players= &GameStartup::getPlayers();
    //std::size_t playersInGame = players.size(); 

@@ -280,6 +280,29 @@ bool GameLogic::playerIsDefeated(const Map& map, const Player& player)
     return map.getPlayersTerritories(player).size() == 0;
 }
 
+void GameLogic::addCardToConqueringPlayers(std::vector<Player>& players, Deck& deck)
+{
+    for (auto& player : players)
+    {
+        if (player.getConqueredTerritory())
+        {
+            std::cout << "Player: " << player << " is awarded a card for conquering a territory this turn" << std::endl;
+            player.getCards().addToHand(deck.draw());
+            player.setConqueredTerritory(false);
+        }
+    }
+}
+
+void GameLogic::playersRecomputeAttackDefend(std::vector<Player>& players, const Map& map)
+{
+    for (auto& player : players)
+    {
+        player.updateToDefend(map);
+        player.updateToAttack(map);
+    }
+}
+
+
 void addNextPhasedOrderOrNothing(std::vector<Order*>& masterList, const std::vector<Order*>& playerList, std::vector<Order*>::const_iterator& cursor,  const std::vector<std::type_index>& selectedTypes)
 {
     for (; cursor != playerList.end(); ++cursor)
@@ -392,27 +415,45 @@ void GameEngine::mainGameLoop()
 {
     while (!gameShouldEnd())
     {
-        for (std::size_t i = 0; i < this->players->size(); ++i)
-        {
-            *this->currentPlayer = i;
-            this->reinforcementPhase(this->players->at(i));
-            this->issueOrdersPhase(this->players->at(i));
-        }
+        this->reinforcementPhase(*this->players);
+        this->issueOrdersPhase();
         this->executeOrdersPhase();
         cullDefeatedPlayers();
+        GameLogic::addCardToConqueringPlayers(*this->players, *this->deck);
+        GameLogic::playersRecomputeAttackDefend(*this->players, *this->map);
     }
 }
 
-void GameEngine::reinforcementPhase(Player& player)
+void GameEngine::reinforcementPhase(std::vector<Player>& players)
 {
     *this->currentPhase = GamePhase::REINFORCEMENT;
-    player.addArmies(GameLogic::totalArmyBonus(*this->map, player));
+    std::cout << "================================================================================" << std::endl;
+    std::cout << "Starting Reinforcement Phase" << std::endl;
+    std::size_t i = 0;
+    for (auto& player : players)
+    {
+        *this->currentPlayer = i++;
+        std::cout << "Reinforcing Player: " << player << std::endl;
+        std::cout << "Player owns " << this->map->getPlayersTerritoriesNonConst(player).size() << " territories" << std::endl;
+        std::cout << "Player owns " << this->map->getPlayersContinents(player).size() << " continents" << std::endl;
+        std::cout << "Adding " << GameLogic::totalArmyBonus(*this->map, player) << " armies to player" << std::endl;
+        player.addArmies(GameLogic::totalArmyBonus(*this->map, player));
+    }
 }
 
-void GameEngine::issueOrdersPhase(Player& player)
+void GameEngine::issueOrdersPhase()
 {
     *this->currentPhase = GamePhase::ISSUE_ORDERS;
-    player.issueOrder(*this->map);
+
+    std::cout << "================================================================================" << std::endl;
+    std::cout << "Starting Issue Order Phase" << std::endl;
+
+    for (std::size_t i = 0; i < this->players->size(); ++i)
+    {
+        *this->currentPlayer = i;
+        std::cout << "Current player to issue orders: " << this->players->at(i) << std::endl;
+        this->players->at(i).issueOrder(*this->map);
+    }
 }
 
 void GameEngine::executeOrdersPhase()
