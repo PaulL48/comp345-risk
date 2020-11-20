@@ -431,18 +431,32 @@ void Map::connectTerritories(int territoryId1, int territoryId2)
 }
 
 
-std::vector<Territory> Map::getPlayersTerritories(const Player& player)
+std::vector<Territory> Map::getPlayersTerritories(const Player& player) const
 {
     std::vector<Territory> ownedTerritories;
     for (const auto& territory : *this->territories)
     {
-        if (territory.getOwningPlayer() != nullptr &&*territory.getOwningPlayer() == player)
+        if (territory.getOwningPlayer() != nullptr && *territory.getOwningPlayer() == player)
         {
             ownedTerritories.push_back(territory);
         }
     }
     return ownedTerritories;
 }
+
+std::vector<Territory> Map::getPlayersTerritoriesNonConst(const Player& player)
+{
+    std::vector<Territory> ownedTerritories;
+    for (const auto& territory : *this->territories)
+    {
+        if (territory.getOwningPlayer() != nullptr && *territory.getOwningPlayer() == player)
+        {
+            ownedTerritories.push_back(territory);
+        }
+    }
+    return ownedTerritories;
+}
+
 
 std::vector<Continent> Map::getPlayersContinents(const Player& player) const
 {

@@ -83,6 +83,8 @@ class Player{
 
         // Return the number of armies queued to reinforce various territories
         int getReinforcementsPendingDeployment();
+
+        void setPlayerName(const std::string& name);
 };
 
 template <typename T>

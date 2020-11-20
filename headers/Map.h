@@ -350,6 +350,8 @@ public:
     void setTerritoryOwner(const Territory& territory, Player *player);
 
     std::vector<Territory> getPlayersTerritories(const Player& player) const;
+    std::vector<Territory> getPlayersTerritoriesNonConst(const Player& player);
+
     std::vector<Continent> getPlayersContinents(const Player& player) const;
     int getPlayersContinentBonus(const Player& player);
 

@@ -213,3 +213,12 @@ void PhaseObserver::displayOrdersExecutionPhase(){
 
 }
 
+MapController::MapController(MapObserver* newView, Map* newModel) {
+    mapView = newView;
+    mapModel = newModel;
+}
+
+PhaseController::PhaseController(PhaseObserver* newView, GameEngine* newModel) {
+    phaseView = newView;
+    phaseModel = newModel;
+}

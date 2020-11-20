@@ -42,7 +42,6 @@ Player::Player() :
     territoriesDefend(new std::vector<Territory>),
     cards(new Hand),
     orders(new OrdersList),
-    conqueredTerritory(new bool(false)),
     numArmies(new int),
     playerOrder(new std::vector<int>),
     negotiators(new std::vector<Player*>),
@@ -305,3 +304,9 @@ bool Player::getConqueredTerritory() const
 {
     return *this->conqueredTerritory;
 }
+
+void Player::setPlayerName(const std::string& name)
+{
+    *this->playerName = name;
+}
+

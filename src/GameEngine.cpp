@@ -16,6 +16,60 @@
 #include "Cards.h"
 #include "Player.h"
 
+void removeNewlines(std::string& string)
+{
+    string.erase(remove(string.begin(), string.end(), '\n'), string.end());
+    string.erase(remove(string.begin(), string.end(), '\r'), string.end());
+}
+
+std::vector<Player> ConfigurationUtilities::getPlayers()
+{
+    int totalPlayers;
+
+    std::cout << "---------------------------------------------------------------" << std::endl;
+
+    std::cout << "Please select the number of players in your game" << std::endl; 
+
+    std::cin >> totalPlayers; 
+
+    while(totalPlayers < 2 || totalPlayers > 5){
+        
+        std::cout << "Please try again. You can only choose 2-5 players" << std::endl; 
+
+        std::cin >> totalPlayers; 
+    }
+
+    std::cout << "---------------------------------------------------------------" << std::endl;
+    std::cout << std::endl;
+
+    std::vector<Player> players(totalPlayers);
+    ConfigurationUtilities::getPlayerNames(players);
+    return players;
+}
+
+void ConfigurationUtilities::getPlayerNames(std::vector<Player>& players)
+{
+    std::size_t i = 0;
+    for (auto& player : players)
+    {
+        std::string name;
+        while (name.empty())
+        {
+            std::cout << "Player " << i + 1<< " set your name: ";
+            std::getline(std::cin, name);
+            removeNewlines(name);
+            if (name.empty())
+            {
+                std::cout << "No input" << std::endl;
+            }
+        }
+        player.setPlayerName(name);
+        ++i;
+    }
+}
+
+
+
 int GameLogic::territoryArmyBonus(const Map& map, const Player& player)
 {
     std::vector<Territory> territoriesOwned = map.getPlayersTerritories(player);
@@ -90,12 +144,27 @@ void fillRoundRobinOrders(std::vector<Order*>& masterList, std::vector<Player>& 
     }
 }
 
-GameEngine::GameEngine(const Map& map, const std::vector<Player>& players) : 
-    map(new Map(map)), 
-    players(new std::vector<Player>(players)), 
-    currentPhase(new GamePhase()), 
-    currentPlayer(new std::size_t())
-{}
+// GameEngine::GameEngine(const Map& map, const std::vector<Player>& players) : 
+//     map(new Map(map)), 
+//     players(new std::vector<Player>(players)), 
+//     currentPhase(new GamePhase()), 
+//     currentPlayer(new std::size_t())
+// {}
+
+GameEngine::GameEngine() :
+    phaseObserver(nullptr),
+    stateObserver(nullptr),
+    map(nullptr),
+    players(nullptr),
+    currentPhase(nullptr),
+    currentPlayer(nullptr)
+{
+}
+
+void GameEngine::configure()
+{
+
+}
 
 void GameEngine::mainGameLoop()
 {
@@ -148,11 +217,11 @@ void GameEngine::executeOrdersPhase()
     Fill<Advance, Bomb, Airlift, Negotiate>(remainingPriorities);
     fillRoundRobinOrders(masterList, *this->players, remainingPriorities);
 
-    for (Order* order : masterList)
-    {
-        // TODO: Print some stuff so the TA sees all deploys are executed first
-        order->execute();
-    }
+    // for (Order* order : masterList)
+    // {
+    //     // TODO: Print some stuff so the TA sees all deploys are executed first
+    //     //order->execute();
+    // }
 }
 
 const Player& GameEngine::getCurrentPlayer() const
@@ -162,7 +231,7 @@ const Player& GameEngine::getCurrentPlayer() const
 
 std::vector<Territory> GameEngine::getCurrentPlayerOwnedTerritories() const
 {
-    return this->map->getPlayersTerritories(this->getCurrentPlayer());
+    return this->map->getPlayersTerritoriesNonConst(this->players->at(*this->currentPlayer));
 }
 
 std::vector<Continent> GameEngine::getCurrentPlayerOwnedContinents() const
@@ -211,16 +280,16 @@ int phaseObserver = 0;
 int statObserver = 0; 
 std::vector<std::string> mapNames = std::vector<std::string>(); 
 
-GameEngine::GameEngine()
-{
-    PlayerAmount amount; 
-    MapSelect maps;  
-    ControlObservers observers;
+// GameEngine::GameEngine()
+// {
+//     PlayerAmount amount; 
+//     MapSelect maps;  
+//     ControlObservers observers;
 
-    //std::vector<Player> players= &GameStartup::getPlayers();
-    //std::size_t players = players.size();   
-    //std::cout << "There are currently " << players << " in the game" << std::endl;
-}
+//     //std::vector<Player> players= &GameStartup::getPlayers();
+//     //std::size_t players = players.size();   
+//     //std::cout << "There are currently " << players << " in the game" << std::endl;
+// }
 
 GameEngine::~GameEngine(){}
 
@@ -344,7 +413,7 @@ ControlObservers::ControlObservers()
 
     if(MapLoader::validateFile(v))
     {
-        MapLoader::loadMap(mapNames[selectedMap-1]);
+        //MapLoader::loadMap(mapNames[selectedMap-1]);
         Deck gameDeck;
     }
     else
@@ -371,7 +440,7 @@ GameStartup::GameStartup() : numPlayers(0), map(new Map)
 GameStartup::~GameStartup()
 {
     delete numPlayers;
-    delete map;
+    //delete map;
     delete players;
     delete orderPlayers;
 }
@@ -482,7 +551,7 @@ std::vector<Player> &GameStartup::intializePlayers(const int numArmies)
     for (int i = 0; i < *numPlayers; i++)
     {
         Player player = playerList->at(i);
-        std::vector<Territory> ownedTerritories = map->getPlayersTerritories(player);
+        std::vector<Territory> ownedTerritories = map->getPlayersTerritoriesNonConst(player);
         for (Territory territory : ownedTerritories)
         {
             std::unordered_set<Territory> neighborTerritories =

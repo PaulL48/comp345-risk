@@ -71,4 +71,20 @@ private:
     void displayOrdersExecutionPhase();
 };
 
+class MapController {
+private:
+    MapObserver *mapView;
+    Map *mapModel;
+public:
+    MapController(MapObserver *mapView, Map *mapModel);
+};
+
+class PhaseController {
+private:
+    PhaseObserver *phaseView;
+    GameEngine *phaseModel;
+public:
+    PhaseController(PhaseObserver *phaseView, GameEngine *phaseModel);
+};
+
 #endif //GAME_OBSERVERS_H

@@ -14,7 +14,7 @@ extern int totalPlayers;
 extern std::size_t selectedMap;
 extern int phaseObserver;
 extern int statObserver; 
-extern std::vector<std::string> mapNames; 
+extern std::vector<std::string> mapNames;
 
 enum class GamePhase
 {
@@ -23,6 +23,15 @@ enum class GamePhase
     EXECUTE_ORDERS
 };
 
+void removeNewlines(std::string& string);
+
+namespace ConfigurationUtilities
+{
+    std::vector<Player> getPlayers();
+    void getPlayerNames(std::vector<Player>& players);
+}
+
+void GameInitialization(GameEngine& gameEngine);
 
 // This number divides the number of territories a player owns
 // to determine how many armies they receive
@@ -60,9 +69,10 @@ public:
     GameEngine();
     ~GameEngine(); 
     // TODO: required methods
-    GameEngine(const Map& map, const std::vector<Player>& players);
+    //GameEngine(const Map& map, const std::vector<Player>& players);
 
     // Phase methods
+    void configure();
     void mainGameLoop();
     void reinforcementPhase(Player& player);
     void issueOrdersPhase(Player& player);
@@ -80,7 +90,8 @@ public:
     bool gameShouldEnd() const;
     void cullDefeatedPlayers();
 private:
-
+    bool* phaseObserver;
+    bool* stateObserver;
     Map* map;
     std::vector<Player>* players;
     GamePhase* currentPhase;
@@ -112,7 +123,9 @@ public:
     ControlObservers();
     ~ControlObservers();
 
-}; 
+};
+
+
 
 class GameStartup{
     private:
