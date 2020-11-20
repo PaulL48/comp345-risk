@@ -292,7 +292,7 @@ const std::vector<Continent> &Map::getContinents() const
     return *continents;
 }
 
-const std::unordered_set<Territory>* Map::getNeighbors(const Territory& t)
+const std::unordered_set<Territory>* Map::getNeighbors(const Territory& t) const
 {
     return this->territories->getNeighbors(t);
 }

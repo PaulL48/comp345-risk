@@ -223,10 +223,46 @@ std::vector<Territory> &Player::toAttack() const
 {
     return *territoriesAttack;
 }
+
+void Player::updateToAttack(const Map& map)
+{
+    this->territoriesAttack->clear();
+    std::vector<Territory> ownedTerritories = map.getPlayersTerritories(*this);
+    for (Territory territory : ownedTerritories)
+    {
+        const std::unordered_set<Territory>* neighborTerritories = map.getNeighbors(territory);
+        for (Territory neighborTerritory : *neighborTerritories)
+        {
+            if (neighborTerritory.getOwningPlayer() == nullptr)
+            {
+                if ((std::find(this->territoriesAttack->begin(), this->territoriesAttack->end(),
+                               neighborTerritory) == this->territoriesAttack->end()))
+                {
+                    this->territoriesAttack->push_back(neighborTerritory);
+                }
+            }
+            else if (*neighborTerritory.getOwningPlayer() != *this)
+            {
+                if ((std::find(this->territoriesAttack->begin(), this->territoriesAttack->end(),
+                               neighborTerritory) == this->territoriesAttack->end()))
+                {
+                    this->territoriesAttack->push_back(neighborTerritory);
+                }
+            }
+        }
+    }
+}
+
+void Player::updateToDefend(const Map& map)
+{
+    *this->territoriesDefend = map.getPlayersTerritories(*this); 
+}
+
 std::vector<Territory> &Player::toDefend() const
 {
     return *territoriesDefend;
 }
+
 Hand &Player::getCards()const
 {
     return *cards;
@@ -276,16 +312,6 @@ bool Player::isNegotiator(const Player* player) const {
 std::ostream &operator<<(std::ostream &output, const Player &p)
 {
     output << "(Player Name: " << *p.playerName << ", Reinforcement Pool: " << *p.reinforcementPool << ", Orders: " << *p.orders;
-    output << ", Territories Attack: ";
-    for (const auto &territory : *p.territoriesAttack)
-    {
-        output << territory << ",";
-    }
-    output << ", Territories Defend: ";
-    for (const auto &territory : *p.territoriesDefend)
-    {
-        output << territory << ",";
-    }
     output << ", Cards: " << *p.cards;
     output << ")";
     return output;

@@ -79,6 +79,9 @@ class Player{
         void specifyDefendOrder();
         void chooseCardToPlay();
 
+        void updateToAttack(const Map& map);
+        void updateToDefend(const Map& map);
+
         // Player fills their order list and plays any cards
 
         // Return the number of armies queued to reinforce various territories

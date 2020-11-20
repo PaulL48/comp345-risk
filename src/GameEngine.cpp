@@ -216,8 +216,6 @@ void StartupUtilities::playersDrawCards(std::vector<Player>& players, Deck& deck
 void StartupUtilities::assignTerritories(std::vector<Player>& players, Map& map)
 {
     std::cout << "Randomly assigning territories to players" << std::endl;
-
-
     Graph<Territory>& territories = map.getGraph();
 
     std::vector<Territory> shuffledTerritories;
@@ -242,30 +240,6 @@ void StartupUtilities::assignTerritories(std::vector<Player>& players, Map& map)
         std::cout << territoryObj << " to " << *playerObj << std::endl;
         map.setTerritoryOwner(territoryObj, *playerObj);
     }
-
-    // for (int i = 0; i < players.size(); i++)
-    // {
-    //     Player player = playerList->at(i);
-    //     std::vector<Territory> ownedTerritories = map.getPlayersTerritoriesNonConst(player);
-    //     for (Territory territory : ownedTerritories)
-    //     {
-    //         std::unordered_set<Territory> neighborTerritories =
-    //             *map.getNeighbors(territory);
-    //         for (Territory neighborTerritory : neighborTerritories)
-    //         {
-    //             if (neighborTerritory.getOwningPlayer() != nullptr && *neighborTerritory.getOwningPlayer() != player)
-    //             {
-    //                 player.toDefend().push_back(territory);
-    //                 if ((std::find(player.toAttack().begin(), player.toAttack().end(),
-    //                                neighborTerritory) == player.toAttack().end()))
-    //                 {
-    //                     player.toAttack().push_back(neighborTerritory);
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     playerList->at(i) = player;
-    // }
 }
 
 int GameLogic::territoryArmyBonus(const Map& map, const Player& player)
@@ -391,6 +365,12 @@ void GameEngine::startupPhase()
     StartupUtilities::shufflePlayers(*this->players);
     StartupUtilities::assignTerritories(*this->players, *this->map);
     StartupUtilities::playersDrawCards(*this->players, *this->deck, 5);
+
+    for (auto& player : *this->players)
+    {
+        player.updateToAttack(*this->map);
+        player.updateToDefend(*this->map);
+    }
 
     std::cout << "================================================================================" << std::endl;
     std::cout << "Game Start Phase Complete. Game details: " << std::endl;
