@@ -8,7 +8,8 @@
 #include "Map.h"
 #include "Observer.h"
 #include <set>
-//#include "GameEngine.h"
+
+class GameEngine;
 
 class MapObserver : public Observer {
 public:

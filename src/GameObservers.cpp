@@ -13,16 +13,16 @@
 MapObserver::MapObserver(Map* s){
     _subject = s;
     _subject->Attach(this);
-};
+}
 
 MapObserver::~MapObserver(){
     _subject->Detach(this);
-};
+}
 
 void MapObserver::Update(){
     displayMap();
     displayPlayers();
-};
+}
 
 bool MapObserver::victory(){
     Player *first = _subject->getContinents()->at(0).getTerritories().begin()->getOwnedBy();

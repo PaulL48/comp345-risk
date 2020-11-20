@@ -152,7 +152,6 @@ public:
 
     void merge(const T &vertex1, const T &vertex2);
     const std::unordered_set<T>* getNeighbors(const T& vertex) const;
-    void update(const T &vertex, const T &replace);
 
     std::size_t size() const;
    
@@ -308,9 +307,7 @@ public:
 
     void setTerritoryOwnerByName(Player& player, const std::string& territoryName);
 
-    void updateTerritory(const Territory& current, const Territory& replacement);
 
-    void setTerritoryOwner(const Territory& territory, const Player& owner);
 
 
 private:
@@ -372,9 +369,6 @@ public:
 
     void setTerritoryOwnerByName(Player& player, const std::string& territoryName);
 
-    void updateTerritory(const Territory& current, const Territory& replacement);
-
-    void setTerritoryOwner(const Territory& territory, const Player& owner);
 
 private:
     Graph<Territory> *territories;
@@ -871,31 +865,6 @@ const std::unordered_set<T>* Graph<T>::getNeighbors(const T& vertex) const
         }
         return nullptr;
 }
-
-template <typename T>
-void Graph<T>::update(const T &vertex, const T &replace)
-{
-    if (vertex != replace || this->adjacencyList->count(vertex) == 0)
-    {
-        return; // The update should not change either the output hash or the equality of a vertex
-    }
-
-    // Search all neighbors and replace the vertex
-    for (auto &[vertexKey, neighbors] : *this->adjacencyList)
-    {
-        if (neighbors.count(vertex) != 0)
-        {
-            neighbors.erase(vertex);
-            neighbors.insert(replace);
-        }
-    }
-
-    // Replace the original vertex
-    NeighborList<T> temp = this->adjacencyList->at(vertex);
-    this->adjacencyList->erase(vertex);
-    this->adjacencyList->insert(std::make_pair(replace, temp));
-}
-
 
 template <typename T>
 std::size_t Graph<T>::size() const

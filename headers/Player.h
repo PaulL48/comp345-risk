@@ -68,8 +68,6 @@ class Player{
         int& getNumArmies() const ;
         void addToNegotiatorsList(Player* player) const;
         bool isNegotiator(const Player* player) const;
-        void setConqueredTerritory(bool status);
-        bool getConqueredTerritory();
         void addArmies(int add);
         int getReinforcementPool() const;
         void setConqueredTerritory(bool conqueredTerritory);
