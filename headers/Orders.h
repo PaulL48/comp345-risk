@@ -37,13 +37,10 @@ std::vector<T *> *clone(const std::vector<T *> &vector)
 
 class Player;
 class Territory;
+class Map;
 
 struct OrderDataPayload
 {
-    // OrderDataPayload(); // allocate numArmies
-    // ~OrderDataPayload(); // Free numArmies
-    //OrderDataPayload(const OrderDataPayload& orderDataPayload);
-    // TODO: Other required methods
     OrderDataPayload();
     ~OrderDataPayload();
 
@@ -98,6 +95,8 @@ public:
 
     OrderDataPayload& getMutableDataPayload();
 
+    friend main();
+
 protected:
     Order(const Order &order);            // copy constructor
     Order &operator=(const Order &order); // copy assignment operator
@@ -107,7 +106,7 @@ protected:
        used pointers so null values can be passed
     */
     virtual bool validate(const Player* const player, const Player* const enemyPlayer, const Territory* const territoryA, const Territory* const territoryB) = 0;
-    virtual void execute(Player* const player, int numberOfArmies, Territory* const targetTerritory, Territory* const sourceTerritory, Player* const enemyPlayer) = 0;  
+    virtual void execute(Map& m, Player* const player, int numberOfArmies, Territory* const targetTerritory, Territory* const sourceTerritory, Player* const enemyPlayer) = 0;  
     int *uniqueId;
     bool *executed = new bool(false); // initialized to false
     std::string *description;
@@ -123,11 +122,12 @@ public:
     Deploy(const Deploy &order);
     virtual ~Deploy();
     Deploy &operator=(const Deploy &order);
-    void execute(); 
+    void execute(Map& map); 
     virtual Order *clone() const;
+    friend main();
 private:
     bool validate(const Player* const player, const Player* const enemyPlayer, const Territory* const targetTerritory, const Territory* const sourceTerritory);      // validates an order, virtual method
-    void execute(Player* const player, int numberOfArmies, Territory* const targetTerritory, Territory* const sourceTerritory, Player* const enemyPlayer);
+    void execute(Map& m, Player* const player, int numberOfArmies, Territory* const targetTerritory, Territory* const sourceTerritory, Player* const enemyPlayer);
 };
 
 class Advance : public Order
@@ -137,11 +137,13 @@ public:
     Advance(const Advance &order);
     virtual ~Advance();
     Advance &operator=(const Advance &order);
-    void execute(); // call overridden virtual method for the class inside this function
+    void execute(Map& map); // call overridden virtual method for the class inside this function
     virtual Order *clone() const;
+    friend main();
+
 private:
     bool validate(const Player* const player, const Player* const enemyPlayer, const Territory* const targetTerritory, const Territory* const sourceTerritory);      // validates an order, virtual method
-    void execute(Player* const player, int numberOfArmies, Territory* const targetTerritory, Territory* const sourceTerritory, Player* const enemyPlayer);
+    void execute(Map& m, Player* const player, int numberOfArmies, Territory* const targetTerritory, Territory* const sourceTerritory, Player* const enemyPlayer);
 };
 
 class Bomb : public Order
@@ -151,11 +153,13 @@ public:
     Bomb(const Bomb &order);
     virtual ~Bomb();
     Bomb &operator=(const Bomb &order);
-    void execute(); // call overridden virtual method for the class inside this function
+    void execute(Map& map); // call overridden virtual method for the class inside this function
     virtual Order *clone() const;
+    friend main();
+
 private:
     bool validate(const Player* const player, const Player* const enemyPlayer, const Territory* const targetTerritory, const Territory* const sourceTerritory);      // validates an order, virtual method
-    void execute(Player* const player, int numberOfArmies, Territory* const targetTerritory, Territory* const sourceTerritory, Player* const enemyPlayer);
+    void execute(Map& m, Player* const player, int numberOfArmies, Territory* const targetTerritory, Territory* const sourceTerritory, Player* const enemyPlayer);
 };
 
 class Blockade : public Order
@@ -165,11 +169,13 @@ public:
     Blockade(const Blockade &order);
     virtual ~Blockade();
     Blockade &operator=(const Blockade &order);
-    void execute(); // call overridden virtual method for the class inside this function
+    void execute(Map& map); // call overridden virtual method for the class inside this function
     virtual Order *clone() const;
+    friend main();
+
 private:
         bool validate(const Player* const player, const Player* const enemyPlayer, const Territory* const targetTerritory, const Territory* const sourceTerritory);      // validates an order, virtual method
-        void execute(Player* const player, int numberOfArmies, Territory* const targetTerritory, Territory* const sourceTerritory, Player* const enemyPlayer);
+        void execute(Map& m, Player* const player, int numberOfArmies, Territory* const targetTerritory, Territory* const sourceTerritory, Player* const enemyPlayer);
 };
 
 class Airlift : public Order
@@ -179,11 +185,13 @@ public:
     Airlift(const Airlift &order);
     virtual ~Airlift();
     Airlift &operator=(const Airlift &order);
-    void execute(); // call overridden virtual method for the class inside this function
+    void execute(Map& map); // call overridden virtual method for the class inside this function
     virtual Order *clone() const;
+    friend main();
+
 private:
         bool validate(const Player* const player, const Player* const enemyPlayer, const Territory* const targetTerritory, const Territory* const sourceTerritory);      // validates an order, virtual method
-        void execute(Player* const player, int numberOfArmies, Territory* const targetTerritory, Territory* const sourceTerritory, Player* const enemyPlayer);
+        void execute(Map& m, Player* const player, int numberOfArmies, Territory* const targetTerritory, Territory* const sourceTerritory, Player* const enemyPlayer);
 };
 
 class Negotiate : public Order
@@ -193,11 +201,13 @@ public:
     Negotiate(const Negotiate &order);
     virtual ~Negotiate();
     Negotiate &operator=(const Negotiate &order);
-    void execute(); // call overridden virtual method for the class inside this function
+    void execute(Map& map); // call overridden virtual method for the class inside this function
     virtual Order *clone() const;
+    friend main();
+
 private:
         bool validate(const Player* const player, const Player* const enemyPlayer, const Territory* const targetTerritory, const Territory* const sourceTerritory);      // validates an order, virtual method
-        void execute(Player* const player, int numberOfArmies, Territory* const targetTerritory, Territory* const sourceTerritory, Player* const enemyPlayer);
+        void execute(Map& m, Player* const player, int numberOfArmies, Territory* const targetTerritory, Territory* const sourceTerritory, Player* const enemyPlayer);
 
 };
 

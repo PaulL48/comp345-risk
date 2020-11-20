@@ -166,6 +166,8 @@ public:
     template <typename F>
     const T *findIf(F predicate) const;
 
+    T* find(const T& val);
+
     template <typename F>
     T *mutableFindIf(F predicate);
 
@@ -885,6 +887,19 @@ const T *Graph<T>::findIf(F predicate) const
         }
     }
 
+    return nullptr;
+}
+
+template <typename T>
+T* Graph<T>::find(const T& val)
+{
+    for (auto &[vertex, neighbors] : *this->adjacencyList)
+    {
+        if (vertex == val)
+        {
+            return const_cast<T*>(&vertex);
+        }
+    }
     return nullptr;
 }
 

@@ -67,7 +67,12 @@ void Player::specifyDeploymentOrder(const Map&)
 
     //this->orders->addToList(deploy);
 
-     MenuUtilities::getValidatedNumericalChoice("Choose a territory to reinforce", this->toDefend());
+    Order* deploy = new Deploy();
+    deploy->getMutableDataPayload().player = this;
+    Territory choice = MenuUtilities::getValidatedMenuChoice("Choose a territory to reinforce", this->toDefend());
+    deploy->getMutableDataPayload().targetTerritory = &choice;
+    
+
 
 }
 
@@ -116,7 +121,15 @@ void Player::chooseCardToPlay()
 
 int Player::getReinforcementsPendingDeployment()
 {
-    return 1;
+    int pendingDeployment = 0;
+    for (Order* order : this->orders->getList())
+    {
+        if (typeid(order) == typeid(Deploy))
+        {
+            pendingDeployment += *order->getMutableDataPayload().numberOfArmies;
+        }
+    }
+    return pendingDeployment;
 }
 
 /**

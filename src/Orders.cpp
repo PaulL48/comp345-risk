@@ -208,6 +208,11 @@ int Order::getUniqueId() const
     return *uniqueId;
 }
 
+OrderDataPayload& Order::getMutableDataPayload()
+{
+    return *this->dataPayload;
+}
+
 ostream &operator<<(ostream &out, const Order &order)
 {
     out << *(order.description);
@@ -246,15 +251,17 @@ bool Deploy::validate(const Player* const player, const Player* const, const Ter
    return targetTerritory->getOwningPlayer() == &*player ? true : false;
 }
 
-void Deploy::execute(){
-    this->execute(this->dataPayload->player, *this->dataPayload->numberOfArmies, this->dataPayload->targetTerritory, nullptr, nullptr);
+void Deploy::execute(Map& map){
+    this->execute(map, this->dataPayload->player, *this->dataPayload->numberOfArmies, map.getGraph().find(*this->dataPayload->targetTerritory), nullptr, nullptr);
 }
 
 
-void Deploy::execute(Player* player, int numberOfArmies, Territory* targetTerritory, Territory*, Player*)
+void Deploy::execute(Map& m, Player* player, int numberOfArmies, Territory* targetTerritory, Territory*, Player*)
 {
     if(this->validate(player, nullptr, targetTerritory, nullptr)){
-        targetTerritory->setOccupyingArmies(targetTerritory->getOccupyingArmies()+numberOfArmies);
+        Territory copy = *targetTerritory;
+        copy.setOccupyingArmies(copy.getOccupyingArmies() + numberOfArmies);
+        m.updateTerritory(*targetTerritory, copy);
         this->setExecutedStatus(true);
     }
     else{
@@ -302,14 +309,16 @@ bool Advance::validate(const Player* const player, const Player* const, const Te
    return false;
 }
 
-void Advance::execute(){
-    this->execute(this->dataPayload->player, *this->dataPayload->numberOfArmies, this->dataPayload->targetTerritory, this->dataPayload->sourceTerritory, nullptr);
+void Advance::execute(Map& m){
+    this->execute(m, this->dataPayload->player, *this->dataPayload->numberOfArmies, this->dataPayload->targetTerritory, this->dataPayload->sourceTerritory, nullptr);
 }
 
-void Advance::execute( Player* player, int numberOfArmies, Territory* targetTerritory, Territory* sourceTerritory, Player*)
+void Advance::execute(Map& m, Player* player, int numberOfArmies, Territory* targetTerritory, Territory* sourceTerritory, Player*)
 {
     if(this->validate(player, nullptr, targetTerritory, sourceTerritory)){
-        sourceTerritory->setOccupyingArmies(sourceTerritory->getOccupyingArmies()-numberOfArmies);
+        Territory copy = *sourceTerritory;
+        copy.setOccupyingArmies(copy.getOccupyingArmies() - numberOfArmies);
+        m.updateTerritory(*sourceTerritory, copy);
         if(targetTerritory->getOwningPlayer() == &*player){
             /*  Target territory belongs to player -> move from source to target */  
             targetTerritory->setOccupyingArmies(targetTerritory->getOccupyingArmies()+numberOfArmies);
@@ -336,11 +345,15 @@ void Advance::execute( Player* player, int numberOfArmies, Territory* targetTerr
             } 
 
             if(numberOfArmies != 0){
-                targetTerritory->setOwningPlayer(*player);
-                targetTerritory->setOccupyingArmies(numberOfArmies);
+                Territory copy = *targetTerritory;
+                copy.setOwningPlayer(*player);
+                copy.setOccupyingArmies(numberOfArmies);
+                m.updateTerritory(*targetTerritory, copy);
             }
             else{
-                targetTerritory->setOccupyingArmies(enemyTerritoryArmyUnits);
+                Territory copy = *targetTerritory;
+                copy.setOccupyingArmies(enemyTerritoryArmyUnits);
+                m.updateTerritory(*targetTerritory, copy);
             }
         }
         this->setExecutedStatus(true);
@@ -386,15 +399,17 @@ bool Bomb::validate(const Player* const player, const Player* const, const Terri
     return true;
 }
 
-void Bomb::execute()
+void Bomb::execute(Map& m)
 {
-    this->execute(this->dataPayload->player, 0, this->dataPayload->targetTerritory, nullptr, nullptr);
+    this->execute(m, this->dataPayload->player, 0, this->dataPayload->targetTerritory, nullptr, nullptr);
 }
 
-void Bomb::execute(Player* player, int, Territory* targetTerritory, Territory*, Player*)
+void Bomb::execute(Map& m, Player* player, int, Territory* targetTerritory, Territory*, Player*)
 {
     if(this->validate(player, nullptr, targetTerritory, nullptr)){
-        targetTerritory->setOccupyingArmies((targetTerritory->getOccupyingArmies())/2);
+        Territory copy = *targetTerritory;
+        copy.setOccupyingArmies(copy.getOccupyingArmies() / 2);
+        m.updateTerritory(*targetTerritory, copy);
         this->setExecutedStatus(true);
     }
     else{
@@ -436,17 +451,20 @@ bool Blockade::validate(const Player* const player, const Player* const, const T
     return (targetTerritory->getOwningPlayer() == &*player) ? true : false;
 }
 
-void Blockade::execute()
+void Blockade::execute(Map& m)
 {
-    this->execute(this->dataPayload->player, 0, this->dataPayload->targetTerritory, nullptr, nullptr);
+    this->execute(m, this->dataPayload->player, 0, this->dataPayload->targetTerritory, nullptr, nullptr);
 }
 
-void Blockade::execute(Player *player, int, Territory* targetTerritory, Territory*, Player*)
+void Blockade::execute(Map& m, Player *player, int, Territory* targetTerritory, Territory*, Player*)
 {
     if(this->validate(player, nullptr, targetTerritory, nullptr)){
         Player* neutralPlayer = new Player("Neutral", vector<Territory>(), vector<Territory>(), Hand(), OrdersList(),0 , vector<int>());
-        targetTerritory->setOccupyingArmies(targetTerritory->getOccupyingArmies()*2);
-        targetTerritory->setOwningPlayer(*neutralPlayer);
+
+        Territory copy = *targetTerritory;
+        copy.setOccupyingArmies(copy.getOccupyingArmies() * 2);
+        copy.setOwningPlayer(*neutralPlayer);
+        m.updateTerritory(*targetTerritory, copy);
         delete neutralPlayer;
         neutralPlayer = nullptr;
         this->setExecutedStatus(true);
@@ -488,15 +506,21 @@ bool Airlift::validate(const Player* const player, const Player* const, const Te
    return ((targetTerritory->getOwningPlayer() == &*player) && (sourceTerritory->getOwningPlayer() == &*player))? true : false;
 }
 
-void Airlift::execute(){
-    this->execute(this->dataPayload->player, *this->dataPayload->numberOfArmies, this->dataPayload->targetTerritory, this->dataPayload->sourceTerritory, nullptr);
+void Airlift::execute(Map& m){
+    this->execute(m, this->dataPayload->player, *this->dataPayload->numberOfArmies, this->dataPayload->targetTerritory, this->dataPayload->sourceTerritory, nullptr);
 }
 
-void Airlift::execute(Player* player, int numberOfArmies, Territory* targetTerritory, Territory* sourceTerritory, Player*)
+void Airlift::execute(Map& m, Player* player, int numberOfArmies, Territory* targetTerritory, Territory* sourceTerritory, Player*)
 {
     if(this->validate(player, nullptr, targetTerritory, sourceTerritory)){
-        sourceTerritory->setOccupyingArmies(sourceTerritory->getOccupyingArmies()-numberOfArmies);
-        targetTerritory->setOccupyingArmies(targetTerritory->getOccupyingArmies()+numberOfArmies);
+        Territory sourceCopy = *sourceTerritory;
+        sourceCopy.setOccupyingArmies(sourceCopy.getOccupyingArmies() - numberOfArmies);
+        m.updateTerritory(*sourceTerritory, sourceCopy);
+
+        Territory targetCopy = *targetTerritory;
+        targetCopy.setOccupyingArmies(targetCopy.getOccupyingArmies() + numberOfArmies);
+        m.updateTerritory(*targetTerritory, targetCopy);
+
         this->setExecutedStatus(true);
     }
     else{
@@ -537,13 +561,13 @@ bool Negotiate::validate(const Player* const player, const Player* const enemyPl
     return (&*player == &*enemyPlayer) ? false : true;
 }
 
-void Negotiate::execute()
+void Negotiate::execute(Map& m)
 {
-    this->execute(this->dataPayload->player, 0, nullptr, nullptr, this->dataPayload->enemyPlayer);
+    this->execute(m, this->dataPayload->player, 0, nullptr, nullptr, this->dataPayload->enemyPlayer);
 }
 
 // sets doNotAttack to true for the territores inside attack lists both for player and enemy where owner of territory equals the opposing party  
-void Negotiate::execute(Player* player, int, Territory*, Territory*, Player* enemyPlayer)
+void Negotiate::execute(Map&, Player* player, int, Territory*, Territory*, Player* enemyPlayer)
 {
     if(this->validate(player, enemyPlayer, nullptr, nullptr)){
         player->addToNegotiatorsList(enemyPlayer);
