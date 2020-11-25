@@ -34,13 +34,12 @@ class Subject
 {
 public:
     // TODO: Fill required methods
+    Subject();
+    ~Subject();
 
     virtual void attach(Observer *o);
     virtual void detach(Observer *o);
     virtual void notify();
-    Subject();
-    ~Subject();
-
 private:
     std::vector<Observer *> *observers;
 };
@@ -86,20 +85,5 @@ private:
     void displayIssueOrdersPhase() const;
     void displayOrdersExecutionPhase() const;
 };
-
-// class PhaseObserver : public Observer
-// {
-// public:
-//     PhaseObserver(GameEngine *s);
-//     ~PhaseObserver();
-//     virtual void update();
-//     void displayPhase();
-
-// private:
-//     GameEngine *_subject;
-//     void displayReinforcementPhase();
-//     void displayissuingOrdersPhase();
-//     void displayOrdersExecutionPhase();
-// };
 
 #endif // GAME_OBSERVERS_H
