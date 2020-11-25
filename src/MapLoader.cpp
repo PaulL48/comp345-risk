@@ -74,7 +74,7 @@ Map MapLoader::loadMap(Map &map, const std::string &path)
     else
     {
         std::cout << "Invalid Map, please start again.\n";
-         return map;
+        return map;
     }
 
     // Load continents
@@ -85,7 +85,7 @@ Map MapLoader::loadMap(Map &map, const std::string &path)
     return map;
 }
 
-Map MapLoader::loadMapValidated(const std::string &path, bool& valid)
+Map MapLoader::loadMapValidated(const std::string &path, bool &valid)
 {
     Map map;
     // Check the path is valid
@@ -149,8 +149,6 @@ void MapLoader::addContinents(Map &map, const std::vector<std::string> &v)
         line << v[i];
         line >> first;
         // if empty line or comment, skip
-
-
 
         if (v[i].length() == 0 || v[i].at(0) == ';')
             continue;

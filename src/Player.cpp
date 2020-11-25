@@ -7,13 +7,14 @@
 #include <string>
 #include <vector>
 
-void InputUtilities::removeNewlines(std::string& string)
+void InputUtilities::removeNewlines(std::string &string)
 {
     string.erase(remove(string.begin(), string.end(), '\n'), string.end());
     string.erase(remove(string.begin(), string.end(), '\r'), string.end());
 }
 
-std::size_t InputUtilities::getRangedInput(const std::string& prompt, std::size_t lower, std::size_t upper)
+std::size_t InputUtilities::getRangedInput(const std::string &prompt, std::size_t lower,
+                                           std::size_t upper)
 {
     bool invalidInput = true;
     std::string input;
@@ -25,7 +26,8 @@ std::size_t InputUtilities::getRangedInput(const std::string& prompt, std::size_
             std::cout << prompt << std::endl;
         }
 
-        std::cout << "Please enter a value between " << lower << " and " << upper << ": ";
+        std::cout << "Please enter a value between " << lower << " and " << upper
+                  << ": ";
 
         std::string input;
         std::getline(std::cin, input);
@@ -59,8 +61,6 @@ std::size_t InputUtilities::getRangedInput(const std::string& prompt, std::size_
 
     return parsedInput;
 }
-
-
 
 Player::Player(const std::string &name, const PlayerStrategy &strategy) :
     playerName(new std::string(name)),
@@ -133,10 +133,10 @@ Player &Player::operator=(const Player &player)
 
 std::ostream &operator<<(std::ostream &output, const Player &p)
 {
-    output << "(Player Name: " << *p.playerName
-           << ", Reinforcement Pool: " << *p.reinforcementPool
+    output << "(Player Name: " << *p.playerName << ", Reinforcement Pool: "
+           << *p.reinforcementPool
            //<< ", Orders: " << *p.orders << ", Cards: " << *p.cards << ")";
-            << ", Cards: " << *p.cards << ")";
+           << ", Cards: " << *p.cards << ")";
     return output;
 }
 

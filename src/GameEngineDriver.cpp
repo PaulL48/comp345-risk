@@ -1,13 +1,13 @@
-#include <iostream> 
+#include <iostream>
 
 #include "GameEngine.h"
-//include "GameStartup.h"
+// include "GameStartup.h"
 #include "Player.h"
 
 template <typename T>
-void addOrder(Player& p)
+void addOrder(Player &p)
 {
-    Order* t = new T();
+    Order *t = new T();
     t->getMutableDataPayload().player = &p;
     p.getOrders().addToList(*t);
     delete t;
@@ -42,40 +42,40 @@ int main()
     addOrder<Bomb>(p3);
 
     std::vector<Player> players{p1, p2, p3};
-    std::vector<Order*> mol = GameLogic::constructMasterExecutionList(players);
-    for (Order* o : mol)
+    std::vector<Order *> mol = GameLogic::constructMasterExecutionList(players);
+    for (Order *o : mol)
     {
         std::cout << *o << std::endl;
     }
     return 0;
 
+    //    int startAgain = 1;
 
-//    int startAgain = 1;
+    //    while(startAgain == 1)
+    //    {
+    //        GameEngine gameEngine;
+    //        gameEngine.configure();
+    //        gameEngine.startupPhase();
+    //        gameEngine.mainGameLoop();
 
-//    while(startAgain == 1)
-//    {
-//        GameEngine gameEngine;
-//        gameEngine.configure();
-//        gameEngine.startupPhase();
-//        gameEngine.mainGameLoop();
+    //        GameEngine Start;
 
-//        GameEngine Start;
+    //        std::cout << "Would you like the restart the startup phase?" << std::endl;
+    //        std::cout << "1) YES" << std::endl;
+    //        std::cout << "2) NO" << std::endl;
 
-//        std::cout << "Would you like the restart the startup phase?" << std::endl;
-//        std::cout << "1) YES" << std::endl;
-//        std::cout << "2) NO" << std::endl;
+    //        std::cin >> startAgain;
 
-//        std::cin >> startAgain;
+    //        while(startAgain < 1 || startAgain > 2)
+    //        {
+    //            std::cout << "Invalid entry. Please enter 1 for YES or 2 for NO" <<
+    //            std::endl;
 
-//        while(startAgain < 1 || startAgain > 2)
-//        {
-//            std::cout << "Invalid entry. Please enter 1 for YES or 2 for NO" << std::endl; 
+    //            std::cin >> startAgain;
+    //        }
+    //    }
 
-//            std::cin >> startAgain;
-//        }
-//    }
-
-   //std::vector<Player> players= &GameStartup::getPlayers();
-   //std::size_t playersInGame = players.size(); 
-   //std::cout << "There are currently " << playersInGame << " in the game."
+    // std::vector<Player> players= &GameStartup::getPlayers();
+    // std::size_t playersInGame = players.size();
+    // std::cout << "There are currently " << playersInGame << " in the game."
 }

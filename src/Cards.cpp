@@ -37,7 +37,7 @@ Deck::Deck() : deck(new std::vector<Card *>())
     std::srand(time(0));
 
     std::cout << "Initializing the deck..." << std::endl;
-    std::cout << std::endl; 
+    std::cout << std::endl;
 
     for (std::size_t i = 0; i < DECK_SIZE; i++)
     {
@@ -70,7 +70,8 @@ Deck::Deck() : deck(new std::vector<Card *>())
     }
     std::cout << std::endl;
     std::cout << "**  Deck has been created  **" << std::endl;
-    std::cout << "---------------------------------------------------------------" << std::endl;
+    std::cout << "---------------------------------------------------------------"
+              << std::endl;
 }
 
 Deck::~Deck()

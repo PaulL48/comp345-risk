@@ -17,7 +17,7 @@ OrderDataPayload::OrderDataPayload() :
 {
 }
 
-OrderDataPayload::OrderDataPayload(const OrderDataPayload& odp) :
+OrderDataPayload::OrderDataPayload(const OrderDataPayload &odp) :
     player(odp.player),
     enemyPlayer(odp.enemyPlayer),
     numberOfArmies(new int(*odp.numberOfArmies)),
@@ -32,7 +32,7 @@ OrderDataPayload::~OrderDataPayload()
     delete this->numberOfArmies;
 }
 
-OrderDataPayload &OrderDataPayload::operator=(const OrderDataPayload& odp)
+OrderDataPayload &OrderDataPayload::operator=(const OrderDataPayload &odp)
 {
     if (&odp == this)
     {
@@ -62,7 +62,7 @@ OrdersList::OrdersList(const OrdersList &ordersList) : orders(clone(*ordersList.
 
 OrdersList::~OrdersList()
 {
-    for (auto* order : *this->orders)
+    for (auto *order : *this->orders)
     {
         delete order;
     }
@@ -345,7 +345,8 @@ Advance &Advance::operator=(const Advance &order)
     return *this;
 }
 
-Advance::Advance() : Order("Advance", "Advance troops to a neighbouring territory", REMAINDER_PRIORITY)
+Advance::Advance() :
+    Order("Advance", "Advance troops to a neighbouring territory", REMAINDER_PRIORITY)
 {
 }
 
@@ -531,7 +532,10 @@ Blockade &Blockade::operator=(const Blockade &order)
 }
 
 Blockade::Blockade() :
-    Order("Blockade", "Seals a territory, Prevents people or goods from entering or leaving the territory", BLOCKADE_PRIORITY)
+    Order("Blockade",
+          "Seals a territory, Prevents people or goods from entering or leaving the "
+          "territory",
+          BLOCKADE_PRIORITY)
 {
 }
 
@@ -589,7 +593,8 @@ Airlift &Airlift::operator=(const Airlift &order)
     return *this;
 }
 
-Airlift::Airlift() : Order("Airlift", "Transport suplies or troops by air", AIRLIFT_PRIORITY)
+Airlift::Airlift() :
+    Order("Airlift", "Transport suplies or troops by air", AIRLIFT_PRIORITY)
 {
 }
 
@@ -663,7 +668,8 @@ Negotiate &Negotiate::operator=(const Negotiate &order)
 }
 
 Negotiate::Negotiate() :
-    Order("Negotiate", "Negotiate with the opposition to reach an agreement", REMAINDER_PRIORITY)
+    Order("Negotiate", "Negotiate with the opposition to reach an agreement",
+          REMAINDER_PRIORITY)
 {
 }
 
