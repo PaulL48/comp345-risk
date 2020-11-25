@@ -1,14 +1,14 @@
 #ifndef GAME_ENGINE_H
 #define GAME_ENGINE_H
 
-#include <vector>
-#include <string>
-#include <unordered_set>
-#include <typeindex>
-#include <iostream>
-#include "Player.h"
-#include "Map.h"
 #include "Cards.h"
+#include "Map.h"
+#include "Player.h"
+#include <iostream>
+#include <string>
+#include <typeindex>
+#include <unordered_set>
+#include <vector>
 
 enum class GamePhase
 {
@@ -20,20 +20,20 @@ enum class GamePhase
 namespace ConfigurationUtilities
 {
     std::vector<Player> getPlayers();
-    void getPlayerNames(std::vector<Player>& players);
+    void getPlayerNames(std::vector<Player> &players);
     Map getMap();
     bool getPhaseObserverSwitch();
     bool getStatisticsObserverSwitch();
-}
+} // namespace ConfigurationUtilities
 
 namespace StartupUtilities
 {
-    void shufflePlayers(std::vector<Player>& player);
+    void shufflePlayers(std::vector<Player> &player);
     int startingArmies(int playerCount);
-    void assignStartingArmies(std::vector<Player>& player);
-    void assignTerritories(std::vector<Player>& players, Map& map);
-    void playersDrawCards(std::vector<Player>& players, Deck& deck, int cardsPerHand);
-}
+    void assignStartingArmies(std::vector<Player> &player);
+    void assignTerritories(std::vector<Player> &players, Map &map);
+    void playersDrawCards(std::vector<Player> &players, Deck &deck, int cardsPerHand);
+} // namespace StartupUtilities
 
 namespace GameLogic
 {
@@ -43,31 +43,38 @@ namespace GameLogic
     // to determine how many armies they receive
     constexpr double TERRITORY_TO_ARMY_DIVISOR = 3.0;
 
-    int territoryArmyBonus(const Map& map, const Player& player);
-    int continentArmyBonus(const Map& map, const Player& player);
-    int totalArmyBonus(const Map& map, const Player& player);
-    int playerTotalAvailableArmies(const Map& map, const Player& player);
-    bool playerIsDefeated(const Map& map, const Player& player);
+    int territoryArmyBonus(const Map &map, const Player &player);
+    int continentArmyBonus(const Map &map, const Player &player);
+    int totalArmyBonus(const Map &map, const Player &player);
+    int playerTotalAvailableArmies(const Map &map, const Player &player);
+    bool playerIsDefeated(const Map &map, const Player &player);
 
-    void addCardToConqueringPlayers(std::vector<Player>& players, Deck& deck);
+    void addCardToConqueringPlayers(std::vector<Player> &players, Deck &deck);
 
     // Given a collection of players containing orders lists, construct a linear list of
     // orders to execute based on the order of execution
-    std::vector<Order*> constructMasterExecutionList(const std::vector<Player>& players);
+    std::vector<Order *>
+    constructMasterExecutionList(const std::vector<Player> &players);
 
+    // Push the next order following cursor, with supplied execution priority, to the
+    // master list
+    void addExecutionPriorityOrderToMaster(std::vector<Order *> &masterList,
+                                           const std::vector<Order *> &playerOrders,
+                                           std::vector<Order *>::const_iterator &cursor,
+                                           int executionPriority);
 
-    // Push the next order following cursor, with supplied execution priority, to the master list
-    void addExecutionPriorityOrderToMaster(std::vector<Order*>& masterList, const std::vector<Order*>& playerOrders, std::vector<Order*>::const_iterator& cursor, int executionPriority);
-    
-    // Iterate through supplied players, adding orders matching an execution priority, until all these orders are in a master list
-    void fillRoundRobinOrders(std::vector<Order*>& masterList, const std::vector<Player>& players, int executionPriority);
-}
+    // Iterate through supplied players, adding orders matching an execution priority,
+    // until all these orders are in a master list
+    void fillRoundRobinOrders(std::vector<Order *> &masterList,
+                              const std::vector<Player> &players,
+                              int executionPriority);
+} // namespace GameLogic
 
 class GameEngine : public Subject
 {
 public:
     GameEngine();
-    ~GameEngine(); 
+    ~GameEngine();
     // TODO: required methods
 
     // Phase methods
@@ -79,7 +86,7 @@ public:
     void executeOrdersPhase();
 
     // Methods based on current player
-    const Player& getCurrentPlayer() const;
+    const Player &getCurrentPlayer() const;
     std::vector<Territory> getCurrentPlayerOwnedTerritories() const;
     std::vector<Continent> getCurrentPlayerOwnedContinents() const;
     int getCurrentPlayerOwnedContinentControlBonus() const;
@@ -89,14 +96,15 @@ public:
 
     bool gameShouldEnd() const;
     void cullDefeatedPlayers();
+
 private:
-    bool* phaseObserver;
-    bool* stateObserver;
-    Map* map;
-    std::vector<Player>* players;
-    GamePhase* currentPhase;
-    std::size_t* currentPlayer;
-    Deck* deck;
+    bool *phaseObserver;
+    bool *stateObserver;
+    Map *map;
+    std::vector<Player> *players;
+    GamePhase *currentPhase;
+    std::size_t *currentPlayer;
+    Deck *deck;
 };
 
 #endif

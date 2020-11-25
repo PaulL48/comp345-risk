@@ -47,10 +47,10 @@ std::vector<T *> *clone(const std::vector<T *> &vector)
 struct OrderDataPayload
 {
     OrderDataPayload();
-    OrderDataPayload(const OrderDataPayload& odp);
+    OrderDataPayload(const OrderDataPayload &odp);
     ~OrderDataPayload();
 
-    OrderDataPayload& operator=(const OrderDataPayload& odp);
+    OrderDataPayload &operator=(const OrderDataPayload &odp);
 
     Player *player;
     Player *enemyPlayer;
@@ -88,15 +88,15 @@ private:
 class Order
 {
 public:
-    Order(const std::string &description,
-          const std::string &effect, int executionPriority);    // constructor
-    virtual ~Order();                    // destructor
+    Order(const std::string &description, const std::string &effect,
+          int executionPriority);         // constructor
+    virtual ~Order();                     // destructor
     Order(const Order &order);            // copy constructor
     Order &operator=(const Order &order); // copy assignment operator
-    const std::string &getDescription(); // returns description string
-    const std::string &getEffect();      // returns effect string
-    const bool &getExecutedStatus();     // returns executed status bool
-    void setExecutedStatus(bool status); // sets executed status
+    const std::string &getDescription();  // returns description string
+    const std::string &getEffect();       // returns effect string
+    const bool &getExecutedStatus();      // returns executed status bool
+    void setExecutedStatus(bool status);  // sets executed status
     friend std::ostream &operator<<(std::ostream &out,
                                     const Order &order); // stream insertion operator
     virtual Order *clone() const = 0; // clones an Order object and returns Order
@@ -110,7 +110,6 @@ public:
     virtual bool validate() = 0;
 
 protected:
-    
     int *uniqueId;
     bool *executed;
     std::string *description;
