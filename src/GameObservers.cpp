@@ -5,7 +5,7 @@
 #include "GameObservers.h"
 #include "MapLoader.h"
 #include "Player.h"
-#include "map.h"
+#include "Map.h"
 #include <iomanip>
 #include <set>
 #include "GameEngine.h"
