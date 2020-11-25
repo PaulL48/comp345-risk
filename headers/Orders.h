@@ -5,10 +5,16 @@
 #include <iostream>
 #include <vector>
 
+constexpr int DEPLOY_PRIORITY = 1;
+constexpr int AIRLIFT_PRIORITY = 2;
+constexpr int BLOCKADE_PRIORITY = 3;
+constexpr int REMAINDER_PRIORITY = 4;
+
 class Territory;
 class Player;
 class Map;
 
+// Suspect
 template <typename T>
 void polymorphicDeepCopy(std::vector<T *> &dest, const std::vector<T *> &source)
 {
@@ -41,11 +47,14 @@ std::vector<T *> *clone(const std::vector<T *> &vector)
 struct OrderDataPayload
 {
     OrderDataPayload();
+    OrderDataPayload(const OrderDataPayload& odp);
     ~OrderDataPayload();
+
+    OrderDataPayload& operator=(const OrderDataPayload& odp);
 
     Player *player;
     Player *enemyPlayer;
-    const int *numberOfArmies; // Owning pointer
+    int *numberOfArmies; // Owning pointer
     Territory *sourceTerritory;
     Territory *targetTerritory;
     Map *map;
@@ -80,8 +89,10 @@ class Order
 {
 public:
     Order(const std::string &description,
-          const std::string &effect);    // constructor
+          const std::string &effect, int executionPriority);    // constructor
     virtual ~Order();                    // destructor
+    Order(const Order &order);            // copy constructor
+    Order &operator=(const Order &order); // copy assignment operator
     const std::string &getDescription(); // returns description string
     const std::string &getEffect();      // returns effect string
     const bool &getExecutedStatus();     // returns executed status bool
@@ -91,6 +102,7 @@ public:
     virtual Order *clone() const = 0; // clones an Order object and returns Order
                                       // pointer, virtual method
     int getUniqueId() const;
+    int getExecutionPriority() const;
 
     OrderDataPayload &getMutableDataPayload();
 
@@ -98,14 +110,14 @@ public:
     virtual bool validate() = 0;
 
 protected:
-    Order(const Order &order);            // copy constructor
-    Order &operator=(const Order &order); // copy assignment operator
+    
     int *uniqueId;
     bool *executed;
     std::string *description;
     std::string *effect;
     static int counter;
     OrderDataPayload *dataPayload;
+    int *executionPriority;
 };
 
 class Deploy : public Order

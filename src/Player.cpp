@@ -64,10 +64,10 @@ std::size_t InputUtilities::getRangedInput(const std::string& prompt, std::size_
 
 Player::Player(const std::string &name, const PlayerStrategy &strategy) :
     playerName(new std::string(name)),
-    cards(new Hand),
-    orders(new OrdersList),
+    cards(new Hand()),
+    orders(new OrdersList()),
     reinforcementPool(new int(0)),
-    negotiators(new std::vector<Player *>),
+    negotiators(new std::vector<Player *>()),
     conqueredTerritory(new bool(false)),
     strategy(strategy.clone())
 {
@@ -86,10 +86,10 @@ Player::Player(const Player &p) :
 
 Player::Player() :
     playerName(new std::string("")),
-    cards(new Hand),
-    orders(new OrdersList),
+    cards(new Hand()),
+    orders(new OrdersList()),
     reinforcementPool(new int(0)),
-    negotiators(new std::vector<Player *>),
+    negotiators(new std::vector<Player *>()),
     conqueredTerritory(new bool(false)),
     strategy(nullptr)
 {
@@ -97,9 +97,9 @@ Player::Player() :
 
 Player::~Player()
 {
+    delete orders;
     delete playerName;
     delete cards;
-    delete orders;
     delete negotiators;
     delete conqueredTerritory;
     delete reinforcementPool;
@@ -135,7 +135,8 @@ std::ostream &operator<<(std::ostream &output, const Player &p)
 {
     output << "(Player Name: " << *p.playerName
            << ", Reinforcement Pool: " << *p.reinforcementPool
-           << ", Orders: " << *p.orders << ", Cards: " << *p.cards << ")";
+           //<< ", Orders: " << *p.orders << ", Cards: " << *p.cards << ")";
+            << ", Cards: " << *p.cards << ")";
     return output;
 }
 

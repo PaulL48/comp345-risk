@@ -50,20 +50,18 @@ namespace GameLogic
     bool playerIsDefeated(const Map& map, const Player& player);
 
     void addCardToConqueringPlayers(std::vector<Player>& players, Deck& deck);
+
+    // Given a collection of players containing orders lists, construct a linear list of
+    // orders to execute based on the order of execution
+    std::vector<Order*> constructMasterExecutionList(const std::vector<Player>& players);
+
+
+    // Push the next order following cursor, with supplied execution priority, to the master list
+    void addExecutionPriorityOrderToMaster(std::vector<Order*>& masterList, const std::vector<Order*>& playerOrders, std::vector<Order*>::const_iterator& cursor, int executionPriority);
+    
+    // Iterate through supplied players, adding orders matching an execution priority, until all these orders are in a master list
+    void fillRoundRobinOrders(std::vector<Order*>& masterList, const std::vector<Player>& players, int executionPriority);
 }
-
-// Packs an array with type information supplied via template
-template <typename... Types>
-void fill(std::vector<std::type_index>& vec)
-{
-    vec.insert(vec.end(), {typeid(Types)...});
-}
-
-// Add the next order in a list that matches one of the selected types to a master list, following the supplied cursor. If the cursor is at the end of the container, nothing happens
-void addNextPhasedOrderOrNothing(std::vector<Order*>& masterList, const std::vector<Order*>& playerList, std::vector<Order*>::const_iterator& cursor, const std::vector<std::type_index>& selectedTypes);
-
-// Go one by one through the supplied players adding orders matching a set of types until all these orders are in a master queue
-void fillRoundRobinOrders(std::vector<Order*> masterList, const std::vector<Player>& players, const std::vector<std::type_index>& selectedTypes);
 
 class GameEngine : public Subject
 {

@@ -19,8 +19,6 @@
 
 std::vector<Player> ConfigurationUtilities::getPlayers()
 {
-    int totalPlayers;
-
     std::cout << "---------------------------------------------------------------" << std::endl;
     std::size_t value = InputUtilities::getRangedInput("Please select the number of players in your game", 2, 5);
     std::cout << "---------------------------------------------------------------" << std::endl;
@@ -241,19 +239,7 @@ void GameLogic::addCardToConqueringPlayers(std::vector<Player>& players, Deck& d
     }
 }
 
-void addNextPhasedOrderOrNothing(std::vector<Order*>& masterList, const std::vector<Order*>& playerList, std::vector<Order*>::const_iterator& cursor,  const std::vector<std::type_index>& selectedTypes)
-{
-    for (; cursor != playerList.end(); ++cursor)
-    {
-        if (std::find(selectedTypes.begin(), selectedTypes.end(), std::type_index(typeid(*cursor))) != selectedTypes.end())
-        {
-            masterList.push_back(*cursor);
-            return;
-        }
-    }
-}
-
-void fillRoundRobinOrders(std::vector<Order*>& masterList, std::vector<Player>& players, const std::vector<std::type_index>& selectedTypes)
+void GameLogic::fillRoundRobinOrders(std::vector<Order*>& masterList, const std::vector<Player>& players, int executionPriority)
 {
     std::vector<std::vector<Order*>::const_iterator> cursors;
     for (auto& player : players)
@@ -266,7 +252,7 @@ void fillRoundRobinOrders(std::vector<Order*>& masterList, std::vector<Player>& 
     {
         for (std::size_t i = 0; i < cursors.size(); ++i)
         {
-            addNextPhasedOrderOrNothing(masterList, players.at(i).getOrders().getList(), cursors.at(i), selectedTypes);
+            GameLogic::addExecutionPriorityOrderToMaster(masterList, players.at(i).getOrders().getList(), cursors.at(i), executionPriority);
         }
 
         allListsScanned = true;
@@ -276,6 +262,31 @@ void fillRoundRobinOrders(std::vector<Order*>& masterList, std::vector<Player>& 
         }
     }
 }
+
+void GameLogic::addExecutionPriorityOrderToMaster(std::vector<Order*>& masterList, const std::vector<Order*>& playerOrders, std::vector<Order*>::const_iterator& cursor, int executionPriority)
+{
+    for (; cursor != playerOrders.end(); ++cursor)
+    {
+        if ((*cursor)->getExecutionPriority() == executionPriority)
+        {
+            masterList.push_back(*cursor);
+            ++cursor;
+            return;
+        }
+    }
+}
+
+
+std::vector<Order*> GameLogic::constructMasterExecutionList(const std::vector<Player>& players)
+{
+    std::vector<Order*> masterList;
+    GameLogic::fillRoundRobinOrders(masterList, players, DEPLOY_PRIORITY);
+    GameLogic::fillRoundRobinOrders(masterList, players, AIRLIFT_PRIORITY);
+    GameLogic::fillRoundRobinOrders(masterList, players, BLOCKADE_PRIORITY);
+    GameLogic::fillRoundRobinOrders(masterList, players, REMAINDER_PRIORITY);
+    return masterList;
+}
+
 
 GameEngine::GameEngine() :
     phaseObserver(new bool(false)),
@@ -386,22 +397,7 @@ void GameEngine::executeOrdersPhase()
     *this->currentPhase = GamePhase::EXECUTE_ORDERS;
     // TODO: Notify observer
 
-    std::vector<Order*> masterList;
-    std::vector<std::type_index> deployPriority;
-    fill<Deploy>(deployPriority);
-    fillRoundRobinOrders(masterList, *this->players, deployPriority);
-
-    std::vector<std::type_index> airliftPriority;
-    fill<Airlift>(airliftPriority);
-    fillRoundRobinOrders(masterList, *this->players, airliftPriority);
-
-    std::vector<std::type_index> blockadePriority;
-    fill<Blockade>(blockadePriority);
-    fillRoundRobinOrders(masterList, *this->players, blockadePriority);
-
-    std::vector<std::type_index> remainingPriorities;
-    fill<Advance, Bomb, Airlift, Negotiate>(remainingPriorities);
-    fillRoundRobinOrders(masterList, *this->players, remainingPriorities);
+    std::vector<Order*> masterList = GameLogic::constructMasterExecutionList(*this->players);
 
     for (Order* order : masterList)
     {

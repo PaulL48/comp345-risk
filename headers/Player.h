@@ -96,7 +96,7 @@ T& InputUtilities::getMenuChoice(const std::string& prompt, std::vector<T>& list
 }
 
 template <typename T>
-std::size_t InputUtilities::getNumericalMenuChoice(const std::string& prompt, const std::vector<T> list)
+std::size_t InputUtilities::getNumericalMenuChoice(const std::string& prompt, const std::vector<T>& list)
 {
     if (list.size() == 0)
     {

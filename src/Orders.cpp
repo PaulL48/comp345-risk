@@ -12,7 +12,18 @@ OrderDataPayload::OrderDataPayload() :
     enemyPlayer(nullptr),
     numberOfArmies(new int(0)),
     sourceTerritory(nullptr),
-    targetTerritory(nullptr)
+    targetTerritory(nullptr),
+    map(nullptr)
+{
+}
+
+OrderDataPayload::OrderDataPayload(const OrderDataPayload& odp) :
+    player(odp.player),
+    enemyPlayer(odp.enemyPlayer),
+    numberOfArmies(new int(*odp.numberOfArmies)),
+    sourceTerritory(odp.sourceTerritory),
+    targetTerritory(odp.targetTerritory),
+    map(odp.map)
 {
 }
 
@@ -20,6 +31,26 @@ OrderDataPayload::~OrderDataPayload()
 {
     delete this->numberOfArmies;
 }
+
+OrderDataPayload &OrderDataPayload::operator=(const OrderDataPayload& odp)
+{
+    if (&odp == this)
+    {
+        return *this;
+    }
+
+    this->player = odp.player;
+    this->enemyPlayer = odp.enemyPlayer;
+    *this->numberOfArmies = *odp.numberOfArmies;
+    this->sourceTerritory = odp.sourceTerritory;
+    this->targetTerritory = odp.targetTerritory;
+    this->map = odp.map;
+    return *this;
+}
+
+//============================================================================================================================================================
+// CLASS DEFINITIONS: OrdersList
+//============================================================================================================================================================
 
 OrdersList::OrdersList() : orders(new vector<Order *>())
 {
@@ -31,9 +62,9 @@ OrdersList::OrdersList(const OrdersList &ordersList) : orders(clone(*ordersList.
 
 OrdersList::~OrdersList()
 {
-    for (std::size_t i = 0; i < orders->size(); ++i)
-    { // deletes order pointers in the vector prior to deleting the vector
-        delete orders->at(i);
+    for (auto* order : *this->orders)
+    {
+        delete order;
     }
     delete this->orders;
 }
@@ -138,14 +169,29 @@ const vector<Order *> &OrdersList::getList()
     return *orders;
 }
 
+//============================================================================================================================================================
+// CLASS DEFINITIONS: Order
+//============================================================================================================================================================
+
 int Order::counter = 0;
+
+Order::Order(const string &description, const string &effect, int executionPriority) :
+    uniqueId(new int(counter++)),
+    executed(new bool(false)),
+    description(new string(description)),
+    effect(new string(effect)),
+    dataPayload(new OrderDataPayload()),
+    executionPriority(new int(executionPriority))
+{
+}
 
 Order::Order(const Order &order) :
     uniqueId(new int(*order.uniqueId)),
     executed(new bool(*order.executed)),
     description(new std::string(*order.description)),
     effect(new std::string(*order.effect)),
-    dataPayload(new OrderDataPayload(*order.dataPayload))
+    dataPayload(new OrderDataPayload(*order.dataPayload)),
+    executionPriority(new int(*order.executionPriority))
 {
 }
 
@@ -156,6 +202,7 @@ Order::~Order()
     delete this->uniqueId;
     delete this->executed;
     delete this->dataPayload;
+    delete this->executionPriority;
 }
 
 Order &Order::operator=(const Order &order)
@@ -165,21 +212,14 @@ Order &Order::operator=(const Order &order)
         return *this;
     }
 
-    description = new string(*order.description);
-    effect = new string(*order.effect);
-    executed = new bool(*order.executed);
-    uniqueId = new int(counter++);
-    dataPayload = new OrderDataPayload(*order.dataPayload);
+    *description = *order.description;
+    *effect = *order.effect;
+    *executed = *order.executed;
+    *uniqueId = *order.uniqueId;
+    *dataPayload = *order.dataPayload;
+    *executionPriority = *order.executionPriority;
 
     return *this;
-}
-
-Order::Order(const string &description, const string &effect) :
-    uniqueId(new int(counter++)),
-    description(new string(description)),
-    effect(new string(effect)),
-    dataPayload(new OrderDataPayload())
-{
 }
 
 const string &Order::getDescription()
@@ -190,6 +230,11 @@ const string &Order::getDescription()
 const string &Order::getEffect()
 {
     return *effect;
+}
+
+int Order::getExecutionPriority() const
+{
+    return *executionPriority;
 }
 
 void Order::setExecutedStatus(bool status)
@@ -214,7 +259,8 @@ OrderDataPayload &Order::getMutableDataPayload()
 
 ostream &operator<<(ostream &out, const Order &order)
 {
-    out << *(order.description);
+    out << *order.description << std::endl;
+    out << "Issuing player: " << *order.dataPayload->player << std::endl;
     if (*(order.executed))
     {
         out << " -> Effect: " << *(order.effect);
@@ -222,6 +268,10 @@ ostream &operator<<(ostream &out, const Order &order)
     out << "\n";
     return out;
 }
+
+//============================================================================================================================================================
+// CLASS DEFINITIONS: Deploy
+//============================================================================================================================================================
 
 Deploy::Deploy(const Deploy &order) : Order(order)
 {
@@ -237,7 +287,7 @@ Deploy &Deploy::operator=(const Deploy &order)
     return *this;
 }
 
-Deploy::Deploy() : Order("Deploy", "Deploy troops to a territory")
+Deploy::Deploy() : Order("Deploy", "Deploy troops to a territory", DEPLOY_PRIORITY)
 {
 }
 
@@ -277,6 +327,10 @@ Order *Deploy::clone() const
     return new Deploy(*this);
 }
 
+//============================================================================================================================================================
+// CLASS DEFINITIONS: Advance
+//============================================================================================================================================================
+
 Advance::Advance(const Advance &order) : Order(order)
 {
 }
@@ -291,7 +345,7 @@ Advance &Advance::operator=(const Advance &order)
     return *this;
 }
 
-Advance::Advance() : Order("Advance", "Advance troops to a neighbouring territory")
+Advance::Advance() : Order("Advance", "Advance troops to a neighbouring territory", REMAINDER_PRIORITY)
 {
 }
 
@@ -389,6 +443,10 @@ Order *Advance::clone() const
     return new Advance(*this);
 }
 
+//============================================================================================================================================================
+// CLASS DEFINITIONS: Bomb
+//============================================================================================================================================================
+
 Bomb::Bomb(const Bomb &order) : Order(order)
 {
 }
@@ -403,7 +461,7 @@ Bomb &Bomb::operator=(const Bomb &order)
     return *this;
 }
 
-Bomb::Bomb() : Order("Bomb", "Bomb a territory")
+Bomb::Bomb() : Order("Bomb", "Bomb a territory", REMAINDER_PRIORITY)
 {
 }
 
@@ -454,6 +512,10 @@ Order *Bomb::clone() const
     return new Bomb(*this);
 }
 
+//============================================================================================================================================================
+// CLASS DEFINITIONS: Blockade
+//============================================================================================================================================================
+
 Blockade::Blockade(const Blockade &order) : Order(order)
 {
 }
@@ -469,8 +531,7 @@ Blockade &Blockade::operator=(const Blockade &order)
 }
 
 Blockade::Blockade() :
-    Order("Blockade", "Seals a territory, Prevents people or goods from entering or "
-                      "leaving the territory")
+    Order("Blockade", "Seals a territory, Prevents people or goods from entering or leaving the territory", BLOCKADE_PRIORITY)
 {
 }
 
@@ -510,6 +571,10 @@ Order *Blockade::clone() const
     return new Blockade(*this);
 }
 
+//============================================================================================================================================================
+// CLASS DEFINITIONS: Airlift
+//============================================================================================================================================================
+
 Airlift::Airlift(const Airlift &order) : Order(order)
 {
 }
@@ -524,7 +589,7 @@ Airlift &Airlift::operator=(const Airlift &order)
     return *this;
 }
 
-Airlift::Airlift() : Order("Airlift", "Transport suplies or troops by air")
+Airlift::Airlift() : Order("Airlift", "Transport suplies or troops by air", AIRLIFT_PRIORITY)
 {
 }
 
@@ -579,6 +644,10 @@ Order *Airlift::clone() const
     return new Airlift(*this);
 }
 
+//============================================================================================================================================================
+// CLASS DEFINITIONS: Negotiate
+//============================================================================================================================================================
+
 Negotiate::Negotiate(const Negotiate &order) : Order(order)
 {
 }
@@ -594,7 +663,7 @@ Negotiate &Negotiate::operator=(const Negotiate &order)
 }
 
 Negotiate::Negotiate() :
-    Order("Negotiate", "Negotiate with the opposition to reach an agreement")
+    Order("Negotiate", "Negotiate with the opposition to reach an agreement", REMAINDER_PRIORITY)
 {
 }
 
