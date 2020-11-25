@@ -387,7 +387,7 @@ void GameEngine::mainGameLoop()
 {
     while (!gameShouldEnd())
     {
-        this->reinforcementPhase(*this->players);
+        this->reinforcementPhase();
         this->issueOrdersPhase();
         this->executeOrdersPhase();
         cullDefeatedPlayers();
