@@ -18,7 +18,6 @@ Card::Card(const Card &)
 {
 }
 
-// copy assignment operator
 Card &Card::operator=(const Card &card)
 {
     if (&card == this)
@@ -27,7 +26,6 @@ Card &Card::operator=(const Card &card)
     return *this;
 }
 
-// stream insertion operator
 std::ostream &operator<<(std::ostream &out, const Card &card)
 {
     return card.print(out);
@@ -38,10 +36,10 @@ Deck::Deck() : deck(new std::vector<Card *>())
 {
     std::srand(time(0));
 
-    std::cout << "Initializind the deck..." << std::endl;
+    std::cout << "Initializing the deck..." << std::endl;
     std::cout << std::endl; 
 
-    for (std::size_t i = 0; i < decksize; i++)
+    for (std::size_t i = 0; i < DECK_SIZE; i++)
     {
 
         int randomIndex = 1 + (rand() % 5);

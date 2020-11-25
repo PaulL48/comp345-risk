@@ -6,9 +6,11 @@
 
 #include "Orders.h"
 
+const std::size_t DECK_SIZE = 30;
+
 class Deck;
-const std::size_t decksize = 30;
 class OrdersList;
+
 class Card
 {
 public:
