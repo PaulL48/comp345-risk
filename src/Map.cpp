@@ -565,3 +565,8 @@ std::ostream &operator<<(std::ostream &output, const Map &map)
     }
     return output;
 }
+
+std::size_t Map::size() const
+{
+    return this->territories->size();
+}

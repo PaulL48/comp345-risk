@@ -28,6 +28,7 @@ std::vector<Player> ConfigurationUtilities::getPlayers()
 
     std::vector<Player> players(value);
     ConfigurationUtilities::getPlayerNames(players);
+    ConfigurationUtilities::getPlayerStrategies(players);
     return players;
 }
 
@@ -56,6 +57,29 @@ void ConfigurationUtilities::getPlayerNames(std::vector<Player> &players)
         player.setPlayerName(name);
         usedNames.insert(name);
         ++i;
+    }
+}
+
+void ConfigurationUtilities::getPlayerStrategies(std::vector<Player> &players)
+{
+    for (auto& player : players)
+    {
+        std::size_t choice = InputUtilities::getNumericalMenuChoice("Select a strategy for " + player.getPlayerName(), std::vector<std::string>{"Human", "Aggressive", "Benevolent", "Neutral"});
+        switch (choice)
+        {
+        case 0:
+            player.setStrategy(HumanPlayerStrategy());
+            break;
+        case 1:
+            player.setStrategy(AggressivePlayerStrategy());
+            break;
+        case 2:
+            player.setStrategy(BenevolentPlayerStrategy());
+            break;
+        case 3:
+            player.setStrategy(NeutralPlayerStrategy());
+            break;
+        }
     }
 }
 
@@ -98,8 +122,8 @@ bool ConfigurationUtilities::getPhaseObserverSwitch()
               << std::endl;
     std::size_t choice = InputUtilities::getNumericalMenuChoice(
         "Please select if you want the Phase observers ON or OFF",
-        std::vector<std::string>{"1) Phase observers ON", "2) Phase observers OFF"});
-    return choice == 1;
+        std::vector<std::string>{"Phase observers ON", "Phase observers OFF"});
+    return choice == 0;
 }
 
 bool ConfigurationUtilities::getStatisticsObserverSwitch()
@@ -108,9 +132,9 @@ bool ConfigurationUtilities::getStatisticsObserverSwitch()
               << std::endl;
     std::size_t choice = InputUtilities::getNumericalMenuChoice(
         "Please select if you want the Game Statistic Observers ON or OFF",
-        std::vector<std::string>{"1) Game Statistic Observers ON",
-                                 "2) Game Statistic Observers OFF"});
-    return choice == 1;
+        std::vector<std::string>{"Game Statistic Observers ON",
+                                 "Game Statistic Observers OFF"});
+    return choice == 0;
 }
 
 void StartupUtilities::shufflePlayers(std::vector<Player> &players)
@@ -330,6 +354,22 @@ void GameEngine::configure()
     *this->players = ConfigurationUtilities::getPlayers();
     *this->map = ConfigurationUtilities::getMap();
 
+    for (auto& player : *this->players)
+    {
+        player.setGameEngine(this);
+    }
+
+    if (*this->stateObserver)
+    {
+        new StatisticsObserver(*this);
+    }
+
+    if (*this->phaseObserver)
+    {
+        new PhaseObserver(*this);
+    }
+    
+
     std::cout << "====================================================================="
                  "==========="
               << std::endl;
@@ -349,7 +389,6 @@ void GameEngine::configure()
               << std::endl;
     std::cout << "Press any enter to continue" << std::endl;
     std::string wait;
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     std::getline(std::cin, wait);
 }
 
@@ -376,7 +415,6 @@ void GameEngine::startupPhase()
               << std::endl;
     std::cout << "Press any enter to continue" << std::endl;
     std::string wait;
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     std::getline(std::cin, wait);
 }
 
@@ -395,42 +433,23 @@ void GameEngine::mainGameLoop()
 void GameEngine::reinforcementPhase()
 {
     *this->currentPhase = GamePhase::REINFORCEMENT;
-    std::cout << "====================================================================="
-                 "==========="
-              << std::endl;
-    std::cout << "Starting Reinforcement Phase" << std::endl;
     std::size_t i = 0;
     for (auto &player : *this->players)
     {
         *this->currentPlayer = i++;
-        std::cout << "Reinforcing Player: " << player << std::endl;
-        std::cout << "Player owns "
-                  << this->map->getPlayersTerritoriesNonConst(player).size()
-                  << " territories" << std::endl;
-        std::cout << "Player owns " << this->map->getPlayersContinents(player).size()
-                  << " continents" << std::endl;
-        std::cout << "Adding " << GameLogic::totalArmyBonus(*this->map, player)
-                  << " armies to player" << std::endl;
         player.addArmies(GameLogic::totalArmyBonus(*this->map, player));
-        std::cout << "Result: " << player << std::endl;
+        this->notify();
     }
 }
 
 void GameEngine::issueOrdersPhase()
 {
     *this->currentPhase = GamePhase::ISSUE_ORDERS;
-
-    std::cout << "====================================================================="
-                 "==========="
-              << std::endl;
-    std::cout << "Starting Issue Order Phase" << std::endl;
-
     for (std::size_t i = 0; i < this->players->size(); ++i)
     {
         *this->currentPlayer = i;
-        std::cout << "Current player to issue orders: " << this->players->at(i)
-                  << std::endl;
         this->players->at(i).issueOrder(*this->map);
+        this->notify();
     }
 }
 
@@ -444,6 +463,7 @@ void GameEngine::executeOrdersPhase()
     for (Order *order : masterList)
     {
         order->execute();
+        this->notify();
     }
 }
 
@@ -452,30 +472,19 @@ const Player &GameEngine::getCurrentPlayer() const
     return this->players->at(*this->currentPlayer);
 }
 
-std::vector<Territory> GameEngine::getCurrentPlayerOwnedTerritories() const
-{
-    return this->map->getPlayersTerritoriesNonConst(
-        this->players->at(*this->currentPlayer));
-}
-
-std::vector<Continent> GameEngine::getCurrentPlayerOwnedContinents() const
-{
-    return this->map->getPlayersContinents(this->getCurrentPlayer());
-}
-
-int GameEngine::getCurrentPlayerOwnedContinentControlBonus() const
-{
-    return GameLogic::continentArmyBonus(*this->map, this->getCurrentPlayer());
-}
-
-int GameEngine::getCurrentPlayerTotalAvailableArmies() const
-{
-    return GameLogic::playerTotalAvailableArmies(*this->map, this->getCurrentPlayer());
-}
-
 GamePhase GameEngine::getCurrentPhase() const
 {
     return *this->currentPhase;
+}
+
+const Map &GameEngine::getMap() const
+{
+    return *this->map;
+}
+
+const std::vector<Player>& GameEngine::getPlayers() const
+{
+    return *this->players;
 }
 
 bool GameEngine::gameShouldEnd() const

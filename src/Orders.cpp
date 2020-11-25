@@ -529,7 +529,7 @@ void Bomb::execute()
     Territory copy = *this->dataPayload->targetTerritory;
     copy.setOccupyingArmies(copy.getOccupyingArmies() / 2);
     this->dataPayload->map->updateTerritory(*this->dataPayload->targetTerritory, copy);
-    *this->effect = this->dataPayload->player->getPlayerName() +  " has dropped a bomb on " + this->dataPayload->targetTerritory->getName() + ", leaving it with " + copy.getOccupyingArmies() + " armies remaining";
+    *this->effect = this->dataPayload->player->getPlayerName() +  " has dropped a bomb on " + this->dataPayload->targetTerritory->getName() + ", leaving it with " + std::to_string(copy.getOccupyingArmies()) + " armies remaining";
     this->setExecutedStatus(true);
 }
 

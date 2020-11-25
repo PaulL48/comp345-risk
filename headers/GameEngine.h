@@ -21,9 +21,11 @@ namespace ConfigurationUtilities
 {
     std::vector<Player> getPlayers();
     void getPlayerNames(std::vector<Player> &players);
+    void getPlayerStrategies(std::vector<Player> &players);
     Map getMap();
     bool getPhaseObserverSwitch();
     bool getStatisticsObserverSwitch();
+
 } // namespace ConfigurationUtilities
 
 namespace StartupUtilities
@@ -87,10 +89,6 @@ public:
 
     // Methods based on current player
     const Player &getCurrentPlayer() const;
-    std::vector<Territory> getCurrentPlayerOwnedTerritories() const;
-    std::vector<Continent> getCurrentPlayerOwnedContinents() const;
-    int getCurrentPlayerOwnedContinentControlBonus() const;
-    int getCurrentPlayerTotalAvailableArmies() const;
 
     GamePhase getCurrentPhase() const;
     const std::vector<Player> &getPlayers() const;

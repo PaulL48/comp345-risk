@@ -358,7 +358,7 @@ public:
 
     void setTerritoryOwnerByName(Player &player, const std::string &territoryName);
 
-    int size() const;
+    std::size_t size() const;
 
 private:
     Graph<Territory> *territories;

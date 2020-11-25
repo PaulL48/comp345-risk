@@ -41,9 +41,19 @@ void Subject::detach(Observer *o)
 
 void Subject::notify()
 {
+    InputUtilities::clearTerminal();
+
     for (auto* observer : *this->observers)
     {
         observer->update();
+    }
+
+    if (!this->observers->empty())
+    {
+        // wait for user input so you can see the observer response
+        std::string input;
+        std::cout << "Press enter to continue..." << std::endl;
+        std::getline(std::cin, input);
     }
 }
 
@@ -74,14 +84,15 @@ void StatisticsObserver::update() const
 
 void StatisticsObserver::displayPlayers() const
 {
-    std::cout << std::setw(SMALL_COLUMN) << std::left << "Player" << "| " << std::setw(MED_COLUMN) << std::left << "# Territories" << "| " << std::setw(MED_COLUMN) << std::left << "% Territories" << "|" << std::endl;
-    std::cout << "-------------------------------------------------------" << std::endl;
+    std::cout << "---------------------------------------------------------" << std::endl;
+    std::cout << "| " << std::setw(SMALL_COLUMN) << std::left << "Player" << "| " << std::setw(MED_COLUMN) << std::left << "# Territories" << "| " << std::setw(MED_COLUMN) << std::left << "% Territories" << "|" << std::endl;
+    std::cout << "---------------------------------------------------------" << std::endl;
 
     for (const auto& player : this->game->getPlayers())
     {
-        std::cout << std::setw(SMALL_COLUMN) << std::left << player.getPlayerName() << "| " << std::setw(MED_COLUMN) << std::left << this->game->getMap().getPlayersTerritories(player).size() << "| " << std::setw(MED_COLUMN) << std::left << static_cast<float>(this->game->getMap().getPlayersTerritories(player).size()) / this->game->getMap().size() << "|" << std::endl;
+        std::cout << "| " << std::setw(SMALL_COLUMN) << std::left << player.getPlayerName() << "| " << std::setw(MED_COLUMN) << std::left << this->game->getMap().getPlayersTerritories(player).size() << "| " << std::setw(MED_COLUMN) << std::left << std::setprecision(3) << (static_cast<float>(this->game->getMap().getPlayersTerritories(player).size()) / this->game->getMap().size()) * 100.0f << "|" << std::endl;
     }
-    std::cout << "-------------------------------------------------------" << std::endl;
+    std::cout << "---------------------------------------------------------"  << std::endl;
 }
 
 void StatisticsObserver::displayTopDeployed() const
@@ -92,7 +103,7 @@ void StatisticsObserver::displayTopDeployed() const
         return;
     }
 
-    Player top;
+    const Player* top;
     int maxDeployed = -1;
     for (const auto& player : players)
     {
@@ -104,12 +115,12 @@ void StatisticsObserver::displayTopDeployed() const
 
         if (playerDeployed > maxDeployed)
         {
-            top = player;
+            top = &player;
             maxDeployed = playerDeployed;
         }
     }
 
-    std::cout << "Most deployed armies: " << top.getPlayerName() << " with " << maxDeployed << std::endl;
+    std::cout << "Most deployed armies: " << top->getPlayerName() << " with " << maxDeployed << std::endl;
 }
 
 void StatisticsObserver::displayTopReinforced() const
@@ -120,19 +131,19 @@ void StatisticsObserver::displayTopReinforced() const
         return;
     }
 
-    Player top;
+    const Player* top;
     int maxReinforced = -1;
     for (const auto& player : players)
     {
         int reinforced = GameLogic::totalArmyBonus(this->game->getMap(), player);
         if (reinforced > maxReinforced)
         {
-            top = player;
+            top = &player;
             maxReinforced = reinforced;
         }
     }
 
-    std::cout << "Most reinforcements per turn: " << top.getPlayerName() << " with " << maxReinforced << std::endl;
+    std::cout << "Most reinforcements per turn: " << top->getPlayerName() << " with " << maxReinforced << std::endl;
 }
 
 void StatisticsObserver::displayVictory() const
@@ -156,7 +167,7 @@ PhaseObserver::PhaseObserver(GameEngine& game) :
 
 void PhaseObserver::update() const
 {
-    std::cout << "-------------------------------------------------------" << std::endl;
+    std::cout << "--------------------------------------------------------------------------------" << std::endl;
     std::cout << "Phase View: ";
     switch (this->game->getCurrentPhase())
     {
@@ -183,7 +194,7 @@ void PhaseObserver::displayReinforcementsPhase() const
     std::cout << "You currently own " << territories.size() << " territories." << std::endl;
     for (const auto& territory : territories)
     {
-        std::cout << territory.getName() << " with " << territory.getOccupyingArmies() << " armies." << std::endl;
+        std::cout << "\t- " << territory.getName() << " with " << territory.getOccupyingArmies() << " armies." << std::endl;
     }
 
     std::cout << "You currently own " << continents.size() << " continents." << std::endl;
@@ -194,6 +205,7 @@ void PhaseObserver::displayReinforcementsPhase() const
     std::cout << "Total territory control reinforcements: " << GameLogic::territoryArmyBonus(this->game->getMap(), player) << std::endl;
     std::cout << "Total continent control reinforcements: " << GameLogic::continentArmyBonus(this->game->getMap(), player) << std::endl;
     std::cout << "Total reinforcements this turn: " << GameLogic::totalArmyBonus(this->game->getMap(), player) << std::endl;
+    std::cout << "Current reinforcement pool: " << player.getReinforcementPool() << std::endl;
 }
 
 void PhaseObserver::displayIssueOrdersPhase() const
@@ -205,20 +217,20 @@ void PhaseObserver::displayIssueOrdersPhase() const
     std::cout << "Current orders: " << std::endl;
     for (const auto* order : player.getOrders().getList())
     {
-        std::cout << order << std::endl;
+        std::cout << "\t -" << order << std::endl;
     }
 
     std::cout << "Current territories to attack: ";
     for (const auto& territory : player.toAttack(this->game->getMap()))
     {
-        std::cout << territory.getName() << ", ";
+        std::cout << "\t -" << territory.getName() << ", ";
     }
     std::cout << std::endl;
 
     std::cout << "Current territories to defend: ";
     for (const auto& territory : player.toDefend(this->game->getMap()))
     {
-        std::cout << territory.getName() << ", ";
+        std::cout << "\t -" << territory.getName() << ", ";
     }
     std::cout << std::endl;
 }
@@ -232,6 +244,6 @@ void PhaseObserver::displayOrdersExecutionPhase() const
     std::cout << "Some or all of your orders have been executed: " << std::endl; 
     for (const auto* order : player.getOrders().getList())
     {
-        std::cout << order << std::endl;
+        std::cout << "\t -" << order << std::endl;
     }
 }

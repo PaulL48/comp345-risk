@@ -36,7 +36,7 @@ std::size_t InputUtilities::getRangedInput(const std::string &prompt, std::size_
             std::cout << prompt << std::endl;
         }
 
-        std::cout << "Please enter a value between " << lower << " and " << upper
+        std::cout << "Enter a value between " << lower << " and " << upper
                   << ": ";
 
         std::string input;
@@ -79,7 +79,8 @@ Player::Player(const std::string &name, const PlayerStrategy &strategy) :
     reinforcementPool(new int(0)),
     negotiators(new std::vector<Player *>()),
     conqueredTerritory(new bool(false)),
-    strategy(strategy.clone())
+    strategy(strategy.clone()),
+    engine(nullptr)
 {
 }
 
@@ -90,8 +91,17 @@ Player::Player(const Player &p) :
     reinforcementPool(new int(*p.reinforcementPool)),
     negotiators(new std::vector<Player *>(*p.negotiators)),
     conqueredTerritory(new bool(*p.conqueredTerritory)),
-    strategy(p.strategy->clone())
+    engine(p.engine)
 {
+    if (p.strategy != nullptr)
+    {
+        this->strategy = p.strategy->clone();
+    }
+    else
+    {
+        this->strategy = new NeutralPlayerStrategy();
+    }
+    
 }
 
 Player::Player() :
@@ -101,7 +111,8 @@ Player::Player() :
     reinforcementPool(new int(0)),
     negotiators(new std::vector<Player *>()),
     conqueredTerritory(new bool(false)),
-    strategy(nullptr)
+    strategy(new NeutralPlayerStrategy()),
+    engine(nullptr)
 {
 }
 
@@ -138,6 +149,7 @@ Player &Player::operator=(const Player &player)
     *this->conqueredTerritory = *player.conqueredTerritory;
     *this->reinforcementPool = *player.reinforcementPool;
     *this->strategy = *player.strategy;
+    this->engine = player.engine;
     return *this;
 }
 
@@ -239,4 +251,9 @@ bool Player::isNegotiator(const Player *player) const
         }
     }
     return false;
+}
+
+void Player::setGameEngine(GameEngine* engine)
+{
+    this->engine = engine;
 }
