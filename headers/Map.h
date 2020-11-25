@@ -358,6 +358,8 @@ public:
 
     void setTerritoryOwnerByName(Player &player, const std::string &territoryName);
 
+    int size() const;
+
 private:
     Graph<Territory> *territories;
     std::vector<Continent> *continents;

@@ -7,6 +7,16 @@
 #include <string>
 #include <vector>
 
+
+void InputUtilities::clearTerminal()
+{
+#ifdef _WIN32
+    std::system("cls");
+#else
+    std::system ("clear");
+#endif
+}
+
 void InputUtilities::removeNewlines(std::string &string)
 {
     string.erase(remove(string.begin(), string.end(), '\n'), string.end());

@@ -1,7 +1,3 @@
-//
-// Created by Ruslan Dallin on 2020-11-03.
-//
-
 #include "GameObservers.h"
 #include "GameEngine.h"
 #include "Map.h"
@@ -9,6 +5,7 @@
 #include "Player.h"
 #include <iomanip>
 #include <set>
+#include <unordered_map>
 
 Observer::Observer()
 {
@@ -18,256 +15,223 @@ Observer::~Observer()
 {
 }
 
-Subject::Subject()
+Subject::Subject() :
+    observers(new std::vector<Observer*>())
 {
-    _observers = new std::list<Observer *>;
 }
 
 Subject::~Subject()
 {
-    delete _observers;
+    delete observers;
 }
 
-void Subject::Attach(Observer *o)
+void Subject::attach(Observer *o)
 {
-    _observers->push_back(o);
+    observers->push_back(o);
 }
 
-void Subject::Detach(Observer *o)
+void Subject::detach(Observer *o)
 {
-    _observers->remove(o);
+    auto it = std::find(this->observers->begin(), this->observers->end(), o);
+    if (it != this->observers->end())
+    {
+        this->observers->erase(it);
+    }
 }
 
-void Subject::Notify()
+void Subject::notify()
 {
-    std::list<Observer *>::iterator i = _observers->begin();
-    for (; i != _observers->end(); ++i)
-        (*i)->Update();
+    for (auto* observer : *this->observers)
+    {
+        observer->update();
+    }
 }
 
-MapObserver::MapObserver(Map *s)
+StatisticsObserver::StatisticsObserver(GameEngine& game) :
+    game(&game)
 {
-    _subject = s;
-    _subject->Attach(this);
+    game.attach(this);
 }
 
-MapObserver::~MapObserver()
+void StatisticsObserver::update() const
 {
-    _subject->Detach(this);
-}
-
-void MapObserver::Update()
-{
-    displayMap();
-    displayPlayers();
-}
-
-bool MapObserver::victory()
-{
-    const Player *first =
-        _subject->getContinents().at(0).getTerritories().begin()->getOwningPlayer();
-
-    if (first == nullptr)
-        return false;
+    std::cout << "--------------------------------------------------------------------------------" << std::endl;
+    std::cout << "Statistics View" << std::endl;
+    if (this->game->gameShouldEnd())
+    {
+        this->displayVictory();
+    }
     else
     {
-        for (const auto &cont : _subject->getContinents())
-            for (const auto &terr : cont.getTerritories())
-                if (terr.getOwningPlayer() != nullptr &&
-                    *first != *terr.getOwningPlayer())
-                    return false;
-
-        std::cout << congratulations << "\n";
-        std::cout << *first << "has conquered all territories";
+        this->displayPlayers();
+        std::cout << std::endl;
+        this->displayTopDeployed();
+        std::cout << std::endl;
+        this->displayTopReinforced();
     }
-    return true;
+    std::cout << std::endl;
 }
 
-std::set<std::string> MapObserver::getPlayerList()
+void StatisticsObserver::displayPlayers() const
 {
-    std::set<std::string> playerSet;
+    std::cout << std::setw(SMALL_COLUMN) << std::left << "Player" << "| " << std::setw(MED_COLUMN) << std::left << "# Territories" << "| " << std::setw(MED_COLUMN) << std::left << "% Territories" << "|" << std::endl;
+    std::cout << "-------------------------------------------------------" << std::endl;
 
-    for (auto &cont : _subject->getContinents())
+    for (const auto& player : this->game->getPlayers())
     {
-        for (auto &terr : cont.getTerritories())
+        std::cout << std::setw(SMALL_COLUMN) << std::left << player.getPlayerName() << "| " << std::setw(MED_COLUMN) << std::left << this->game->getMap().getPlayersTerritories(player).size() << "| " << std::setw(MED_COLUMN) << std::left << static_cast<float>(this->game->getMap().getPlayersTerritories(player).size()) / this->game->getMap().size() << "|" << std::endl;
+    }
+    std::cout << "-------------------------------------------------------" << std::endl;
+}
+
+void StatisticsObserver::displayTopDeployed() const
+{
+    const std::vector<Player>& players = this->game->getPlayers();
+    if (players.size() == 0)
+    {
+        return;
+    }
+
+    Player top;
+    int maxDeployed = -1;
+    for (const auto& player : players)
+    {
+        int playerDeployed = 0;
+        for (const auto& territory : this->game->getMap().getPlayersTerritories(player))
         {
-            if (terr.getOwningPlayer() != nullptr)
-                playerSet.insert(terr.getOwningPlayer()->getPlayerName());
+            playerDeployed += territory.getOccupyingArmies();
+        }
+
+        if (playerDeployed > maxDeployed)
+        {
+            top = player;
+            maxDeployed = playerDeployed;
         }
     }
-    return playerSet;
+
+    std::cout << "Most deployed armies: " << top.getPlayerName() << " with " << maxDeployed << std::endl;
 }
 
-void MapObserver::displayMap()
+void StatisticsObserver::displayTopReinforced() const
 {
-
-    if (!victory())
+    const std::vector<Player>& players = this->game->getPlayers();
+    if (players.size() == 0)
     {
-        std::cout << "-----------------------------------------------------------------"
-                     "------------------------------------------------------\n"
-                  << std::left << std::setw(20) << "Continents"
-                  << "Territory Ownership\n"
-                  << "-----------------------------------------------------------------"
-                     "------------------------------------------------------\n";
-        for (auto &cont : _subject->getContinents())
+        return;
+    }
+
+    Player top;
+    int maxReinforced = -1;
+    for (const auto& player : players)
+    {
+        int reinforced = GameLogic::totalArmyBonus(this->game->getMap(), player);
+        if (reinforced > maxReinforced)
         {
-            std::cout << std::left << std::setw(20) << cont.getName() + ":";
-            for (auto &terr : cont.getTerritories())
-            {
-                if (terr.getOwningPlayer() == nullptr)
-                    std::cout << std::setw(15) << "[Neutral]";
-                else
-                    std::cout << std::setw(15) << "["
-                              << terr.getOwningPlayer()->getPlayerName() << "]";
-            }
-            std::cout << "\n";
+            top = player;
+            maxReinforced = reinforced;
         }
     }
+
+    std::cout << "Most reinforcements per turn: " << top.getPlayerName() << " with " << maxReinforced << std::endl;
 }
 
-void MapObserver::displayPlayers()
+void StatisticsObserver::displayVictory() const
 {
-    std::set<std::string> playerSet = getPlayerList();
-    double ownedCount;
-    double count;
-
-    if (!victory())
+    if (this->game->getPlayers().size() == 0)
     {
-        std::cout << "-----------------------------------------------------------------"
-                     "------------------------------------------------------\n"
-                  << std::left << std::setw(20) << "Players"
-                  << "Percentage of world conquered\n"
-                  << "-----------------------------------------------------------------"
-                     "------------------------------------------------------\n";
-        for (auto &player : playerSet)
-        {
-            std::cout << std::left << std::setw(20) << player + ":"
-                      << "[";
-            ownedCount = 0;
-            count = 0;
-            for (auto &cont : _subject->getContinents())
-            {
-                for (auto &terr : cont.getTerritories())
-                {
-                    if (terr.getOwningPlayer()->getPlayerName() == player)
-                    {
-                        std::cout << std::setw(1) << "+";
-                        ownedCount++;
-                    }
-                    else
-                        std::cout << std::setw(1) << "-";
-                    count++;
-                }
-            }
-            std::cout << std::setw(15) << std::fixed << std::setprecision(3)
-                      << ownedCount / count << '%';
-            std::cout << "\n";
-        }
-        std::cout << "-----------------------------------------------------------------"
-                     "------------------------------------------------------\n";
+        return;
     }
+
+    // There will only be one player left
+    std::cout << this->game->getPlayers().at(0).getPlayerName() << " has conquered the world!" << std::endl;
+    std::cout << std::endl;
+    std::cout << VICTORY_BANNER << std::endl;
 }
 
-PhaseObserver::PhaseObserver(GameEngine *s)
+PhaseObserver::PhaseObserver(GameEngine& game) :
+    game(&game)
 {
-    _subject = s;
-    _subject->Attach(this);
+    game.attach(this);
 }
 
-PhaseObserver::~PhaseObserver()
+void PhaseObserver::update() const
 {
-    _subject->Detach(this);
-}
-
-void PhaseObserver::Update()
-{
-    displayPhase();
-}
-
-void PhaseObserver::displayPhase()
-{
-    GamePhase phase = _subject->getCurrentPhase();
-
-    switch (phase)
+    std::cout << "-------------------------------------------------------" << std::endl;
+    std::cout << "Phase View: ";
+    switch (this->game->getCurrentPhase())
     {
     case GamePhase::REINFORCEMENT:
-        displayReinforcementPhase();
+        this->displayReinforcementsPhase();
         break;
     case GamePhase::ISSUE_ORDERS:
-        displayissuingOrdersPhase();
+        this->displayIssueOrdersPhase();
         break;
     case GamePhase::EXECUTE_ORDERS:
-        displayOrdersExecutionPhase();
+        this->displayOrdersExecutionPhase();
         break;
     }
 }
 
-void PhaseObserver::displayReinforcementPhase()
+void PhaseObserver::displayReinforcementsPhase() const
 {
-    const Player &currentPlayer = _subject->getCurrentPlayer();
+    const Player& player = this->game->getCurrentPlayer();
+    std::cout << "Reinforcement Phase" << std::endl;
+    std::cout << "Player: " << player.getPlayerName() << std::endl;
 
-    std::cout << "---------------------------------------------------------------------"
-                 "--------------------------------------------------\n"
-              << std::left << std::setw(20) << currentPlayer
-              << " - Reinforcement Phase\n"
-              << "---------------------------------------------------------------------"
-                 "--------------------------------------------------\n";
-    std::cout << std::setw(10)
-              << "Your Territories: " << _subject->getCurrentPlayerOwnedTerritories();
-    std::cout << std::setw(10)
-              << "\nYour Continents: " << _subject->getCurrentPlayerOwnedContinents();
-    std::cout << std::setw(10) << "\nContinent Control Bonus: "
-              << _subject->getCurrentPlayerOwnedContinentControlBonus();
-    std::cout << std::setw(10) << "\nTotal Available Armies: "
-              << _subject->getCurrentPlayerTotalAvailableArmies() << "\n";
-}
-
-void PhaseObserver::displayissuingOrdersPhase()
-{
-    const Player &currentPlayer = _subject->getCurrentPlayer();
-
-    std::cout << "---------------------------------------------------------------------"
-                 "--------------------------------------------------\n"
-              << std::left << std::setw(20) << currentPlayer
-              << " - Issuing Orders Phase\n"
-              << "---------------------------------------------------------------------"
-                 "--------------------------------------------------\n";
-    std::cout << std::setw(10) << "Territories to defend: ";
-    // for (auto &terri: currentPlayer.toDefend()){
-    //     std::cout << terri.getName() << "\n";
-    // }
-
-    // std::cout << std::setw(10) << "\nTerritories to attack: ";
-    // for (auto &terri: currentPlayer.toAttack()){
-    //     std::cout << terri.getName() << "\n";
-    // }
-}
-
-void PhaseObserver::displayOrdersExecutionPhase()
-{
-    const Player &currentPlayer = _subject->getCurrentPlayer();
-
-    std::cout << "---------------------------------------------------------------------"
-                 "--------------------------------------------------\n"
-              << std::left << std::setw(25) << currentPlayer
-              << " - Orders Execution Phase\n"
-              << "---------------------------------------------------------------------"
-                 "--------------------------------------------------\n";
-    std::cout << std::setw(10) << "\nYour orders: ";
-    for (Order *order : currentPlayer.getOrders().getList())
+    const auto& territories = this->game->getMap().getPlayersTerritories(player);
+    const auto& continents = this->game->getMap().getPlayersContinents(player);
+    std::cout << "You currently own " << territories.size() << " territories." << std::endl;
+    for (const auto& territory : territories)
     {
-        std::cout << order << "\n";
+        std::cout << territory.getName() << " with " << territory.getOccupyingArmies() << " armies." << std::endl;
     }
+
+    std::cout << "You currently own " << continents.size() << " continents." << std::endl;
+    for (const auto& continent : continents)
+    {
+        std::cout << continent.getName() << " with " << continent.getBonusArmyValue() << " bonus armies." << std::endl;
+    }
+    std::cout << "Total territory control reinforcements: " << GameLogic::territoryArmyBonus(this->game->getMap(), player) << std::endl;
+    std::cout << "Total continent control reinforcements: " << GameLogic::continentArmyBonus(this->game->getMap(), player) << std::endl;
+    std::cout << "Total reinforcements this turn: " << GameLogic::totalArmyBonus(this->game->getMap(), player) << std::endl;
 }
 
-MapController::MapController(MapObserver *newView, Map *newModel)
+void PhaseObserver::displayIssueOrdersPhase() const
 {
-    mapView = newView;
-    mapModel = newModel;
+    const Player& player = this->game->getCurrentPlayer();
+    std::cout << "Issue Orders Phase" << std::endl;
+    std::cout << "Player: " << player.getPlayerName() << std::endl;
+
+    std::cout << "Current orders: " << std::endl;
+    for (const auto* order : player.getOrders().getList())
+    {
+        std::cout << order << std::endl;
+    }
+
+    std::cout << "Current territories to attack: ";
+    for (const auto& territory : player.toAttack(this->game->getMap()))
+    {
+        std::cout << territory.getName() << ", ";
+    }
+    std::cout << std::endl;
+
+    std::cout << "Current territories to defend: ";
+    for (const auto& territory : player.toDefend(this->game->getMap()))
+    {
+        std::cout << territory.getName() << ", ";
+    }
+    std::cout << std::endl;
 }
 
-PhaseController::PhaseController(PhaseObserver *newView, GameEngine *newModel)
+void PhaseObserver::displayOrdersExecutionPhase() const
 {
-    phaseView = newView;
-    phaseModel = newModel;
+    const Player& player = this->game->getCurrentPlayer();
+    std::cout << "Execute Orders Phase" << std::endl;
+    std::cout << "Player: " << player.getPlayerName() << std::endl;
+
+    std::cout << "Some or all of your orders have been executed: " << std::endl; 
+    for (const auto* order : player.getOrders().getList())
+    {
+        std::cout << order << std::endl;
+    }
 }

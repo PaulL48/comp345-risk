@@ -93,6 +93,8 @@ public:
     int getCurrentPlayerTotalAvailableArmies() const;
 
     GamePhase getCurrentPhase() const;
+    const std::vector<Player> &getPlayers() const;
+    const Map &getMap() const;
 
     bool gameShouldEnd() const;
     void cullDefeatedPlayers();

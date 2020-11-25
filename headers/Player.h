@@ -17,6 +17,7 @@ class OrdersList;
 
 namespace InputUtilities
 {
+    void clearTerminal();
     void removeNewlines(std::string &string);
     std::size_t getRangedInput(const std::string &prompt, std::size_t lowerBound,
                                std::size_t upperBound);

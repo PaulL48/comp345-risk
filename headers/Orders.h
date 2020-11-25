@@ -110,6 +110,8 @@ public:
     virtual bool validate() = 0;
 
 protected:
+    virtual std::ostream &print(std::ostream& output) const = 0;
+
     int *uniqueId;
     bool *executed;
     std::string *description;
@@ -129,6 +131,9 @@ public:
     virtual void execute();
     virtual bool validate();
     virtual Order *clone() const;
+
+protected:
+    virtual std::ostream &print(std::ostream& output) const;
 };
 
 class Advance : public Order
@@ -141,6 +146,8 @@ public:
     virtual void execute();
     virtual bool validate();
     virtual Order *clone() const;
+protected:
+    virtual std::ostream &print(std::ostream& output) const;
 };
 
 class Bomb : public Order
@@ -153,6 +160,8 @@ public:
     virtual void execute();
     virtual bool validate();
     virtual Order *clone() const;
+protected:
+    virtual std::ostream &print(std::ostream& output) const;
 };
 
 class Blockade : public Order
@@ -165,6 +174,8 @@ public:
     virtual void execute();
     virtual bool validate();
     virtual Order *clone() const;
+protected:
+    virtual std::ostream &print(std::ostream& output) const;
 };
 
 class Airlift : public Order
@@ -177,6 +188,8 @@ public:
     virtual void execute();
     virtual bool validate();
     virtual Order *clone() const;
+protected:
+    virtual std::ostream &print(std::ostream& output) const;
 };
 
 class Negotiate : public Order
@@ -189,6 +202,8 @@ public:
     virtual void execute();
     virtual bool validate();
     virtual Order *clone() const;
+protected:
+    virtual std::ostream &print(std::ostream& output) const;
 };
 
 #endif
