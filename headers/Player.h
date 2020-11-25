@@ -22,6 +22,9 @@ namespace InputUtilities
 
     template <typename T>
     T& getMenuChoice(const std::string& prompt, std::vector<T>& list);
+
+    template <typename T>
+    std::size_t getNumericalMenuChoice(const std::string& prompt, const std::vector<T>& list);
 }
 
 class Player
@@ -90,6 +93,25 @@ T& InputUtilities::getMenuChoice(const std::string& prompt, std::vector<T>& list
 
     std::size_t input = InputUtilities::getRangedInput(ss.str(), 1, list.size()) - 1;
     return list.at(input);
+}
+
+template <typename T>
+std::size_t InputUtilities::getNumericalMenuChoice(const std::string& prompt, const std::vector<T> list)
+{
+    if (list.size() == 0)
+    {
+        std::exit(1); // Nothing meaningful or valid can be returned here.
+    }
+
+    // Build the list string into the prompt
+    std::stringstream ss;
+    ss << prompt << std::endl;
+    for (std::size_t i = 0; i < list.size(); ++i)
+    {
+        ss << i + 1 << ") " << list.at(i) << std::endl;
+    }
+
+    return InputUtilities::getRangedInput(ss.str(), 1, list.size()) - 1;
 }
 
 #endif

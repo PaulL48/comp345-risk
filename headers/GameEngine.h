@@ -35,16 +35,12 @@ namespace StartupUtilities
     void playersDrawCards(std::vector<Player>& players, Deck& deck, int cardsPerHand);
 }
 
-void GameInitialization(GameEngine& gameEngine);
-
-// This number divides the number of territories a player owns
-// to determine how many armies they receive
-
-// STATELESS UTILITY FUNCTIONS
-
 namespace GameLogic
 {
     constexpr int MINIMUM_REINFORCEMENTS_PER_TURN = 3;
+
+    // Divides the number of territories a player owns
+    // to determine how many armies they receive
     constexpr double TERRITORY_TO_ARMY_DIVISOR = 3.0;
 
     int territoryArmyBonus(const Map& map, const Player& player);
@@ -56,9 +52,9 @@ namespace GameLogic
     void addCardToConqueringPlayers(std::vector<Player>& players, Deck& deck);
 }
 
-// This function packs an array with type information supplied via template
+// Packs an array with type information supplied via template
 template <typename... Types>
-void Fill(std::vector<std::type_index>& vec)
+void fill(std::vector<std::type_index>& vec)
 {
     vec.insert(vec.end(), {typeid(Types)...});
 }

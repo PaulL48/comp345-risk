@@ -22,22 +22,11 @@ std::vector<Player> ConfigurationUtilities::getPlayers()
     int totalPlayers;
 
     std::cout << "---------------------------------------------------------------" << std::endl;
-
-    std::cout << "Please select the number of players in your game" << std::endl; 
-
-    std::cin >> totalPlayers; 
-
-    while(totalPlayers < 2 || totalPlayers > 5){
-        
-        std::cout << "Please try again. You can only choose 2-5 players" << std::endl; 
-
-        std::cin >> totalPlayers; 
-    }
-
+    std::size_t value = InputUtilities::getRangedInput("Please select the number of players in your game", 2, 5);
     std::cout << "---------------------------------------------------------------" << std::endl;
     std::cout << std::endl;
 
-    std::vector<Player> players(totalPlayers);
+    std::vector<Player> players(value);
     ConfigurationUtilities::getPlayerNames(players);
     return players;
 }
@@ -104,52 +93,16 @@ Map ConfigurationUtilities::getMap()
 
 bool ConfigurationUtilities::getPhaseObserverSwitch()
 {
-    int switchValue = 0;
     std::cout << "---------------------------------------------------------------" << std::endl;
-    std::cout << "Please select if you want the Phase observers ON or OFF" << std::endl; 
-    std::cout << "1) Phase observers ON" << std::endl;
-    std::cout << "2) Phase observers OFF" << std::endl;
-
-    std::cin >> switchValue;
-
-    while(switchValue < 1 || switchValue > 2)
-    {
-        std::cout << "Please try again, you can only choose between 1) On or 2) Off" << std::endl; 
-        std::cin >> switchValue;
-    }
-    
-    if (switchValue == 1)
-        return true;
-    else if (switchValue == 2)
-        return false;
-    else
-        return false;
+    std::size_t choice = InputUtilities::getNumericalMenuChoice("Please select if you want the Phase observers ON or OFF", std::vector<std::string>{"1) Phase observers ON", "2) Phase observers OFF"});
+    return choice == 1;
 }
 
 bool ConfigurationUtilities::getStatisticsObserverSwitch()
 {
-    int switchValue = 0;
-
     std::cout << "---------------------------------------------------------------" << std::endl;
-    std::cout << "Please select if you want the Game Statistic Observers ON or OFF" << std::endl; 
-    std::cout << "1) Game Statistic Observers ON" << std::endl;
-    std::cout << "2) Game Statistic Observers OFF" << std::endl;
-
-    std::cin >> switchValue;
-
-    while(switchValue < 1 || switchValue > 2)
-    {
-        std::cout << "Please try again, you can only choose between 1) On or 2) Off" << std::endl; 
-        std::cin >> switchValue;
-    }
-    std::cout << "---------------------------------------------------------------" << std::endl;
-
-    if (switchValue == 1)
-        return true;
-    else if (switchValue == 2)
-        return false;
-    else
-        return false;
+    std::size_t choice = InputUtilities::getNumericalMenuChoice("Please select if you want the Game Statistic Observers ON or OFF", std::vector<std::string>{"1) Game Statistic Observers ON", "2) Game Statistic Observers OFF"});
+    return choice == 1;
 }
 
 void StartupUtilities::shufflePlayers(std::vector<Player>& players)
@@ -433,23 +386,21 @@ void GameEngine::executeOrdersPhase()
     *this->currentPhase = GamePhase::EXECUTE_ORDERS;
     // TODO: Notify observer
 
-    this->players->at(0).getOrders();
-
     std::vector<Order*> masterList;
     std::vector<std::type_index> deployPriority;
-    Fill<Deploy>(deployPriority);
+    fill<Deploy>(deployPriority);
     fillRoundRobinOrders(masterList, *this->players, deployPriority);
 
     std::vector<std::type_index> airliftPriority;
-    Fill<Airlift>(airliftPriority);
+    fill<Airlift>(airliftPriority);
     fillRoundRobinOrders(masterList, *this->players, airliftPriority);
 
     std::vector<std::type_index> blockadePriority;
-    Fill<Blockade>(blockadePriority);
+    fill<Blockade>(blockadePriority);
     fillRoundRobinOrders(masterList, *this->players, blockadePriority);
 
     std::vector<std::type_index> remainingPriorities;
-    Fill<Advance, Bomb, Airlift, Negotiate>(remainingPriorities);
+    fill<Advance, Bomb, Airlift, Negotiate>(remainingPriorities);
     fillRoundRobinOrders(masterList, *this->players, remainingPriorities);
 
     for (Order* order : masterList)
