@@ -1,9 +1,6 @@
-//
-// Created by Ruslan Dallin on 2020-09-20.
-//
-
 #ifndef MAPLOADER_H
 #define MAPLOADER_H
+
 #include "Map.h"
 #include <string>
 
