@@ -212,8 +212,10 @@ public:
 
     int getOccupyingArmies() const;
     void setOccupyingArmies(int occupyingArmies);
+    void addArmies(int armies);
 
     void setOwningPlayer(const Player &player);
+    void unsetOwningPlayer();
     const Player* getOwningPlayer() const;
 
     // Adding std::hash is necessary to allow Territory to be a key of an

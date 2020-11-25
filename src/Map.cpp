@@ -56,13 +56,14 @@ Territory::~Territory()
     delete this->occupyingArmies;
 }
 
-// void Territory::setOwningPlayer(const Player &player){
-//     this->ownedBy = &player;
-// }
-
 void Territory::setOwningPlayer(const Player& player)
 {
     this->ownedBy = &player;
+}
+
+void Territory::unsetOwningPlayer()
+{
+    this->ownedBy = nullptr;
 }
 
 const Player* Territory::getOwningPlayer() const
@@ -129,6 +130,17 @@ void Territory::setOccupyingArmies(int occupyingArmies)
     else{
         std::cout << "Cannot assign negative value to number of armies." << std::endl;
     }
+}
+
+void Territory::addArmies(int armies)
+{
+    if (this->occupyingArmies + armies < 0)
+    {
+        std::cout << "Current armies: " << this->occupyingArmies << ", attempting to add " << armies << " produces a negative value" << std::endl;
+        return;
+    }
+
+    *this->occupyingArmies += armies;
 }
 
 std::ostream &operator<<(std::ostream &output, const Territory &territory)

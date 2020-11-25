@@ -1,8 +1,8 @@
 #include "Orders.h"
 #include <algorithm>
-#include <random>
-#include <functional>
 #include <ctime>
+#include <functional>
+#include <random>
 using std::ostream;
 using std::string;
 using std::vector;
@@ -25,8 +25,7 @@ OrdersList::OrdersList() : orders(new vector<Order *>())
 {
 }
 
-OrdersList::OrdersList(const OrdersList &ordersList) :
-    orders(clone(*ordersList.orders))
+OrdersList::OrdersList(const OrdersList &ordersList) : orders(clone(*ordersList.orders))
 {
 }
 
@@ -208,7 +207,7 @@ int Order::getUniqueId() const
     return *uniqueId;
 }
 
-OrderDataPayload& Order::getMutableDataPayload()
+OrderDataPayload &Order::getMutableDataPayload()
 {
     return *this->dataPayload;
 }
@@ -246,27 +245,31 @@ Deploy::~Deploy()
 {
 }
 
-bool Deploy::validate(const Player* const player, const Player* const, const Territory* const targetTerritory, const Territory* const)
+bool Deploy::validate()
 {
-   return targetTerritory->getOwningPlayer() == &*player ? true : false;
+    if (this->dataPayload->targetTerritory == nullptr ||
+        this->dataPayload->player == nullptr || this->dataPayload->map != nullptr)
+    {
+        return false;
+    }
+
+    return *this->dataPayload->targetTerritory->getOwningPlayer() ==
+           *this->dataPayload->player;
 }
 
-void Deploy::execute(Map& map){
-    this->execute(map, this->dataPayload->player, *this->dataPayload->numberOfArmies, map.getGraph().find(*this->dataPayload->targetTerritory), nullptr, nullptr);
-}
-
-
-void Deploy::execute(Map& m, Player* player, int numberOfArmies, Territory* targetTerritory, Territory*, Player*)
+void Deploy::execute()
 {
-    if(this->validate(player, nullptr, targetTerritory, nullptr)){
-        Territory copy = *targetTerritory;
-        copy.setOccupyingArmies(copy.getOccupyingArmies() + numberOfArmies);
-        m.updateTerritory(*targetTerritory, copy);
-        this->setExecutedStatus(true);
+    if (!this->validate())
+    {
+        std::cout << "Invalid order. Target territory does not belong to player."
+                  << std::endl;
+        return;
     }
-    else{
-        std::cout << "\tInvalid order. Target territory does not belong to player." << std::endl;
-    }
+
+    Territory copy = *this->dataPayload->targetTerritory;
+    copy.addArmies(*this->dataPayload->numberOfArmies);
+    this->dataPayload->map->updateTerritory(*this->dataPayload->targetTerritory, copy);
+    this->setExecutedStatus(true);
 }
 
 Order *Deploy::clone() const
@@ -296,71 +299,89 @@ Advance::~Advance()
 {
 }
 
-bool Advance::validate(const Player* const player, const Player* const, const Territory* const targetTerritory, const Territory* const sourceTerritory)
+bool Advance::validate()
 {
-   if(sourceTerritory->getOwningPlayer() == &*player){
-       if(targetTerritory->getOwningPlayer() != &*player){
-           if(player->isNegotiator(targetTerritory->getOwningPlayer())){
-               return false;
-           }
-       }
-       return true;
-   }
-   return false;
+    if (this->dataPayload->sourceTerritory->getOwningPlayer() == nullptr ||
+        this->dataPayload->targetTerritory->getOwningPlayer() == nullptr ||
+        this->dataPayload->map == nullptr)
+    {
+        return false;
+    }
+
+    // No offensive advance on players in negotiation
+    if (*this->dataPayload->targetTerritory->getOwningPlayer() !=
+            *this->dataPayload->sourceTerritory->getOwningPlayer() &&
+        this->dataPayload->player->isNegotiator(
+            this->dataPayload->targetTerritory->getOwningPlayer()))
+    {
+        return false;
+    }
+
+    return true;
 }
 
-void Advance::execute(Map& m){
-    this->execute(m, this->dataPayload->player, *this->dataPayload->numberOfArmies, this->dataPayload->targetTerritory, this->dataPayload->sourceTerritory, nullptr);
-}
-
-void Advance::execute(Map& m, Player* player, int numberOfArmies, Territory* targetTerritory, Territory* sourceTerritory, Player*)
+void Advance::execute()
 {
-    if(this->validate(player, nullptr, targetTerritory, sourceTerritory)){
-        Territory copy = *sourceTerritory;
-        copy.setOccupyingArmies(copy.getOccupyingArmies() - numberOfArmies);
-        m.updateTerritory(*sourceTerritory, copy);
-        if(targetTerritory->getOwningPlayer() == &*player){
-            /*  Target territory belongs to player -> move from source to target */  
-            targetTerritory->setOccupyingArmies(targetTerritory->getOccupyingArmies()+numberOfArmies);
-        }
-        else{
-            /* Target territory belongs to enemy -> Attack */ 
-            std::default_random_engine generator(static_cast<unsigned int>(time(0)));
-            std::uniform_int_distribution<int> distribution(1,100);
-            auto killProbability = std::bind( distribution, generator );
-            int enemyTerritoryArmyUnits = targetTerritory->getOccupyingArmies();
-
-            while(numberOfArmies != 0 && enemyTerritoryArmyUnits != 0){
-                // player attacks
-                // if kill probability <= 60, one defending army reduced
-                if(killProbability() <= 60){
-                    --enemyTerritoryArmyUnits;                                                
-                }
-
-                // enemy attacks
-                // if kill probability <= 70, one attacking army reduced
-                if(killProbability() <= 70){
-                    --numberOfArmies;
-                }
-            } 
-
-            if(numberOfArmies != 0){
-                Territory copy = *targetTerritory;
-                copy.setOwningPlayer(*player);
-                copy.setOccupyingArmies(numberOfArmies);
-                m.updateTerritory(*targetTerritory, copy);
-            }
-            else{
-                Territory copy = *targetTerritory;
-                copy.setOccupyingArmies(enemyTerritoryArmyUnits);
-                m.updateTerritory(*targetTerritory, copy);
-            }
-        }
-        this->setExecutedStatus(true);
+    if (!this->validate())
+    {
+        std::cout << "Invalid order. Source territory does not belong to player."
+                  << std::endl;
+        return;
     }
-    else{
-        std::cout << "Invalid order. Source territory does not belong to player." << std::endl;
+
+    Territory copy = *this->dataPayload->sourceTerritory;
+    copy.addArmies(-*this->dataPayload->numberOfArmies);
+    this->dataPayload->map->updateTerritory(*this->dataPayload->sourceTerritory, copy);
+
+    // Reinforcing territory
+    if (this->dataPayload->sourceTerritory->getOwningPlayer() ==
+        this->dataPayload->targetTerritory->getOwningPlayer())
+    {
+        this->dataPayload->targetTerritory->addArmies(
+            *this->dataPayload->numberOfArmies);
+        return;
     }
+
+    // Attacking territory
+    std::default_random_engine generator(static_cast<unsigned int>(time(0)));
+    std::uniform_int_distribution<int> distribution(1, 100);
+    auto killProbability = std::bind(distribution, generator);
+    int attackingArmies = *this->dataPayload->numberOfArmies;
+    int defendingArmies = this->dataPayload->targetTerritory->getOccupyingArmies();
+
+    while (attackingArmies != 0 && defendingArmies != 0)
+    {
+        // player attacks
+        // if kill probability <= 60, one defending army reduced
+        if (killProbability() <= 60)
+        {
+            --defendingArmies;
+        }
+
+        // enemy attacks
+        // if kill probability <= 70, one attacking army reduced
+        if (killProbability() <= 70)
+        {
+            --attackingArmies;
+        }
+    }
+
+    if (attackingArmies != 0)
+    {
+        Territory copy = *this->dataPayload->targetTerritory;
+        copy.setOwningPlayer(*this->dataPayload->player);
+        copy.setOccupyingArmies(attackingArmies);
+        this->dataPayload->map->updateTerritory(*this->dataPayload->targetTerritory,
+                                                copy);
+    }
+    else
+    {
+        Territory copy = *this->dataPayload->targetTerritory;
+        copy.setOccupyingArmies(defendingArmies);
+        this->dataPayload->map->updateTerritory(*this->dataPayload->targetTerritory,
+                                                copy);
+    }
+    this->setExecutedStatus(true);
 }
 
 Order *Advance::clone() const
@@ -390,31 +411,42 @@ Bomb::~Bomb()
 {
 }
 
-bool Bomb::validate(const Player* const player, const Player* const, const Territory* const targetTerritory, const Territory* const)
+bool Bomb::validate()
 {
-    if(targetTerritory->getOwningPlayer() == &*player || (player->isNegotiator(targetTerritory->getOwningPlayer()))){
+    if (this->dataPayload->sourceTerritory->getOwningPlayer() == nullptr ||
+        this->dataPayload->targetTerritory->getOwningPlayer() == nullptr ||
+        this->dataPayload->map == nullptr)
+    {
+        return false;
+    }
+
+    if (this->dataPayload->player->isNegotiator(
+            this->dataPayload->targetTerritory->getOwningPlayer()))
+    {
+        return false;
+    }
+
+    if (*this->dataPayload->targetTerritory->getOwningPlayer() ==
+        *this->dataPayload->player)
+    {
         return false;
     }
 
     return true;
 }
 
-void Bomb::execute(Map& m)
+void Bomb::execute()
 {
-    this->execute(m, this->dataPayload->player, 0, this->dataPayload->targetTerritory, nullptr, nullptr);
-}
-
-void Bomb::execute(Map& m, Player* player, int, Territory* targetTerritory, Territory*, Player*)
-{
-    if(this->validate(player, nullptr, targetTerritory, nullptr)){
-        Territory copy = *targetTerritory;
-        copy.setOccupyingArmies(copy.getOccupyingArmies() / 2);
-        m.updateTerritory(*targetTerritory, copy);
-        this->setExecutedStatus(true);
+    if (!this->validate())
+    {
+        std::cout << "Invalid bomb order" << std::endl;
+        return;
     }
-    else{
-        std::cout << "\tInvalid order bomb." << std::endl;
-    }    
+
+    Territory copy = *this->dataPayload->targetTerritory;
+    copy.setOccupyingArmies(copy.getOccupyingArmies() / 2);
+    this->dataPayload->map->updateTerritory(*this->dataPayload->targetTerritory, copy);
+    this->setExecutedStatus(true);
 }
 
 Order *Bomb::clone() const
@@ -446,32 +478,31 @@ Blockade::~Blockade()
 {
 }
 
-bool Blockade::validate(const Player* const player, const Player* const, const Territory* const targetTerritory, const Territory* const)
+bool Blockade::validate()
 {
-    return (targetTerritory->getOwningPlayer() == &*player) ? true : false;
+    if (this->dataPayload->targetTerritory->getOwningPlayer() == nullptr ||
+        this->dataPayload->map == nullptr)
+    {
+        return false;
+    }
+
+    return *this->dataPayload->targetTerritory->getOwningPlayer() ==
+           *this->dataPayload->player;
 }
 
-void Blockade::execute(Map& m)
+void Blockade::execute()
 {
-    this->execute(m, this->dataPayload->player, 0, this->dataPayload->targetTerritory, nullptr, nullptr);
-}
-
-void Blockade::execute(Map& m, Player *player, int, Territory* targetTerritory, Territory*, Player*)
-{
-    if(this->validate(player, nullptr, targetTerritory, nullptr)){
-        Player* neutralPlayer = new Player("Neutral", vector<Territory>(), vector<Territory>(), Hand(), OrdersList(),0 , vector<int>());
-
-        Territory copy = *targetTerritory;
-        copy.setOccupyingArmies(copy.getOccupyingArmies() * 2);
-        copy.setOwningPlayer(*neutralPlayer);
-        m.updateTerritory(*targetTerritory, copy);
-        delete neutralPlayer;
-        neutralPlayer = nullptr;
-        this->setExecutedStatus(true);
+    if (!this->validate())
+    {
+        std::cout << "Invalid order. Territory does not belong to player." << std::endl;
+        return;
     }
-    else{
-        std::cout << "\tInvalid order. Territory does not belong to player." << std::endl;
-    }
+
+    Territory copy = *this->dataPayload->targetTerritory;
+    copy.setOccupyingArmies(copy.getOccupyingArmies() * 2);
+    copy.unsetOwningPlayer();
+    this->dataPayload->map->updateTerritory(*this->dataPayload->targetTerritory, copy);
+    this->setExecutedStatus(true);
 }
 
 Order *Blockade::clone() const
@@ -501,31 +532,46 @@ Airlift::~Airlift()
 {
 }
 
-bool Airlift::validate(const Player* const player, const Player* const, const Territory* const targetTerritory, const Territory* const sourceTerritory)
+bool Airlift::validate()
 {
-   return ((targetTerritory->getOwningPlayer() == &*player) && (sourceTerritory->getOwningPlayer() == &*player))? true : false;
+    if (this->dataPayload->sourceTerritory->getOwningPlayer() == nullptr ||
+        this->dataPayload->targetTerritory->getOwningPlayer() == nullptr ||
+        this->dataPayload->map == nullptr)
+    {
+        return false;
+    }
+
+    if (*this->dataPayload->sourceTerritory->getOwningPlayer() !=
+            *this->dataPayload->targetTerritory->getOwningPlayer() ||
+        *this->dataPayload->player !=
+            *this->dataPayload->sourceTerritory->getOwningPlayer())
+    {
+        return false;
+    }
+
+    return true;
 }
 
-void Airlift::execute(Map& m){
-    this->execute(m, this->dataPayload->player, *this->dataPayload->numberOfArmies, this->dataPayload->targetTerritory, this->dataPayload->sourceTerritory, nullptr);
-}
-
-void Airlift::execute(Map& m, Player* player, int numberOfArmies, Territory* targetTerritory, Territory* sourceTerritory, Player*)
+void Airlift::execute()
 {
-    if(this->validate(player, nullptr, targetTerritory, sourceTerritory)){
-        Territory sourceCopy = *sourceTerritory;
-        sourceCopy.setOccupyingArmies(sourceCopy.getOccupyingArmies() - numberOfArmies);
-        m.updateTerritory(*sourceTerritory, sourceCopy);
-
-        Territory targetCopy = *targetTerritory;
-        targetCopy.setOccupyingArmies(targetCopy.getOccupyingArmies() + numberOfArmies);
-        m.updateTerritory(*targetTerritory, targetCopy);
-
-        this->setExecutedStatus(true);
+    if (!this->validate())
+    {
+        std::cout << "Invalid order. Can not airlift from or to enemy territory."
+                  << std::endl;
+        return;
     }
-    else{
-        std::cout << "Invalid order. Can not airlift from or to enemy territory." << std::endl;
-    }
+
+    Territory sourceCopy = *this->dataPayload->sourceTerritory;
+    sourceCopy.addArmies(-*this->dataPayload->numberOfArmies);
+    this->dataPayload->map->updateTerritory(*this->dataPayload->sourceTerritory,
+                                            sourceCopy);
+
+    Territory targetCopy = *this->dataPayload->targetTerritory;
+    targetCopy.addArmies(*this->dataPayload->numberOfArmies);
+    this->dataPayload->map->updateTerritory(*this->dataPayload->targetTerritory,
+                                            targetCopy);
+
+    this->setExecutedStatus(true);
 }
 
 Order *Airlift::clone() const
@@ -556,27 +602,33 @@ Negotiate::~Negotiate()
 {
 }
 
-bool Negotiate::validate(const Player* const player, const Player* const enemyPlayer, const Territory* const, const Territory* const)
+bool Negotiate::validate()
 {
-    return (&*player == &*enemyPlayer) ? false : true;
+    if (this->dataPayload->player == nullptr ||
+        this->dataPayload->enemyPlayer == nullptr)
+    {
+        return false;
+    }
+
+    if (*this->dataPayload->player == *this->dataPayload->enemyPlayer)
+    {
+        return false;
+    }
+
+    return true;
 }
 
-void Negotiate::execute(Map& m)
+void Negotiate::execute()
 {
-    this->execute(m, this->dataPayload->player, 0, nullptr, nullptr, this->dataPayload->enemyPlayer);
-}
+    if (!this->validate())
+    {
+        std::cout << "Invalid negotiation. Target player == player." << std::endl;
+        return;
+    }
 
-// sets doNotAttack to true for the territores inside attack lists both for player and enemy where owner of territory equals the opposing party  
-void Negotiate::execute(Map&, Player* player, int, Territory*, Territory*, Player* enemyPlayer)
-{
-    if(this->validate(player, enemyPlayer, nullptr, nullptr)){
-        player->addToNegotiatorsList(enemyPlayer);
-        enemyPlayer->addToNegotiatorsList(player);
-        this->setExecutedStatus(true);
-    }
-    else{
-        std::cout << "\tInvalid negotiation. Target player == player." << std::endl;
-    }
+    this->dataPayload->player->addToNegotiatorsList(this->dataPayload->enemyPlayer);
+    this->dataPayload->enemyPlayer->addToNegotiatorsList(this->dataPayload->player);
+    this->setExecutedStatus(true);
 }
 
 Order *Negotiate::clone() const
