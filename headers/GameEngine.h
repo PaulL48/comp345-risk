@@ -56,7 +56,6 @@ namespace GameLogic
     bool playerIsDefeated(const Map& map, const Player& player);
 
     void addCardToConqueringPlayers(std::vector<Player>& players, Deck& deck);
-    void playersRecomputeAttackDefend(std::vector<Player>& players, const Map& map);
 }
 
 // This function packs an array with type information supplied via template
@@ -109,25 +108,4 @@ private:
     Deck* deck; // TODO: Initialize
 };
 
-class GameStartup{
-    private:
-        int* numPlayers;
-        std::vector<Player>* players;
-        Map* map;
-        std::vector<int>* orderPlayers;
-        int getNumberOfArmies();
-        std::vector<Player>& intializePlayers(const int numArmies);
-        std::vector<int>& intitializeOrderPlayers(const int numPlayers);
-        
-        
-
-    public:
-        GameStartup(const int numPlayer, const Map& map);                          // Constructor
-        GameStartup();
-        ~GameStartup();              
-        void startupPhase();
-        std::vector<Player>& getPlayers();
-        Map& getMap();
-        std::vector<int>& getOrderPlayers();
-};
 #endif

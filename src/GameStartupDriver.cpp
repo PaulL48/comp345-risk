@@ -54,7 +54,7 @@
 //    for(Player player : game.getPlayers()){
 //        std::string s = player.getPlayerName();
 //    
-//        std::cout<< player.getPlayerName() + " has the following amount of Armies " + std::to_string(player.getNumArmies()) + " \n";
+//        std::cout<< player.getPlayerName() + " has the following amount of Armies " + std::to_string(player.getReinforcementPool()) + " \n";
 //    }
 //
 //    for(Player player: game.getPlayers()){
