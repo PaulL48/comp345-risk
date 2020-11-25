@@ -555,7 +555,6 @@ void Map::setTerritoryOwner(const Territory &territory, const Player &owner)
     {
         continent.setTerritoryOwner(copy, owner);
     }
-    Notify();
 }
 
 std::ostream &operator<<(std::ostream &output, const Map &map)
