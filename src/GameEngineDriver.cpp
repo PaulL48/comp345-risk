@@ -1,49 +1,18 @@
-#include <iostream>
-
 #include "GameEngine.h"
-// include "GameStartup.h"
-#include "Player.h"
-
-// template <typename T>
-// void addOrder(Player &p)
-// {
-//     Order *t = new T();
-//     t->getMutableDataPayload().player = &p;
-//     p.getOrders().addToList(*t);
-//     delete t;
-// }
 
 int main()
 {
-    int startAgain = 1;
+    std::size_t startAgain = 0;
 
-    while (startAgain == 1)
+    while (startAgain == 0)
     {
         GameEngine gameEngine;
         gameEngine.configure();
         gameEngine.startupPhase();
         gameEngine.mainGameLoop();
 
-        GameEngine Start;
-
-        std::cout << "Would you like the restart the startup phase?" << std::endl;
-        std::cout << "1) YES" << std::endl;
-        std::cout << "2) NO" << std::endl;
-
-        std::cin >> startAgain;
-
-        while (startAgain < 1 || startAgain > 2)
-        {
-            std::cout << "Invalid entry. Please enter 1 for YES or 2 for NO"
-                      << std::endl;
-
-            std::cin >> startAgain;
-        }
+        startAgain = InputUtilities::getNumericalMenuChoice("Would you like to play again?", std::vector<std::string>{"Yes", "No"});
     }
 
     return 0;
-
-    // std::vector<Player> players= &GameStartup::getPlayers();
-    // std::size_t playersInGame = players.size();
-    // std::cout << "There are currently " << playersInGame << " in the game."
 }
