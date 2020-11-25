@@ -84,6 +84,17 @@ Player::Player(const Player &p) :
 {
 }
 
+Player::Player() :
+    playerName(new std::string("")),
+    cards(new Hand),
+    orders(new OrdersList),
+    reinforcementPool(new int(0)),
+    negotiators(new std::vector<Player *>),
+    conqueredTerritory(new bool(false)),
+    strategy(nullptr)
+{
+}
+
 Player::~Player()
 {
     delete playerName;
@@ -173,12 +184,12 @@ void Player::setStrategy(const PlayerStrategy &strategy)
     *this->strategy = strategy;
 }
 
-std::vector<Territory> &Player::toAttack(const Map &map) const
+std::vector<Territory> Player::toAttack(const Map &map) const
 {
     return this->strategy->toAttack(map, *this);
 }
 
-std::vector<Territory> &Player::toDefend(const Map &map) const
+std::vector<Territory> Player::toDefend(const Map &map) const
 {
     return this->strategy->toDefend(map, *this);
 }

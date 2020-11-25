@@ -134,7 +134,7 @@ void Territory::setOccupyingArmies(int occupyingArmies)
 
 void Territory::addArmies(int armies)
 {
-    if (this->occupyingArmies + armies < 0)
+    if (*this->occupyingArmies + armies < 0)
     {
         std::cout << "Current armies: " << this->occupyingArmies << ", attempting to add " << armies << " produces a negative value" << std::endl;
         return;

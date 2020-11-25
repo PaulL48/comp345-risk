@@ -452,11 +452,10 @@ void GameEngine::executeOrdersPhase()
     Fill<Advance, Bomb, Airlift, Negotiate>(remainingPriorities);
     fillRoundRobinOrders(masterList, *this->players, remainingPriorities);
 
-    // for (Order* order : masterList)
-    // {
-    //     // TODO: Print some stuff so the TA sees all deploys are executed first
-    //     //order->execute();
-    // }
+    for (Order* order : masterList)
+    {
+        order->execute();
+    }
 }
 
 const Player& GameEngine::getCurrentPlayer() const

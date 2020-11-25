@@ -1,26 +1,36 @@
 #include "PlayerStrategies.h"
 
+PlayerStrategy::~PlayerStrategy()
+{
+}
 
 //============================================================================================================================================================
 // CLASS DEFINITIONS: HumanPlayerStrategy
 //============================================================================================================================================================
 
-void HumanPlayerStrategy::issueOrder(const Map& map, Player& player)
+HumanPlayerStrategy::HumanPlayerStrategy()
 {
-
 }
 
-std::vector<Territory>& HumanPlayerStrategy::toAttack(const Map& map, const Player& player)
+HumanPlayerStrategy::~HumanPlayerStrategy()
 {
-
 }
 
-std::vector<Territory>& HumanPlayerStrategy::toDefend(const Map& map, const Player& player)
+void HumanPlayerStrategy::issueOrder(const Map &, Player &)
 {
-
 }
 
-PlayerStrategy* HumanPlayerStrategy::clone() const
+std::vector<Territory> HumanPlayerStrategy::toAttack(const Map &, const Player &)
+{
+    return std::vector<Territory>();
+}
+
+std::vector<Territory> HumanPlayerStrategy::toDefend(const Map &, const Player &)
+{
+    return std::vector<Territory>();
+}
+
+PlayerStrategy *HumanPlayerStrategy::clone() const
 {
     return new HumanPlayerStrategy(*this);
 }
@@ -29,22 +39,29 @@ PlayerStrategy* HumanPlayerStrategy::clone() const
 // CLASS DEFINITIONS: AggressivePlayerStrategy
 //============================================================================================================================================================
 
-void AggressivePlayerStrategy::issueOrder(const Map& map, Player& player)
+AggressivePlayerStrategy::AggressivePlayerStrategy()
 {
-
 }
 
-std::vector<Territory>& AggressivePlayerStrategy::toAttack(const Map& map, const Player& player)
+AggressivePlayerStrategy::~AggressivePlayerStrategy()
 {
-
 }
 
-std::vector<Territory>& AggressivePlayerStrategy::toDefend(const Map& map, const Player& player)
+void AggressivePlayerStrategy::issueOrder(const Map &, Player &)
 {
-
 }
 
-PlayerStrategy* AggressivePlayerStrategy::clone() const
+std::vector<Territory> AggressivePlayerStrategy::toAttack(const Map &, const Player &)
+{
+    return std::vector<Territory>();
+}
+
+std::vector<Territory> AggressivePlayerStrategy::toDefend(const Map &, const Player &)
+{
+    return std::vector<Territory>();
+}
+
+PlayerStrategy *AggressivePlayerStrategy::clone() const
 {
     return new AggressivePlayerStrategy(*this);
 }
@@ -53,22 +70,29 @@ PlayerStrategy* AggressivePlayerStrategy::clone() const
 // CLASS DEFINITIONS: BenevolentPlayerStrategy
 //============================================================================================================================================================
 
-void BenevolentPlayerStrategy::issueOrder(const Map& map, Player& player)
+BenevolentPlayerStrategy::BenevolentPlayerStrategy()
 {
-
 }
 
-std::vector<Territory>& BenevolentPlayerStrategy::toAttack(const Map& map, const Player& player)
+BenevolentPlayerStrategy::~BenevolentPlayerStrategy()
 {
-
 }
 
-std::vector<Territory>& BenevolentPlayerStrategy::toDefend(const Map& map, const Player& player)
+void BenevolentPlayerStrategy::issueOrder(const Map &, Player &)
 {
-    
 }
 
-PlayerStrategy* BenevolentPlayerStrategy::clone() const
+std::vector<Territory> BenevolentPlayerStrategy::toAttack(const Map &, const Player &)
+{
+    return std::vector<Territory>();
+}
+
+std::vector<Territory> BenevolentPlayerStrategy::toDefend(const Map &, const Player &)
+{
+    return std::vector<Territory>();
+}
+
+PlayerStrategy *BenevolentPlayerStrategy::clone() const
 {
     return new BenevolentPlayerStrategy(*this);
 }
@@ -77,22 +101,29 @@ PlayerStrategy* BenevolentPlayerStrategy::clone() const
 // CLASS DEFINITIONS: NeutralPlayerStrategy
 //============================================================================================================================================================
 
-void NeutralPlayerStrategy::issueOrder(const Map& map, Player& player)
+NeutralPlayerStrategy::NeutralPlayerStrategy()
 {
-
 }
 
-std::vector<Territory>& NeutralPlayerStrategy::toAttack(const Map& map, const Player& player)
+NeutralPlayerStrategy::~NeutralPlayerStrategy()
 {
-
 }
 
-std::vector<Territory>& NeutralPlayerStrategy::toDefend(const Map& map, const Player& player)
+void NeutralPlayerStrategy::issueOrder(const Map &, Player &)
 {
-
 }
 
-PlayerStrategy* NeutralPlayerStrategy::clone() const
+std::vector<Territory> NeutralPlayerStrategy::toAttack(const Map &, const Player &)
+{
+    return std::vector<Territory>();
+}
+
+std::vector<Territory> NeutralPlayerStrategy::toDefend(const Map &, const Player &)
+{
+    return std::vector<Territory>();
+}
+
+PlayerStrategy *NeutralPlayerStrategy::clone() const
 {
     return new NeutralPlayerStrategy(*this);
 }

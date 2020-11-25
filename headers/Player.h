@@ -19,8 +19,9 @@ namespace InputUtilities
 {
     void removeNewlines(std::string& string);
     std::size_t getRangedInput(const std::string& prompt, std::size_t lowerBound, std::size_t upperBound);
+
     template <typename T>
-    T& getMenuChoice(const std::string& prompt, const std::vector<T>& list);
+    T& getMenuChoice(const std::string& prompt, std::vector<T>& list);
 }
 
 class Player
@@ -30,6 +31,7 @@ public:
     // Construct a players with an empty hand and orders list
     Player(const std::string &name, const PlayerStrategy &strategy);
     Player(const Player &player);
+    Player();
     ~Player();
 
     // Operators ==========================================================
@@ -50,8 +52,8 @@ public:
     void setStrategy(const PlayerStrategy &strategy);
 
     // Core Functionality =================================================
-    std::vector<Territory> &toAttack(const Map &map) const;
-    std::vector<Territory> &toDefend(const Map &map) const;
+    std::vector<Territory> toAttack(const Map &map) const;
+    std::vector<Territory> toDefend(const Map &map) const;
     void issueOrder(const Map &map);
 
     // Auxiliary Methods ==================================================
@@ -71,7 +73,7 @@ private:
 };
 
 template <typename T>
-T& InputUtilities::getMenuChoice(const std::string& prompt, const std::vector<T>& list)
+T& InputUtilities::getMenuChoice(const std::string& prompt, std::vector<T>& list)
 {
     if (list.size() == 0)
     {
