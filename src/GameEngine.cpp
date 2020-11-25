@@ -17,12 +17,6 @@
 #include "Cards.h"
 #include "Player.h"
 
-void removeNewlines(std::string& string)
-{
-    string.erase(remove(string.begin(), string.end(), '\n'), string.end());
-    string.erase(remove(string.begin(), string.end(), '\r'), string.end());
-}
-
 std::vector<Player> ConfigurationUtilities::getPlayers()
 {
     int totalPlayers;
@@ -59,7 +53,7 @@ void ConfigurationUtilities::getPlayerNames(std::vector<Player>& players)
         {
             std::cout << "Player " << i + 1<< " set your name: ";
             std::getline(std::cin, name);
-            removeNewlines(name);
+            InputUtilities::removeNewlines(name);
             if (name.empty())
             {
                 std::cout << "No input" << std::endl;
@@ -89,7 +83,7 @@ Map ConfigurationUtilities::getMap()
     Map m;
     while (!valid)
     {
-        std::string choice = MenuUtilities::getValidatedMenuChoice("Map Selection. Please choose from the following maps: ", maps);
+        std::string choice = InputUtilities::getMenuChoice("Map Selection. Please choose from the following maps: ", maps);
         m = MapLoader::loadMapValidated(choice, valid);
         std::cout << "Checking map integrity" << std::endl;
         MapState state = m.validate();
@@ -401,13 +395,13 @@ void GameEngine::mainGameLoop()
     }
 }
 
-void GameEngine::reinforcementPhase(std::vector<Player>& players)
+void GameEngine::reinforcementPhase()
 {
     *this->currentPhase = GamePhase::REINFORCEMENT;
     std::cout << "================================================================================" << std::endl;
     std::cout << "Starting Reinforcement Phase" << std::endl;
     std::size_t i = 0;
-    for (auto& player : players)
+    for (auto& player : *this->players)
     {
         *this->currentPlayer = i++;
         std::cout << "Reinforcing Player: " << player << std::endl;

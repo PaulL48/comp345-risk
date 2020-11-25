@@ -7,6 +7,61 @@
 #include <string>
 #include <vector>
 
+void InputUtilities::removeNewlines(std::string& string)
+{
+    string.erase(remove(string.begin(), string.end(), '\n'), string.end());
+    string.erase(remove(string.begin(), string.end(), '\r'), string.end());
+}
+
+std::size_t InputUtilities::getRangedInput(const std::string& prompt, std::size_t lower, std::size_t upper)
+{
+    bool invalidInput = true;
+    std::string input;
+    std::size_t parsedInput;
+    while (invalidInput)
+    {
+        if (prompt.size() != 0)
+        {
+            std::cout << prompt << std::endl;
+        }
+
+        std::cout << "Please enter a value between " << lower << " and " << upper << ": ";
+
+        std::string input;
+        std::getline(std::cin, input);
+
+        if (input.empty())
+        {
+            invalidInput = true;
+            std::cout << "No input received" << std::endl << std::endl;
+            continue;
+        }
+
+        try
+        {
+            invalidInput = false;
+            parsedInput = std::stoull(input);
+        }
+        catch (const std::exception &e)
+        {
+            invalidInput = true;
+            std::cout << "Invalid input" << std::endl << std::endl;
+            continue;
+        }
+
+        if (parsedInput < lower || parsedInput > upper)
+        {
+            invalidInput = true;
+            std::cout << "Input out of range" << std::endl << std::endl;
+            continue;
+        }
+    }
+
+    return parsedInput;
+}
+
+
+
 Player::Player(const std::string &name, const PlayerStrategy &strategy) :
     playerName(new std::string(name)),
     cards(new Hand),

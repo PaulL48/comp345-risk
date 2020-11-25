@@ -10,9 +10,18 @@
 #include <limits>
 #include <string>
 #include <vector>
+#include <sstream>
 
 class Hand;
 class OrdersList;
+
+namespace InputUtilities
+{
+    void removeNewlines(std::string& string);
+    std::size_t getRangedInput(const std::string& prompt, std::size_t lowerBound, std::size_t upperBound);
+    template <typename T>
+    T& getMenuChoice(const std::string& prompt, const std::vector<T>& list);
+}
 
 class Player
 {
@@ -60,5 +69,25 @@ private:
     bool *conqueredTerritory; // whether this player has conquered a territory this turn
     PlayerStrategy *strategy;
 };
+
+template <typename T>
+T& InputUtilities::getMenuChoice(const std::string& prompt, const std::vector<T>& list)
+{
+    if (list.size() == 0)
+    {
+        std::exit(1); // Nothing meaningful or valid can be returned here.
+    }
+
+    // Build the list string into the prompt
+    std::stringstream ss;
+    ss << prompt << std::endl;
+    for (std::size_t i = 0; i < list.size(); ++i)
+    {
+        ss << i + 1 << ") " << list.at(i) << std::endl;
+    }
+
+    std::size_t input = InputUtilities::getRangedInput(ss.str(), 1, list.size()) - 1;
+    return list.at(input);
+}
 
 #endif

@@ -17,8 +17,6 @@ enum class GamePhase
     EXECUTE_ORDERS
 };
 
-void removeNewlines(std::string& string);
-
 namespace ConfigurationUtilities
 {
     std::vector<Player> getPlayers();
@@ -77,13 +75,12 @@ public:
     GameEngine();
     ~GameEngine(); 
     // TODO: required methods
-    //GameEngine(const Map& map, const std::vector<Player>& players);
 
     // Phase methods
     void configure();
     void startupPhase();
     void mainGameLoop();
-    void reinforcementPhase(std::vector<Player>& players);
+    void reinforcementPhase();
     void issueOrdersPhase();
     void executeOrdersPhase();
 
@@ -105,7 +102,7 @@ private:
     std::vector<Player>* players;
     GamePhase* currentPhase;
     std::size_t* currentPlayer;
-    Deck* deck; // TODO: Initialize
+    Deck* deck;
 };
 
 #endif
