@@ -7,13 +7,12 @@
 #include <string>
 #include <vector>
 
-
 void InputUtilities::clearTerminal()
 {
 #ifdef _WIN32
     std::system("cls");
 #else
-    std::system ("clear");
+    std::system("clear");
 #endif
 }
 
@@ -36,8 +35,7 @@ std::size_t InputUtilities::getRangedInput(const std::string &prompt, std::size_
             std::cout << prompt << std::endl;
         }
 
-        std::cout << "Enter a value between " << lower << " and " << upper
-                  << ": ";
+        std::cout << "Enter a value between " << lower << " and " << upper << ": ";
 
         std::string input;
         std::getline(std::cin, input);
@@ -101,7 +99,6 @@ Player::Player(const Player &p) :
     {
         this->strategy = new NeutralPlayerStrategy();
     }
-    
 }
 
 Player::Player() :
@@ -253,7 +250,7 @@ bool Player::isNegotiator(const Player *player) const
     return false;
 }
 
-void Player::setGameEngine(GameEngine* engine)
+void Player::setGameEngine(GameEngine *engine)
 {
     this->engine = engine;
 }

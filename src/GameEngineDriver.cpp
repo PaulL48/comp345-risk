@@ -15,43 +15,9 @@
 
 int main()
 {
-    // Player p1("Player 1", HumanPlayerStrategy());
-    // Player p2("Player 2", HumanPlayerStrategy());
-    // Player p3("Player 3", HumanPlayerStrategy());
-
-    // addOrder<Deploy>(p1);
-    // addOrder<Deploy>(p1);
-    // addOrder<Deploy>(p1);
-
-    // addOrder<Deploy>(p3);
-
-    // addOrder<Advance>(p1);
-    // addOrder<Advance>(p1);
-    // addOrder<Advance>(p1);
-
-    // addOrder<Advance>(p2);
-    // addOrder<Advance>(p2);
-    // addOrder<Advance>(p2);
-
-    // addOrder<Advance>(p3);
-    // addOrder<Advance>(p3);
-    // addOrder<Advance>(p3);
-
-    // addOrder<Airlift>(p1);
-    // addOrder<Blockade>(p2);
-    // addOrder<Bomb>(p3);
-
-    // std::vector<Player> players{p1, p2, p3};
-    // std::vector<Order *> mol = GameLogic::constructMasterExecutionList(players);
-    // for (Order *o : mol)
-    // {
-    //     std::cout << *o << std::endl;
-    // }
-    // return 0;
-
     int startAgain = 1;
 
-    while(startAgain == 1)
+    while (startAgain == 1)
     {
         GameEngine gameEngine;
         gameEngine.configure();
@@ -66,10 +32,10 @@ int main()
 
         std::cin >> startAgain;
 
-        while(startAgain < 1 || startAgain > 2)
+        while (startAgain < 1 || startAgain > 2)
         {
-            std::cout << "Invalid entry. Please enter 1 for YES or 2 for NO" <<
-            std::endl;
+            std::cout << "Invalid entry. Please enter 1 for YES or 2 for NO"
+                      << std::endl;
 
             std::cin >> startAgain;
         }

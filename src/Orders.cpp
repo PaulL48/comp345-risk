@@ -313,7 +313,9 @@ void Deploy::execute()
     Territory copy = *this->dataPayload->targetTerritory;
     copy.addArmies(*this->dataPayload->numberOfArmies);
     this->dataPayload->map->updateTerritory(*this->dataPayload->targetTerritory, copy);
-    *this->effect = std::to_string(*this->dataPayload->numberOfArmies) + " were deployed to " + this->dataPayload->targetTerritory->getName();
+    *this->effect = std::to_string(*this->dataPayload->numberOfArmies) +
+                    " were deployed to " +
+                    this->dataPayload->targetTerritory->getName();
     this->setExecutedStatus(true);
 }
 
@@ -322,7 +324,7 @@ Order *Deploy::clone() const
     return new Deploy(*this);
 }
 
-std::ostream &Deploy::print(std::ostream& output) const
+std::ostream &Deploy::print(std::ostream &output) const
 {
     if (this->executed)
     {
@@ -330,9 +332,10 @@ std::ostream &Deploy::print(std::ostream& output) const
     }
     else
     {
-        output << *this->dataPayload->numberOfArmies << " armies deploying to " << this->dataPayload->targetTerritory->getName();
+        output << *this->dataPayload->numberOfArmies << " armies deploying to "
+               << this->dataPayload->targetTerritory->getName();
     }
-    
+
     return output;
 }
 
@@ -437,7 +440,10 @@ void Advance::execute()
         copy.setOccupyingArmies(attackingArmies);
         this->dataPayload->map->updateTerritory(*this->dataPayload->targetTerritory,
                                                 copy);
-        *this->effect = this->dataPayload->targetTerritory->getName() + " was conquered by " + this->dataPayload->player->getPlayerName() + ", with " + std::to_string(attackingArmies) + " now occupying";
+        *this->effect = this->dataPayload->targetTerritory->getName() +
+                        " was conquered by " +
+                        this->dataPayload->player->getPlayerName() + ", with " +
+                        std::to_string(attackingArmies) + " now occupying";
     }
     else
     {
@@ -445,7 +451,10 @@ void Advance::execute()
         copy.setOccupyingArmies(defendingArmies);
         this->dataPayload->map->updateTerritory(*this->dataPayload->targetTerritory,
                                                 copy);
-        *this->effect = this->dataPayload->targetTerritory->getName() + " resisted the attack from " + this->dataPayload->sourceTerritory->getName() + ", with " + std::to_string(defendingArmies) + " armies remaining";
+        *this->effect = this->dataPayload->targetTerritory->getName() +
+                        " resisted the attack from " +
+                        this->dataPayload->sourceTerritory->getName() + ", with " +
+                        std::to_string(defendingArmies) + " armies remaining";
     }
     this->setExecutedStatus(true);
 }
@@ -455,7 +464,7 @@ Order *Advance::clone() const
     return new Advance(*this);
 }
 
-std::ostream &Advance::print(std::ostream& output) const
+std::ostream &Advance::print(std::ostream &output) const
 {
     if (this->executed)
     {
@@ -463,7 +472,9 @@ std::ostream &Advance::print(std::ostream& output) const
     }
     else
     {
-        output << *this->dataPayload->numberOfArmies << " armies are moving from " << this->dataPayload->sourceTerritory->getName() << " to " << this->dataPayload->targetTerritory->getName();
+        output << *this->dataPayload->numberOfArmies << " armies are moving from "
+               << this->dataPayload->sourceTerritory->getName() << " to "
+               << this->dataPayload->targetTerritory->getName();
     }
     return output;
 }
@@ -529,7 +540,10 @@ void Bomb::execute()
     Territory copy = *this->dataPayload->targetTerritory;
     copy.setOccupyingArmies(copy.getOccupyingArmies() / 2);
     this->dataPayload->map->updateTerritory(*this->dataPayload->targetTerritory, copy);
-    *this->effect = this->dataPayload->player->getPlayerName() +  " has dropped a bomb on " + this->dataPayload->targetTerritory->getName() + ", leaving it with " + std::to_string(copy.getOccupyingArmies()) + " armies remaining";
+    *this->effect =
+        this->dataPayload->player->getPlayerName() + " has dropped a bomb on " +
+        this->dataPayload->targetTerritory->getName() + ", leaving it with " +
+        std::to_string(copy.getOccupyingArmies()) + " armies remaining";
     this->setExecutedStatus(true);
 }
 
@@ -538,7 +552,7 @@ Order *Bomb::clone() const
     return new Bomb(*this);
 }
 
-std::ostream &Bomb::print(std::ostream& output) const
+std::ostream &Bomb::print(std::ostream &output) const
 {
     if (this->executed)
     {
@@ -546,7 +560,9 @@ std::ostream &Bomb::print(std::ostream& output) const
     }
     else
     {
-        output << this->dataPayload->player->getPlayerName() << " is dropping a bomb on " << this->dataPayload->targetTerritory->getName();
+        output << this->dataPayload->player->getPlayerName()
+               << " is dropping a bomb on "
+               << this->dataPayload->targetTerritory->getName();
     }
     return output;
 }
@@ -605,7 +621,9 @@ void Blockade::execute()
     copy.setOccupyingArmies(copy.getOccupyingArmies() * 2);
     copy.unsetOwningPlayer();
     this->dataPayload->map->updateTerritory(*this->dataPayload->targetTerritory, copy);
-    *this->effect = this->dataPayload->targetTerritory->getName() + " has been blockaded. " + std::to_string(copy.getOccupyingArmies()) + " neutral forces defend it";
+    *this->effect =
+        this->dataPayload->targetTerritory->getName() + " has been blockaded. " +
+        std::to_string(copy.getOccupyingArmies()) + " neutral forces defend it";
     this->setExecutedStatus(true);
 }
 
@@ -614,7 +632,7 @@ Order *Blockade::clone() const
     return new Blockade(*this);
 }
 
-std::ostream &Blockade::print(std::ostream& output) const
+std::ostream &Blockade::print(std::ostream &output) const
 {
     if (this->executed)
     {
@@ -622,7 +640,9 @@ std::ostream &Blockade::print(std::ostream& output) const
     }
     else
     {
-        output << this->dataPayload->player->getPlayerName() << " is creating a blockade in " << this->dataPayload->targetTerritory->getName();
+        output << this->dataPayload->player->getPlayerName()
+               << " is creating a blockade in "
+               << this->dataPayload->targetTerritory->getName();
     }
     return output;
 }
@@ -692,7 +712,10 @@ void Airlift::execute()
     targetCopy.addArmies(*this->dataPayload->numberOfArmies);
     this->dataPayload->map->updateTerritory(*this->dataPayload->targetTerritory,
                                             targetCopy);
-    *this->effect = std::to_string(*this->dataPayload->numberOfArmies) + " armies were airlifted to " + this->dataPayload->targetTerritory->getName() + " from " + this->dataPayload->sourceTerritory->getName();
+    *this->effect = std::to_string(*this->dataPayload->numberOfArmies) +
+                    " armies were airlifted to " +
+                    this->dataPayload->targetTerritory->getName() + " from " +
+                    this->dataPayload->sourceTerritory->getName();
     this->setExecutedStatus(true);
 }
 
@@ -701,7 +724,7 @@ Order *Airlift::clone() const
     return new Airlift(*this);
 }
 
-std::ostream &Airlift::print(std::ostream& output) const
+std::ostream &Airlift::print(std::ostream &output) const
 {
     if (this->executed)
     {
@@ -709,7 +732,9 @@ std::ostream &Airlift::print(std::ostream& output) const
     }
     else
     {
-        output << *this->dataPayload->numberOfArmies << " armies are airlifting from " << this->dataPayload->sourceTerritory->getName() << " to " << this->dataPayload->targetTerritory->getName();
+        output << *this->dataPayload->numberOfArmies << " armies are airlifting from "
+               << this->dataPayload->sourceTerritory->getName() << " to "
+               << this->dataPayload->targetTerritory->getName();
     }
     return output;
 }
@@ -768,7 +793,10 @@ void Negotiate::execute()
 
     this->dataPayload->player->addToNegotiatorsList(this->dataPayload->enemyPlayer);
     this->dataPayload->enemyPlayer->addToNegotiatorsList(this->dataPayload->player);
-    *this->effect = this->dataPayload->player->getPlayerName() + " has entered negotiations with " + this->dataPayload->enemyPlayer->getPlayerName() + ". Battle has stopped for now";
+    *this->effect = this->dataPayload->player->getPlayerName() +
+                    " has entered negotiations with " +
+                    this->dataPayload->enemyPlayer->getPlayerName() +
+                    ". Battle has stopped for now";
     this->setExecutedStatus(true);
 }
 
@@ -777,7 +805,7 @@ Order *Negotiate::clone() const
     return new Negotiate(*this);
 }
 
-std::ostream &Negotiate::print(std::ostream& output) const
+std::ostream &Negotiate::print(std::ostream &output) const
 {
     if (this->executed)
     {
@@ -785,7 +813,9 @@ std::ostream &Negotiate::print(std::ostream& output) const
     }
     else
     {
-        output << this->dataPayload->player->getPlayerName() << " is entering negotiations with " << this->dataPayload->enemyPlayer->getPlayerName();
+        output << this->dataPayload->player->getPlayerName()
+               << " is entering negotiations with "
+               << this->dataPayload->enemyPlayer->getPlayerName();
     }
     return output;
 }

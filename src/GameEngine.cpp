@@ -62,9 +62,11 @@ void ConfigurationUtilities::getPlayerNames(std::vector<Player> &players)
 
 void ConfigurationUtilities::getPlayerStrategies(std::vector<Player> &players)
 {
-    for (auto& player : players)
+    for (auto &player : players)
     {
-        std::size_t choice = InputUtilities::getNumericalMenuChoice("Select a strategy for " + player.getPlayerName(), std::vector<std::string>{"Human", "Aggressive", "Benevolent", "Neutral"});
+        std::size_t choice = InputUtilities::getNumericalMenuChoice(
+            "Select a strategy for " + player.getPlayerName(),
+            std::vector<std::string>{"Human", "Aggressive", "Benevolent", "Neutral"});
         switch (choice)
         {
         case 0:
@@ -354,7 +356,7 @@ void GameEngine::configure()
     *this->players = ConfigurationUtilities::getPlayers();
     *this->map = ConfigurationUtilities::getMap();
 
-    for (auto& player : *this->players)
+    for (auto &player : *this->players)
     {
         player.setGameEngine(this);
     }
@@ -368,7 +370,6 @@ void GameEngine::configure()
     {
         new PhaseObserver(*this);
     }
-    
 
     std::cout << "====================================================================="
                  "==========="
@@ -482,7 +483,7 @@ const Map &GameEngine::getMap() const
     return *this->map;
 }
 
-const std::vector<Player>& GameEngine::getPlayers() const
+const std::vector<Player> &GameEngine::getPlayers() const
 {
     return *this->players;
 }

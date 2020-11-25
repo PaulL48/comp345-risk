@@ -71,7 +71,7 @@ public:
     void addToNegotiatorsList(Player *player) const;
     bool isNegotiator(const Player *player) const;
 
-    void setGameEngine(GameEngine* engine);
+    void setGameEngine(GameEngine *engine);
 
 private:
     std::string *playerName;
@@ -81,7 +81,8 @@ private:
     std::vector<Player *> *negotiators;
     bool *conqueredTerritory; // whether this player has conquered a territory this turn
     PlayerStrategy *strategy;
-    GameEngine* engine; // This is purely to be able to call notify from within issueOrder
+    GameEngine
+        *engine; // This is purely to be able to call notify from within issueOrder
 };
 
 template <typename T>
