@@ -27,13 +27,10 @@ class HumanPlayerStrategy : public PlayerStrategy
 {
 public:
     HumanPlayerStrategy();
-    
     virtual ~HumanPlayerStrategy();
-
     HumanPlayerStrategy(const HumanPlayerStrategy &strategy);
     HumanPlayerStrategy &operator=(const HumanPlayerStrategy &strategy);
     friend std::ostream &operator<<(std::ostream &output, const HumanPlayerStrategy & strategy);
-
     virtual void issueOrder(const Map &map, Player &player);
     virtual std::vector<Territory> toAttack(const Map &map, const Player &player);
     virtual std::vector<Territory> toDefend(const Map &map, const Player &player);
