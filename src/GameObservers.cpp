@@ -11,17 +11,56 @@ Observer::Observer()
 {
 }
 
+Observer::Observer(const Observer &)
+{
+}
+
 Observer::~Observer()
 {
+}
+
+Observer &Observer::operator=(const Observer &)
+{
+    return *this;
+}
+
+std::ostream &operator<<(std::ostream &output, const Observer &)
+{
+    return output;
 }
 
 Subject::Subject() : observers(new std::vector<Observer *>())
 {
 }
 
+Subject::Subject(const Subject &subject) :
+    observers(new std::vector<Observer *>(*subject.observers))
+{
+}
+
 Subject::~Subject()
 {
     delete observers;
+}
+
+Subject &Subject::operator=(const Subject &subject)
+{
+    if (this == &subject)
+    {
+        return *this;
+    }
+
+    *this->observers = *subject.observers;
+    return *this;
+}
+
+std::ostream &operator<<(std::ostream &output, const Subject &subject)
+{
+    for (const auto* observer : *subject.observers)
+    {
+        output << observer << ", ";
+    }
+    return output;
 }
 
 void Subject::attach(Observer *o)
@@ -59,6 +98,28 @@ void Subject::notify()
 StatisticsObserver::StatisticsObserver(GameEngine &game) : game(&game)
 {
     game.attach(this);
+}
+
+StatisticsObserver::StatisticsObserver(const StatisticsObserver &statisticsObserver) : 
+    Observer(statisticsObserver),
+    game(statisticsObserver.game)
+{
+}
+
+StatisticsObserver &StatisticsObserver::operator=(const StatisticsObserver &statisticsObserver)
+{
+    if (this == &statisticsObserver)
+    {
+        return *this;
+    }
+
+    Observer::operator=(statisticsObserver);
+    return *this;
+}
+
+std::ostream &operator<<(std::ostream &output, const StatisticsObserver &)
+{
+    return output;
 }
 
 void StatisticsObserver::update() const
@@ -180,6 +241,28 @@ void StatisticsObserver::displayVictory() const
 PhaseObserver::PhaseObserver(GameEngine &game) : game(&game)
 {
     game.attach(this);
+}
+
+PhaseObserver::PhaseObserver(const PhaseObserver &phaseObserver) :
+    Observer(phaseObserver), 
+    game(phaseObserver.game) 
+{
+}
+
+PhaseObserver &PhaseObserver::operator=(const PhaseObserver &phaseObserver)
+{
+    if (this == &phaseObserver)
+    {
+        return *this;
+    }
+
+    Observer::operator=(phaseObserver);
+    return *this;
+}
+
+std::ostream &operator<<(std::ostream &output, const PhaseObserver &)
+{
+    return output;
 }
 
 void PhaseObserver::update() const

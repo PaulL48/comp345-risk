@@ -34,21 +34,22 @@ const std::string VICTORY_BANNER =
 class Observer
 {
 public:
-    // TODO: Fill required methods
-    ~Observer();
-    virtual void update() const = 0;
-
-protected:
     Observer();
+    Observer(const Observer &observer);
+    ~Observer();
+    Observer &operator=(const Observer &observer);
+    friend std::ostream &operator<<(std::ostream &output, const Observer &observer);
+    virtual void update() const = 0;
 };
 
 class Subject
 {
 public:
-    // TODO: Fill required methods
     Subject();
     ~Subject();
-
+    Subject(const Subject &subject);
+    Subject &operator=(const Subject &subject);
+    friend std::ostream &operator<<(std::ostream &output, const Subject &subject);
     virtual void attach(Observer *o);
     virtual void detach(Observer *o);
     virtual void notify();
@@ -63,12 +64,13 @@ class Map;
 class StatisticsObserver : public Observer
 {
 public:
-    // TODO: Fill required methods
     StatisticsObserver(GameEngine &game);
+    StatisticsObserver(const StatisticsObserver &statisticsObserver);
+    StatisticsObserver &operator=(const StatisticsObserver &statisticsObserver);
+    friend std::ostream &operator<<(std::ostream &output, const StatisticsObserver &statisticsObserver);
 
     // If active, a statistics box should always be active in the view
     virtual void update() const;
-
 private:
     const GameEngine *game;
 
@@ -86,12 +88,13 @@ private:
 class PhaseObserver : public Observer
 {
 public:
-    // TODO: Fill required methods
     PhaseObserver(GameEngine &game);
+    PhaseObserver(const PhaseObserver &phaseObserver);
+    PhaseObserver &operator=(const PhaseObserver &phaseObserver);
+    friend std::ostream &operator<<(std::ostream &output, const PhaseObserver &phaseObserver);
 
     // If active, display important phase information below statistics information
     virtual void update() const;
-
 private:
     const GameEngine *game;
 

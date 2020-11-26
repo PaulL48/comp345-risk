@@ -291,6 +291,7 @@ Map::Map() :
 }
 
 Map::Map(const Map &map) :
+    Subject(),
     territories(new Graph<Territory>(*map.territories)),
     continents(new std::vector<Continent>(*map.continents))
 {

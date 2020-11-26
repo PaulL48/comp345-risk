@@ -17,6 +17,8 @@ enum class GamePhase
     EXECUTE_ORDERS
 };
 
+std::ostream &operator<<(std::ostream &output, const GamePhase& gamePhase);
+
 namespace ConfigurationUtilities
 {
     std::vector<Player> getPlayers();
@@ -75,11 +77,23 @@ namespace GameLogic
 class GameEngine : public Subject
 {
 public:
-    GameEngine();
-    ~GameEngine();
-    // TODO: required methods
 
-    // Phase methods
+    // Construction / Destruction =========================================
+    GameEngine();
+    GameEngine(const GameEngine& gameEngine);
+    ~GameEngine();
+
+    // Operators ==========================================================
+    GameEngine &operator=(const GameEngine &gameEngine);
+    friend std::ostream &operator<<(std::ostream &output, const GameEngine &gameEngine);
+
+    // Getters / Setters ==================================================
+    const Player &getCurrentPlayer() const;
+    GamePhase getCurrentPhase() const;
+    const std::vector<Player> &getPlayers() const;
+    const Map &getMap() const;
+
+    // Phase methods ======================================================
     void configure();
     void startupPhase();
     void mainGameLoop();
@@ -87,13 +101,7 @@ public:
     void issueOrdersPhase();
     void executeOrdersPhase();
 
-    // Methods based on current player
-    const Player &getCurrentPlayer() const;
-
-    GamePhase getCurrentPhase() const;
-    const std::vector<Player> &getPlayers() const;
-    const Map &getMap() const;
-
+    // Auxiliary Methods ==================================================
     bool gameShouldEnd() const;
     void cullDefeatedPlayers();
 

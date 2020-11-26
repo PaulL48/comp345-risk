@@ -16,6 +16,23 @@
 #include <typeindex>
 #include <vector>
 
+std::ostream &operator<<(std::ostream &output, const GamePhase& gamePhase)
+{
+    switch (gamePhase)
+    {
+    case GamePhase::REINFORCEMENT:
+        output << "Reinforcement";
+        break;
+    case GamePhase::ISSUE_ORDERS:
+        output << "Issue orders";
+        break;
+    case GamePhase::EXECUTE_ORDERS:
+        output << "Reinforcement";
+        break;
+    }
+    return output;
+}
+
 std::vector<Player> ConfigurationUtilities::getPlayers()
 {
     std::cout << "---------------------------------------------------------------"
@@ -347,6 +364,47 @@ GameEngine::GameEngine() :
     currentPlayer(new std::size_t()),
     deck(new Deck())
 {
+}
+
+GameEngine::GameEngine(const GameEngine &game) :
+    Subject(),
+    phaseObserver(new bool(*game.phaseObserver)),
+    stateObserver(new bool(*game.stateObserver)),
+    map(new Map(*game.map)),
+    players(new std::vector<Player>(*game.players)),
+    currentPhase(new GamePhase(*game.currentPhase)),
+    currentPlayer(new std::size_t(*game.currentPlayer)),
+    deck(new Deck(*game.deck))
+{
+}
+
+GameEngine &GameEngine::operator=(const GameEngine &gameEngine)
+{
+    if (this == &gameEngine)
+    {
+        return *this;
+    }
+
+    *this->phaseObserver = *gameEngine.phaseObserver;
+    *this->stateObserver = *gameEngine.stateObserver;
+    *this->map = *gameEngine.map;
+    *this->players = *gameEngine.players;
+    *this->currentPhase = *gameEngine.currentPhase;
+    *this->currentPlayer = *gameEngine.currentPlayer;
+    *this->deck = *gameEngine.deck;
+    return *this;
+}
+
+std::ostream &operator<<(std::ostream &output, const GameEngine &gameEngine)
+{
+    output << "Phase observer: " << *gameEngine.phaseObserver
+           << "Statistics observer: " << *gameEngine.stateObserver
+           << "Map: " << *gameEngine.map
+           << "Players: " << *gameEngine.players
+           << "Current phase: " << *gameEngine.currentPhase
+           << "Current player: " << gameEngine.getCurrentPlayer()
+           << "Deck: " << *gameEngine.deck;
+    return output;
 }
 
 void GameEngine::configure()
