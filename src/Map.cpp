@@ -246,7 +246,7 @@ std::ostream &operator<<(std::ostream &output, const Continent &continent)
     output << "Color: " << *continent.color << "\n";
     output << "Army Value: " << *continent.armyValue << "\n";
     output << "Territories: \n";
-    for (auto &entry : *continent.territories)
+    for (auto &entry : continent.getTerritories())
     {
         output << entry;
     }
@@ -570,4 +570,24 @@ std::ostream &operator<<(std::ostream &output, const Map &map)
 std::size_t Map::size() const
 {
     return this->territories->size();
+}
+
+int Map::getContinentIdByName(const std::string &name){
+    int i = 1;
+    for (const auto& continent : *this->continents){
+        if (name == continent.getName())
+            break;
+        i++;
+    }
+    return i;
+}
+
+int Map::getTerritoryIdByName(const std::string &name){
+    int i = 1;
+    for (const auto& territory : *this->territories){
+        if (name == territory.getName())
+            break;
+        i++;
+    }
+    return i;
 }
