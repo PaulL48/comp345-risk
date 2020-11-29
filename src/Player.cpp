@@ -201,7 +201,7 @@ void Player::setConqueredTerritory(bool conqueredTerritory)
 
 void Player::setStrategy(const PlayerStrategy &strategy)
 {
-    *this->strategy = strategy;
+    *this->strategy = strategy->clone();
 }
 
 std::vector<Territory> Player::toAttack(const Map &map) const
