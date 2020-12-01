@@ -70,6 +70,24 @@ std::size_t InputUtilities::getRangedInput(const std::string &prompt, std::size_
     return parsedInput;
 }
 
+void InputUtilities::executeMenuAction(const std::string &prompt, const std::vector<std::string> &list, const std::vector<std::function<void(void)>> &actions)
+{
+    if (list.size() == 0)
+    {
+        return;
+    }
+
+    // Build the list string into the prompt
+    std::stringstream ss;
+    ss << prompt << std::endl;
+    for (std::size_t i = 0; i < list.size(); ++i)
+    {
+        ss << i + 1 << ") " << list.at(i) << std::endl;
+    }
+
+    actions.at(InputUtilities::getRangedInput(ss.str(), 1, list.size()) - 1)();
+}
+
 Player::Player(const std::string &name, const PlayerStrategy &strategy) :
     playerName(new std::string(name)),
     cards(new Hand()),
@@ -132,6 +150,11 @@ bool Player::operator==(const Player &player) const
 bool Player::operator!=(const Player &player) const
 {
     return !(*this == player);
+}
+
+bool operator!=(const Player &lhs, const Player& rhs)
+{
+    return !(lhs == rhs);
 }
 
 Player &Player::operator=(const Player &player)
@@ -201,7 +224,7 @@ void Player::setConqueredTerritory(bool conqueredTerritory)
 
 void Player::setStrategy(const PlayerStrategy &strategy)
 {
-    *this->strategy = strategy;
+    this->strategy = strategy.clone();
 }
 
 std::vector<Territory> Player::toAttack(const Map &map) const
@@ -214,7 +237,7 @@ std::vector<Territory> Player::toDefend(const Map &map) const
     return this->strategy->toDefend(map, *this);
 }
 
-void Player::issueOrder(const Map &map)
+void Player::issueOrder(Map &map)
 {
     this->strategy->issueOrder(map, *this);
 }
@@ -224,7 +247,20 @@ int Player::getReinforcementsPendingDeployment()
     int pendingDeployment = 0;
     for (Order *order : this->orders->getList())
     {
-        if (typeid(order) == typeid(Deploy))
+        if (order->getExecutionPriority() == DEPLOY_PRIORITY)
+        {
+            pendingDeployment += *order->getMutableDataPayload().numberOfArmies;
+        }
+    }
+    return pendingDeployment;
+}
+
+int Player::getReinforcementsPendingDeployment(const Territory& territory)
+{
+    int pendingDeployment = 0;
+    for (Order *order : this->orders->getList())
+    {
+        if (order->getExecutionPriority() == DEPLOY_PRIORITY && *order->getMutableDataPayload().targetTerritory == territory)
         {
             pendingDeployment += *order->getMutableDataPayload().numberOfArmies;
         }
@@ -253,4 +289,9 @@ bool Player::isNegotiator(const Player *player) const
 void Player::setGameEngine(GameEngine *engine)
 {
     this->engine = engine;
+}
+
+GameEngine &Player::getGameEngine() const
+{
+    return *this->engine;
 }

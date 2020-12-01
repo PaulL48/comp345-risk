@@ -92,6 +92,7 @@ public:
     GamePhase getCurrentPhase() const;
     const std::vector<Player> &getPlayers() const;
     const Map &getMap() const;
+    Deck &getDeck();
 
     // Phase methods ======================================================
     void configure();

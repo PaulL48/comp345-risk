@@ -55,8 +55,8 @@ struct OrderDataPayload
     Player *player;
     Player *enemyPlayer;
     int *numberOfArmies; // Owning pointer
-    Territory *sourceTerritory;
-    Territory *targetTerritory;
+    const Territory *sourceTerritory;
+    const Territory *targetTerritory;
     Map *map;
 };
 
@@ -78,6 +78,7 @@ public:
     void moveDown(const Order &order);        // moves an order down by one position
     void remove(const Order &order);          // removes an order from the list
     const std::vector<Order *> &getList();    // returns orders vector
+    void clear();
 
 private:
     void move(const Order &order,
@@ -210,5 +211,46 @@ public:
 protected:
     virtual std::ostream &print(std::ostream &output) const;
 };
+
+class Reinforcement : public Order
+{
+public:
+    Reinforcement();
+    Reinforcement(const Negotiate &order);
+    virtual ~Reinforcement();
+    Reinforcement &operator=(const Negotiate &order);
+    virtual void execute();
+    virtual bool validate();
+    virtual Order *clone() const;
+
+protected:
+    virtual std::ostream &print(std::ostream &output) const;
+};
+
+// class Deploy : public Order
+// class Advance : public Order
+// class Bomb : public Order
+// class Blockade : public Order
+// class Airlift : public Order
+// class Negotiate : public Order
+// class Reinforcement : public Order
+
+    // Player *player;
+    // Player *enemyPlayer;
+    // int *numberOfArmies; // Owning pointer
+    // const Territory *sourceTerritory;
+    // const Territory *targetTerritory;
+    // Map *map;
+
+namespace OrderBuilder
+{
+    Deploy buildDeployOrder(Map *map, Player *player, const Territory &target, int numberOfArmies);
+    Advance buildAdvanceOrder(Map *map, Player *player, const Territory &source, const Territory &target, int numberOfArmies);
+    Bomb buildBombOrder(Map *map, Player *player, const Territory &target);
+    Blockade buildBlockadeOrder(Map *map, Player *player, const Territory &target);
+    Airlift buildAirlift(Map *map, Player *player, const Territory &source, const Territory &target, int numberOfArmies);
+    Negotiate buildNegotiate(Map *map, Player *initiatingPlayer, Player *targetPlayer);
+    Reinforcement buildReinforcement(Map *map, Player *player);
+}
 
 #endif

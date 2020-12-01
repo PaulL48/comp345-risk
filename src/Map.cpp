@@ -571,3 +571,8 @@ std::size_t Map::size() const
 {
     return this->territories->size();
 }
+
+const Territory *Map::getTerritory(const Territory &t)
+{
+    return this->territories->findIf([&t](const Territory &territory){ return t == territory; });
+}

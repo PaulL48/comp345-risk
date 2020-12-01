@@ -486,6 +486,12 @@ void GameEngine::mainGameLoop()
         this->executeOrdersPhase();
         cullDefeatedPlayers();
         GameLogic::addCardToConqueringPlayers(*this->players, *this->deck);
+        
+        // Flush orders
+        for (auto& player : *this->players)
+        {
+            player.getOrders().clear();
+        }
     }
 }
 
@@ -507,6 +513,7 @@ void GameEngine::issueOrdersPhase()
     for (std::size_t i = 0; i < this->players->size(); ++i)
     {
         *this->currentPlayer = i;
+        this->notify();
         this->players->at(i).issueOrder(*this->map);
         this->notify();
     }
@@ -521,6 +528,14 @@ void GameEngine::executeOrdersPhase()
 
     for (Order *order : masterList)
     {
+        for (std::size_t i = 0; i < this->players->size(); ++i)
+        {
+            if (this->players->at(i) == *order->getMutableDataPayload().player)
+            {
+                *this->currentPlayer = i;
+            }
+        }
+        order->getMutableDataPayload().player;
         order->execute();
         this->notify();
     }
@@ -539,6 +554,11 @@ GamePhase GameEngine::getCurrentPhase() const
 const Map &GameEngine::getMap() const
 {
     return *this->map;
+}
+
+Deck &GameEngine::getDeck()
+{
+    return *this->deck;
 }
 
 const std::vector<Player> &GameEngine::getPlayers() const

@@ -169,6 +169,11 @@ const vector<Order *> &OrdersList::getList()
     return *orders;
 }
 
+void OrdersList::clear()
+{
+    this->orders->clear();
+}
+
 //============================================================================================================================================================
 // CLASS DEFINITIONS: Order
 //============================================================================================================================================================
@@ -291,14 +296,20 @@ Deploy::~Deploy()
 
 bool Deploy::validate()
 {
-    if (this->dataPayload->targetTerritory == nullptr ||
-        this->dataPayload->player == nullptr || this->dataPayload->map != nullptr)
+    if (this->dataPayload->map == nullptr)
     {
         return false;
     }
 
-    return *this->dataPayload->targetTerritory->getOwningPlayer() ==
-           *this->dataPayload->player;
+    // Get up to date territory descritpions
+    const Territory* target = this->dataPayload->map->getTerritory(*this->dataPayload->targetTerritory);
+
+    if (target == nullptr || this->dataPayload->player == nullptr)
+    {
+        return false;
+    }
+
+    return *target->getOwningPlayer() == *this->dataPayload->player;
 }
 
 void Deploy::execute()
@@ -310,12 +321,16 @@ void Deploy::execute()
         return;
     }
 
-    Territory copy = *this->dataPayload->targetTerritory;
+    // Get up to date territory descritpions
+    const Territory* target = this->dataPayload->map->getTerritory(*this->dataPayload->targetTerritory);
+
+    Territory copy = *target;
     copy.addArmies(*this->dataPayload->numberOfArmies);
-    this->dataPayload->map->updateTerritory(*this->dataPayload->targetTerritory, copy);
     *this->effect = std::to_string(*this->dataPayload->numberOfArmies) +
-                    " were deployed to " +
-                    this->dataPayload->targetTerritory->getName();
+                " were deployed to " +
+                target->getName();
+    this->dataPayload->player->addArmies(-*this->dataPayload->numberOfArmies);
+    this->dataPayload->map->updateTerritory(*target, copy);
     this->setExecutedStatus(true);
 }
 
@@ -326,9 +341,9 @@ Order *Deploy::clone() const
 
 std::ostream &Deploy::print(std::ostream &output) const
 {
-    if (this->executed)
+    if (*this->executed)
     {
-        output << *this->effect;
+        output << *this->effect << std::endl;
     }
     else
     {
@@ -368,18 +383,24 @@ Advance::~Advance()
 
 bool Advance::validate()
 {
-    if (this->dataPayload->sourceTerritory->getOwningPlayer() == nullptr ||
-        this->dataPayload->targetTerritory->getOwningPlayer() == nullptr ||
-        this->dataPayload->map == nullptr)
+    if (this->dataPayload->map == nullptr)
+    {
+        return false;
+    }
+
+    // Get up to date territory descritpions
+    const Territory* source = this->dataPayload->map->getTerritory(*this->dataPayload->sourceTerritory);
+    const Territory* target = this->dataPayload->map->getTerritory(*this->dataPayload->targetTerritory);
+
+    if (source->getOwningPlayer() == nullptr ||
+        target->getOwningPlayer() == nullptr)
     {
         return false;
     }
 
     // No offensive advance on players in negotiation
-    if (*this->dataPayload->targetTerritory->getOwningPlayer() !=
-            *this->dataPayload->sourceTerritory->getOwningPlayer() &&
-        this->dataPayload->player->isNegotiator(
-            this->dataPayload->targetTerritory->getOwningPlayer()))
+    if (*target->getOwningPlayer() != *source->getOwningPlayer() &&
+        this->dataPayload->player->isNegotiator(target->getOwningPlayer()))
     {
         return false;
     }
@@ -396,16 +417,22 @@ void Advance::execute()
         return;
     }
 
-    Territory copy = *this->dataPayload->sourceTerritory;
+    // Get up to date territory descritpions
+    const Territory* source = this->dataPayload->map->getTerritory(*this->dataPayload->sourceTerritory);
+    const Territory* target = this->dataPayload->map->getTerritory(*this->dataPayload->targetTerritory);
+
+    // Subtract territories
+    Territory copy = *source;
     copy.addArmies(-*this->dataPayload->numberOfArmies);
-    this->dataPayload->map->updateTerritory(*this->dataPayload->sourceTerritory, copy);
+    
 
     // Reinforcing territory
-    if (this->dataPayload->sourceTerritory->getOwningPlayer() ==
-        this->dataPayload->targetTerritory->getOwningPlayer())
+    if (source->getOwningPlayer() == target->getOwningPlayer())
     {
-        this->dataPayload->targetTerritory->addArmies(
-            *this->dataPayload->numberOfArmies);
+        Territory tcopy = *target;
+        tcopy.addArmies(*this->dataPayload->numberOfArmies);
+        this->dataPayload->map->updateTerritory(*target, tcopy);
+        this->dataPayload->map->updateTerritory(*source, copy);
         return;
     }
 
@@ -414,7 +441,7 @@ void Advance::execute()
     std::uniform_int_distribution<int> distribution(1, 100);
     auto killProbability = std::bind(distribution, generator);
     int attackingArmies = *this->dataPayload->numberOfArmies;
-    int defendingArmies = this->dataPayload->targetTerritory->getOccupyingArmies();
+    int defendingArmies = target->getOccupyingArmies();
 
     while (attackingArmies != 0 && defendingArmies != 0)
     {
@@ -435,26 +462,24 @@ void Advance::execute()
 
     if (attackingArmies != 0)
     {
-        Territory copy = *this->dataPayload->targetTerritory;
-        copy.setOwningPlayer(*this->dataPayload->player);
-        copy.setOccupyingArmies(attackingArmies);
-        this->dataPayload->map->updateTerritory(*this->dataPayload->targetTerritory,
-                                                copy);
-        *this->effect = this->dataPayload->targetTerritory->getName() +
-                        " was conquered by " +
+        Territory tcopy = *target;
+        tcopy.setOwningPlayer(*this->dataPayload->player);
+        tcopy.setOccupyingArmies(attackingArmies);
+        *this->effect = target->getName() + " was conquered by " +
                         this->dataPayload->player->getPlayerName() + ", with " +
-                        std::to_string(attackingArmies) + " now occupying";
+                        std::to_string(attackingArmies) + " armies now occupying it";
+        this->dataPayload->map->updateTerritory(*target, tcopy);
+        this->dataPayload->map->updateTerritory(*source, copy);
     }
     else
     {
-        Territory copy = *this->dataPayload->targetTerritory;
-        copy.setOccupyingArmies(defendingArmies);
-        this->dataPayload->map->updateTerritory(*this->dataPayload->targetTerritory,
-                                                copy);
-        *this->effect = this->dataPayload->targetTerritory->getName() +
-                        " resisted the attack from " +
-                        this->dataPayload->sourceTerritory->getName() + ", with " +
+        Territory tcopy = *target;
+        tcopy.setOccupyingArmies(defendingArmies);
+        *this->effect = target->getName() + " resisted the attack from " +
+                        source->getName() + ", with " +
                         std::to_string(defendingArmies) + " armies remaining";
+        this->dataPayload->map->updateTerritory(*target, tcopy);
+        this->dataPayload->map->updateTerritory(*source, copy);
     }
     this->setExecutedStatus(true);
 }
@@ -466,9 +491,9 @@ Order *Advance::clone() const
 
 std::ostream &Advance::print(std::ostream &output) const
 {
-    if (this->executed)
+    if (*this->executed)
     {
-        output << *this->effect;
+        output << *this->effect << std::endl;
     }
     else
     {
@@ -507,21 +532,27 @@ Bomb::~Bomb()
 
 bool Bomb::validate()
 {
-    if (this->dataPayload->sourceTerritory->getOwningPlayer() == nullptr ||
-        this->dataPayload->targetTerritory->getOwningPlayer() == nullptr ||
-        this->dataPayload->map == nullptr)
+    if (this->dataPayload->map == nullptr)
     {
         return false;
     }
 
-    if (this->dataPayload->player->isNegotiator(
-            this->dataPayload->targetTerritory->getOwningPlayer()))
+    // Get up to date territory descritpions
+    const Territory *source = this->dataPayload->map->getTerritory(*this->dataPayload->sourceTerritory);
+    const Territory *target = this->dataPayload->map->getTerritory(*this->dataPayload->targetTerritory);
+
+    if (source->getOwningPlayer() == nullptr ||
+        target->getOwningPlayer() == nullptr)
     {
         return false;
     }
 
-    if (*this->dataPayload->targetTerritory->getOwningPlayer() ==
-        *this->dataPayload->player)
+    if (this->dataPayload->player->isNegotiator(target->getOwningPlayer()))
+    {
+        return false;
+    }
+
+    if (*target->getOwningPlayer() == *this->dataPayload->player)
     {
         return false;
     }
@@ -537,13 +568,16 @@ void Bomb::execute()
         return;
     }
 
-    Territory copy = *this->dataPayload->targetTerritory;
+    // Get up to date territory descritpions
+    const Territory *target = this->dataPayload->map->getTerritory(*this->dataPayload->targetTerritory);
+
+    Territory copy = *target;
     copy.setOccupyingArmies(copy.getOccupyingArmies() / 2);
-    this->dataPayload->map->updateTerritory(*this->dataPayload->targetTerritory, copy);
     *this->effect =
         this->dataPayload->player->getPlayerName() + " has dropped a bomb on " +
-        this->dataPayload->targetTerritory->getName() + ", leaving it with " +
+        target->getName() + ", leaving it with " +
         std::to_string(copy.getOccupyingArmies()) + " armies remaining";
+    this->dataPayload->map->updateTerritory(*target, copy);
     this->setExecutedStatus(true);
 }
 
@@ -554,9 +588,9 @@ Order *Bomb::clone() const
 
 std::ostream &Bomb::print(std::ostream &output) const
 {
-    if (this->executed)
+    if (*this->executed)
     {
-        output << *this->effect;
+        output << *this->effect << std::endl;
     }
     else
     {
@@ -599,14 +633,20 @@ Blockade::~Blockade()
 
 bool Blockade::validate()
 {
-    if (this->dataPayload->targetTerritory->getOwningPlayer() == nullptr ||
-        this->dataPayload->map == nullptr)
+    if (this->dataPayload->map == nullptr)
+    {
+        return false;
+    }
+    
+    // Get up to date territory descritpions
+    const Territory *target = this->dataPayload->map->getTerritory(*this->dataPayload->targetTerritory);
+
+    if (target->getOwningPlayer() == nullptr)
     {
         return false;
     }
 
-    return *this->dataPayload->targetTerritory->getOwningPlayer() ==
-           *this->dataPayload->player;
+    return *target->getOwningPlayer() == *this->dataPayload->player;
 }
 
 void Blockade::execute()
@@ -617,13 +657,16 @@ void Blockade::execute()
         return;
     }
 
-    Territory copy = *this->dataPayload->targetTerritory;
+    // Get up to date territory descritpions
+    const Territory *target = this->dataPayload->map->getTerritory(*this->dataPayload->targetTerritory);
+
+    Territory copy = *target;
     copy.setOccupyingArmies(copy.getOccupyingArmies() * 2);
     copy.unsetOwningPlayer();
-    this->dataPayload->map->updateTerritory(*this->dataPayload->targetTerritory, copy);
     *this->effect =
-        this->dataPayload->targetTerritory->getName() + " has been blockaded. " +
+        target->getName() + " has been blockaded. " +
         std::to_string(copy.getOccupyingArmies()) + " neutral forces defend it";
+    this->dataPayload->map->updateTerritory(*target, copy);
     this->setExecutedStatus(true);
 }
 
@@ -634,9 +677,9 @@ Order *Blockade::clone() const
 
 std::ostream &Blockade::print(std::ostream &output) const
 {
-    if (this->executed)
+    if (*this->executed)
     {
-        output << *this->effect;
+        output << *this->effect << std::endl;
     }
     else
     {
@@ -676,17 +719,23 @@ Airlift::~Airlift()
 
 bool Airlift::validate()
 {
-    if (this->dataPayload->sourceTerritory->getOwningPlayer() == nullptr ||
-        this->dataPayload->targetTerritory->getOwningPlayer() == nullptr ||
-        this->dataPayload->map == nullptr)
+    if (this->dataPayload->map == nullptr)
     {
         return false;
     }
 
-    if (*this->dataPayload->sourceTerritory->getOwningPlayer() !=
-            *this->dataPayload->targetTerritory->getOwningPlayer() ||
-        *this->dataPayload->player !=
-            *this->dataPayload->sourceTerritory->getOwningPlayer())
+    // Get up to date territory descritpions
+    const Territory *source = this->dataPayload->map->getTerritory(*this->dataPayload->sourceTerritory);
+    const Territory *target = this->dataPayload->map->getTerritory(*this->dataPayload->targetTerritory);
+
+    if (source->getOwningPlayer() == nullptr ||
+        target->getOwningPlayer() == nullptr)
+    {
+        return false;
+    }
+
+    if (*source->getOwningPlayer() != *target->getOwningPlayer() ||
+        *this->dataPayload->player != *source->getOwningPlayer())
     {
         return false;
     }
@@ -705,17 +754,17 @@ void Airlift::execute()
 
     Territory sourceCopy = *this->dataPayload->sourceTerritory;
     sourceCopy.addArmies(-*this->dataPayload->numberOfArmies);
-    this->dataPayload->map->updateTerritory(*this->dataPayload->sourceTerritory,
-                                            sourceCopy);
 
     Territory targetCopy = *this->dataPayload->targetTerritory;
     targetCopy.addArmies(*this->dataPayload->numberOfArmies);
-    this->dataPayload->map->updateTerritory(*this->dataPayload->targetTerritory,
-                                            targetCopy);
     *this->effect = std::to_string(*this->dataPayload->numberOfArmies) +
                     " armies were airlifted to " +
                     this->dataPayload->targetTerritory->getName() + " from " +
                     this->dataPayload->sourceTerritory->getName();
+    this->dataPayload->map->updateTerritory(*this->dataPayload->targetTerritory,
+                                            targetCopy);
+    this->dataPayload->map->updateTerritory(*this->dataPayload->sourceTerritory,
+                                            sourceCopy);
     this->setExecutedStatus(true);
 }
 
@@ -726,9 +775,9 @@ Order *Airlift::clone() const
 
 std::ostream &Airlift::print(std::ostream &output) const
 {
-    if (this->executed)
+    if (*this->executed)
     {
-        output << *this->effect;
+        output << *this->effect << std::endl;
     }
     else
     {
@@ -807,9 +856,9 @@ Order *Negotiate::clone() const
 
 std::ostream &Negotiate::print(std::ostream &output) const
 {
-    if (this->executed)
+    if (*this->executed)
     {
-        output << *this->effect;
+        output << *this->effect << std::endl;
     }
     else
     {
@@ -819,3 +868,121 @@ std::ostream &Negotiate::print(std::ostream &output) const
     }
     return output;
 }
+
+Reinforcement::Reinforcement() :
+    Order("Reinforcement", "Gain extra reinforcements to deploy this turn", REMAINDER_PRIORITY)
+{
+}
+
+Reinforcement::~Reinforcement()
+{
+}
+
+bool Reinforcement::validate()
+{
+    if (this->dataPayload->map == nullptr || this->dataPayload->player == nullptr)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+void Reinforcement::execute()
+{
+    if (!this->validate())
+    {
+        std::cout << "Invalid reinforcement" << std::endl;
+        return;
+    }
+
+    this->dataPayload->player->addArmies(*this->dataPayload->numberOfArmies);
+}
+
+Order *Reinforcement::clone() const
+{
+    return new Reinforcement(*this);
+}
+
+std::ostream &Reinforcement::print(std::ostream &output) const
+{
+    if (*this->executed)
+    {
+        output << *this->effect << std::endl;
+    }
+    else
+    {
+        output << this->dataPayload->player->getPlayerName()
+               << " is receiving extra reinforcements"; 
+    }
+    return output;
+}
+
+Deploy OrderBuilder::buildDeployOrder(Map *map, Player *player, const Territory &target, int numberOfArmies)
+{
+    Deploy order;
+    order.getMutableDataPayload().map = map;
+    order.getMutableDataPayload().player = player;
+    order.getMutableDataPayload().targetTerritory = new Territory(target);
+    *order.getMutableDataPayload().numberOfArmies = numberOfArmies;
+    return order;
+}
+
+Advance OrderBuilder::buildAdvanceOrder(Map *map, Player *player, const Territory &source, const Territory &target, int numberOfArmies)
+{
+    Advance order;
+    order.getMutableDataPayload().map = map;
+    order.getMutableDataPayload().player = player;
+    order.getMutableDataPayload().sourceTerritory = new Territory(source);
+    order.getMutableDataPayload().targetTerritory = new Territory(target);
+    *order.getMutableDataPayload().numberOfArmies = numberOfArmies;
+    return order;
+}
+
+Bomb OrderBuilder::buildBombOrder(Map *map, Player *player, const Territory &target)
+{
+    Bomb order;
+    order.getMutableDataPayload().map = map;
+    order.getMutableDataPayload().player = player;
+    order.getMutableDataPayload().targetTerritory = new Territory(target);
+    return order;
+}
+
+Blockade OrderBuilder::buildBlockadeOrder(Map *map, Player *player, const Territory &target)
+{
+    Blockade order;
+    order.getMutableDataPayload().map = map;
+    order.getMutableDataPayload().player = player;
+    order.getMutableDataPayload().targetTerritory = new Territory(target);
+    return order;
+}
+
+Airlift OrderBuilder::buildAirlift(Map *map, Player *player, const Territory &source, const Territory &target, int numberOfArmies)
+{
+    Airlift order;
+    order.getMutableDataPayload().map = map;
+    order.getMutableDataPayload().player = player;
+    order.getMutableDataPayload().sourceTerritory = new Territory(source);
+    order.getMutableDataPayload().targetTerritory = new Territory(target);
+    *order.getMutableDataPayload().numberOfArmies = numberOfArmies;
+    return order;
+}
+
+Negotiate OrderBuilder::buildNegotiate(Map *map, Player *initiatingPlayer, Player *targetPlayer)
+{
+    Negotiate order;
+    order.getMutableDataPayload().map = map;
+    order.getMutableDataPayload().player = initiatingPlayer;
+    order.getMutableDataPayload().enemyPlayer = targetPlayer;
+    return order;
+}
+
+Reinforcement OrderBuilder::buildReinforcement(Map *map, Player *player)
+{
+    Reinforcement order;
+    order.getMutableDataPayload().map = map;
+    order.getMutableDataPayload().player = player;
+    *order.getMutableDataPayload().numberOfArmies = 10;
+    return order;
+}
+

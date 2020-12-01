@@ -329,20 +329,20 @@ void PhaseObserver::displayIssueOrdersPhase() const
     std::cout << "Current orders: " << std::endl;
     for (const auto *order : player.getOrders().getList())
     {
-        std::cout << "\t -" << order << std::endl;
+        std::cout << "\t- " << *order << std::endl;
     }
 
-    std::cout << "Current territories to attack: ";
+    std::cout << "Current territories to attack: " << std::endl;
     for (const auto &territory : player.toAttack(this->game->getMap()))
     {
-        std::cout << "\t -" << territory.getName() << ", ";
+        std::cout << "\t- " << territory.getName() << " (" << territory.getOccupyingArmies() << " armies)" << std::endl;
     }
     std::cout << std::endl;
 
-    std::cout << "Current territories to defend: ";
+    std::cout << "Current territories to defend: " << std::endl;
     for (const auto &territory : player.toDefend(this->game->getMap()))
     {
-        std::cout << "\t -" << territory.getName() << ", ";
+        std::cout << "\t- " << territory.getName() << " (" << territory.getOccupyingArmies() << " armies)" << std::endl;
     }
     std::cout << std::endl;
 }
@@ -356,6 +356,7 @@ void PhaseObserver::displayOrdersExecutionPhase() const
     std::cout << "Some or all of your orders have been executed: " << std::endl;
     for (const auto *order : player.getOrders().getList())
     {
-        std::cout << "\t -" << order << std::endl;
+        std::cout << "\t- " << *order;
     }
+    std::cout << std::endl;
 }
