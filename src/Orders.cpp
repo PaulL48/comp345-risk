@@ -538,11 +538,9 @@ bool Bomb::validate()
     }
 
     // Get up to date territory descritpions
-    const Territory *source = this->dataPayload->map->getTerritory(*this->dataPayload->sourceTerritory);
     const Territory *target = this->dataPayload->map->getTerritory(*this->dataPayload->targetTerritory);
 
-    if (source->getOwningPlayer() == nullptr ||
-        target->getOwningPlayer() == nullptr)
+    if (target->getOwningPlayer() == nullptr)
     {
         return false;
     }
@@ -897,6 +895,10 @@ void Reinforcement::execute()
     }
 
     this->dataPayload->player->addArmies(*this->dataPayload->numberOfArmies);
+    *this->effect = this->dataPayload->player->getPlayerName() +
+                    " has gained " + std::to_string(*this->dataPayload->numberOfArmies) +
+                    " extra reinforcements";
+    this->setExecutedStatus(true);
 }
 
 Order *Reinforcement::clone() const
@@ -913,7 +915,7 @@ std::ostream &Reinforcement::print(std::ostream &output) const
     else
     {
         output << this->dataPayload->player->getPlayerName()
-               << " is receiving extra reinforcements"; 
+               << " is receiving " << *this->dataPayload->numberOfArmies << " extra reinforcements"; 
     }
     return output;
 }

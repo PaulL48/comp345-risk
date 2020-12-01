@@ -205,7 +205,11 @@ Order *Hand::playCard(const Card& card, Deck &deck, OrdersList &ordersList)
         return nullptr;
     }
 
-    return (*it)->play(deck, ordersList);
+    Order *order = (*it)->play(deck, ordersList);
+    this->hand->at(it - this->hand->begin()) = this->hand->back();
+    this->hand->pop_back();
+
+    return order;
 }
 
 Bombcard::Bombcard()

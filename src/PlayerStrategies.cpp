@@ -125,9 +125,11 @@ void HumanPlayerStrategy::deleteOrder(Player &player, Map&)
     std::vector<std::string> orders;
     std::stringstream ss;
     ss << "Choose an order to delete: " << std::endl;
+    std::size_t i = 1;
     for (const Order* order : player.getOrders().getList())
     {
-        ss << "- " << *order << std::endl;
+        // Add numbering
+        ss << i++ << ") " << *order << std::endl;
     }
 
     std::size_t choice = InputUtilities::getRangedInput(ss.str(), 1, player.getOrders().getList().size());
@@ -223,7 +225,18 @@ void HumanPlayerStrategy::defend(Player &player, Map& map)
 
 void HumanPlayerStrategy::playCard(Player &player, Map& map)
 {
-    Card* card = InputUtilities::getMenuChoice("Choose a card to play: ", player.getCards().getList());
+
+    std::vector<std::string> cards;
+    std::stringstream ss;
+    ss << "Choose a card to play: " << std::endl;
+    std::size_t i = 1;
+    for (const Card* card : player.getCards().getList())
+    {
+        ss << i++ << ") " << *card << std::endl;
+    }
+
+    std::size_t choice = InputUtilities::getRangedInput(ss.str(), 1, player.getCards().getList().size());
+    Card *card = player.getCards().getList().at(choice - 1);
     switch (card->discriminant())
     {
     case 0:
@@ -237,6 +250,9 @@ void HumanPlayerStrategy::playCard(Player &player, Map& map)
         break;
     case 3:
         this->airlift(player, map);
+        break;
+    case 4:
+        this->diplomacy(player, map);
         break;
     }
     player.getCards().playCard(*card, player.getGameEngine().getDeck(), player.getOrders());
@@ -286,7 +302,7 @@ void HumanPlayerStrategy::reinforce(Player &player, Map &map)
 void HumanPlayerStrategy::blockade(Player &player, Map &map)
 {
     std::vector<Territory> toDefend = this->toDefend(map, player);
-    Territory &target = InputUtilities::getMenuChoice("Choose a territory to bomb: ", toDefend);
+    Territory &target = InputUtilities::getMenuChoice("Choose a territory to blockade: ", toDefend);
     player.getOrders().addToList(OrderBuilder::buildBlockadeOrder(&map, &player, target));
 }
 
@@ -300,7 +316,7 @@ void HumanPlayerStrategy::airlift(Player &player, Map &map)
 
 
     std::vector<Territory> candidates = this->toDefend(map, player);
-    auto it = std::remove_if(candidates.begin(), candidates.end(), [&player](Territory& t) { return t.getOccupyingArmies() == 0; });
+    auto it = std::remove_if(candidates.begin(), candidates.end(), [&player, &target](Territory& t) { return t.getOccupyingArmies() == 0 || t == target; });
     if (it != candidates.end())
     {
         candidates.erase(it);
@@ -322,7 +338,7 @@ void HumanPlayerStrategy::diplomacy(Player &player, Map &map)
     std::unordered_set<const Player*> playersSet;
     for (const auto& territory : map.getGraph())
     {
-        if (territory.getOwningPlayer() != nullptr)
+        if (territory.getOwningPlayer() != nullptr && *territory.getOwningPlayer() != player)
         {
             playersSet.insert(territory.getOwningPlayer());
         }
@@ -331,14 +347,15 @@ void HumanPlayerStrategy::diplomacy(Player &player, Map &map)
     std::vector<const Player*> players(playersSet.begin(), playersSet.end());
 
     std::stringstream ss;
+    std::size_t i = 1;
     ss << "Choose a player to enter peace with: " << std::endl;
     for (const Player* player : players)
     {
-        ss << "- " << *player << std::endl;
+        ss << i << ") " << *player << std::endl;
     }
 
     std::size_t choice = InputUtilities::getRangedInput(ss.str(), 1, players.size());
-    player.getOrders().addToList(OrderBuilder::buildNegotiate(&map, &player, const_cast<Player*>(players.at(choice))));
+    player.getOrders().addToList(OrderBuilder::buildNegotiate(&map, &player, const_cast<Player*>(players.at(choice - 1))));
 }
 
 //============================================================================================================================================================

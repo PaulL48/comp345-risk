@@ -456,7 +456,7 @@ void GameEngine::startupPhase()
     StartupUtilities::assignStartingArmies(*this->players);
     StartupUtilities::shufflePlayers(*this->players);
     StartupUtilities::assignTerritories(*this->players, *this->map);
-    StartupUtilities::playersDrawCards(*this->players, *this->deck, 1);
+    StartupUtilities::playersDrawCards(*this->players, *this->deck, 8);
 
     std::cout << "====================================================================="
                  "==========="

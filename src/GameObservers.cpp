@@ -305,7 +305,7 @@ void PhaseObserver::displayReinforcementsPhase() const
               << std::endl;
     for (const auto &continent : continents)
     {
-        std::cout << continent.getName() << " with " << continent.getBonusArmyValue()
+        std::cout << "\t- " << continent.getName() << " with " << continent.getBonusArmyValue()
                   << " bonus armies." << std::endl;
     }
     std::cout << "Total territory control reinforcements: "
@@ -356,7 +356,7 @@ void PhaseObserver::displayOrdersExecutionPhase() const
     std::cout << "Some or all of your orders have been executed: " << std::endl;
     for (const auto *order : player.getOrders().getList())
     {
-        std::cout << "\t- " << *order;
+        std::cout << "\t- " << *order << std::endl;
     }
     std::cout << std::endl;
 }
