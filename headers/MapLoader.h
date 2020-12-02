@@ -4,8 +4,8 @@
 #include "Map.h"
 #include <string>
 
-const std::string CONQUEST_EXTENSION = "cmap";
-const std::string WARZONE_EXTENSION = "map";
+extern const std::string CONQUEST_EXTENSION;
+extern const std::string WARZONE_EXTENSION;
 
 namespace MapLoader
 {

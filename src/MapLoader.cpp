@@ -11,6 +11,10 @@
 #include <vector>
 #include <algorithm>
 
+const std::string CONQUEST_EXTENSION = "conquestmap";
+const std::string WARZONE_EXTENSION = "map";
+
+
 Map MapLoader::loadMapValidated(const std::string &path, bool &valid)
 {
     Map map;
