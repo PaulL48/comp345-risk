@@ -507,8 +507,11 @@ void BenevolentPlayerStrategy::issueOrder(Map &map, Player &player)
         if (!strongestNeighbors.empty())
         {
             Territory chosenStrongest = strongestNeighbors.at(0);
-            int move = std::min((chosenStrongest.getOccupyingArmies() - territory.getOccupyingArmies()) / 2, 1);
-            player.getOrders().addToList(OrderBuilder::buildAdvanceOrder(&map, &player, chosenStrongest, territory, move));
+            int move = chosenStrongest.getOccupyingArmies() - territory.getOccupyingArmies();
+            if (move != 0)
+            {
+                player.getOrders().addToList(OrderBuilder::buildAdvanceOrder(&map, &player, chosenStrongest, territory, move));
+            }
         }
     }
 
