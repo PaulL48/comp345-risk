@@ -236,6 +236,7 @@ void StatisticsObserver::displayVictory() const
               << " has conquered the world!" << std::endl;
     std::cout << std::endl;
     std::cout << VICTORY_BANNER << std::endl;
+
 }
 
 PhaseObserver::PhaseObserver(GameEngine &game) : game(&game)
@@ -267,6 +268,11 @@ std::ostream &operator<<(std::ostream &output, const PhaseObserver &)
 
 void PhaseObserver::update() const
 {
+    if (this->game->gameShouldEnd())
+    {
+        return;
+    }
+
     std::cout << "---------------------------------------------------------------------"
                  "-----------"
               << std::endl;

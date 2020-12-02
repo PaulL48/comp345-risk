@@ -71,6 +71,9 @@ public:
     virtual PlayerStrategy *clone() const;
     virtual std::ostream &print(std::ostream &output) const;
 
+private:
+    Territory getStrongestStrategic(const std::vector<Territory> &territories, const Player &player, const Map &map) const;
+
 };
 
 class BenevolentPlayerStrategy : public PlayerStrategy

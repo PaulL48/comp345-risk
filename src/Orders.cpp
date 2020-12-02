@@ -436,6 +436,9 @@ void Advance::execute()
     {
         Territory tcopy = *target;
         tcopy.addArmies(*this->dataPayload->numberOfArmies);
+        *this->effect = target->getName() + " was reinforced by " +
+                        source->getName() + ", with " +
+                        std::to_string(*this->dataPayload->numberOfArmies) + " armies";
         this->dataPayload->map->updateTerritory(*target, tcopy);
         this->dataPayload->map->updateTerritory(*source, copy);
         return;

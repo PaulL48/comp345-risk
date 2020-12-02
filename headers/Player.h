@@ -83,6 +83,7 @@ public:
 
     std::vector<Territory> getWeakest(const std::vector<Territory> &territories) const;
     std::vector<Territory> getStrongest(const std::vector<Territory> &territories) const;
+    std::vector<Territory> getStrongestWithHostileNeighbors(const std::vector<Territory> &territories) const;
 private:
     std::string *playerName;
     Hand *cards;

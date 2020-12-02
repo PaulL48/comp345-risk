@@ -411,24 +411,142 @@ std::ostream &AggressivePlayerStrategy::print(std::ostream &output) const
     return output;
 }
 
-void AggressivePlayerStrategy::issueOrder(Map &, Player &)
+void AggressivePlayerStrategy::issueOrder(Map &map, Player &player)
 {
+    Territory chosenStrongest = this->getStrongestStrategic(map.getPlayersTerritories(player), player, map);
+    player.getOrders().addToList(OrderBuilder::buildDeployOrder(&map, &player, chosenStrongest, player.getReinforcementPool()));
+    std::cout << "Deploying reinforcements to strategic and strongest territory" << std::endl;
+    std::string input;
+    std::cout << "Press enter to continue..." << std::endl;
+    std::getline(std::cin, input);
+    player.getGameEngine().notify();
+
+    // Move all forces towards their higher neighbors
+    for (const auto &territory : map.getPlayersTerritories(player))
+    {
+        if (territory != chosenStrongest && territory.getOccupyingArmies() != 0)
+        {
+            std::unordered_set<Territory> neighborSet = map.getCommonOwnerNeighbors(territory);
+            std::vector<Territory> neighbors(neighborSet.begin(), neighborSet.end());
+            Territory strongestNeighbor = this->getStrongestStrategic(neighbors, player, map);
+            if (strongestNeighbor.getOccupyingArmies() > territory.getOccupyingArmies())
+            {
+                player.getOrders().addToList(OrderBuilder::buildAdvanceOrder(&map, &player, territory, strongestNeighbor, territory.getOccupyingArmies()));
+            }
+        }
+    }
+
+    std::cout << "Advancing armies to their strongest neighbor" << std::endl;
+    std::cout << "Press enter to continue..." << std::endl;
+    std::getline(std::cin, input);
+    player.getGameEngine().notify();
+
+
+    // Attack as much as possible with strongest strategic
+    std::unordered_set<Territory> targetsSet = map.getDisjunctOwnerNeighbors(chosenStrongest);
+    std::vector<Territory> targets(targetsSet.begin(), targetsSet.end());
+
+    // Preallocate armies to deploy
+    std::vector<int> numbers;
+    numbers.reserve(targets.size());
+    for (std::size_t i = 0; i < targets.size(); ++i)
+    {
+        numbers.push_back(0);
+    }
+
+    int evenArmiesPerTerritory = (chosenStrongest.getOccupyingArmies() + player.getReinforcementsPendingDeployment(chosenStrongest)) / targets.size();
+    int remainingArmiesPerTerritory = (chosenStrongest.getOccupyingArmies() + player.getReinforcementsPendingDeployment(chosenStrongest)) % targets.size();
+
+
+    if (evenArmiesPerTerritory != 0)
+    {
+        for (int &number : numbers)
+        {
+            number += evenArmiesPerTerritory;
+        }
+    }
+
+    if (remainingArmiesPerTerritory != 0)
+    {
+        for (std::size_t i = 0; i < static_cast<std::size_t>(remainingArmiesPerTerritory); ++i)
+        {
+            numbers.at(i) += 1;
+        }
+    }
+
+    for (std::size_t i = 0; i < numbers.size(); ++i)
+    {
+        player.getOrders().addToList(OrderBuilder::buildAdvanceOrder(&map, &player, chosenStrongest, targets.at(i), numbers.at(i)));
+    }
+
+    std::cout << "Attacking from strongest territory" << std::endl;
+    std::cout << "Press enter to continue..." << std::endl;
+    std::getline(std::cin, input);
+    player.getGameEngine().notify();
 }
 
-std::vector<Territory> AggressivePlayerStrategy::toAttack(const Map &, const Player &) const
+std::vector<Territory> AggressivePlayerStrategy::toAttack(const Map &map, const Player &player) const
 {
-    return std::vector<Territory>();
+    std::unordered_set<Territory> hostileNeighborSet = map.getDisjunctOwnerNeighbors(this->getStrongestStrategic(map.getPlayersTerritories(player), player, map));
+    return std::vector<Territory>(hostileNeighborSet.begin(), hostileNeighborSet.end());
 }
 
-std::vector<Territory> AggressivePlayerStrategy::toDefend(const Map &, const Player &) const
+std::vector<Territory> AggressivePlayerStrategy::toDefend(const Map &map, const Player &player) const
 {
-    return std::vector<Territory>();
+    std::vector<Territory> result;
+    result.push_back(this->getStrongestStrategic(map.getPlayersTerritories(player), player, map));
+    return result;
 }
 
 PlayerStrategy *AggressivePlayerStrategy::clone() const
 {
     return new AggressivePlayerStrategy(*this);
 }
+
+Territory AggressivePlayerStrategy::getStrongestStrategic(const std::vector<Territory> &territories, const Player &player, const Map &map) const
+{
+    // This is not a simple maximum because we must consider this case:
+    // The strongest node chases an opponent into a dead end and defeats them
+    // Now the strongest node has no hostile neighbors so it is strategically useless
+    std::vector<Territory> strongest;
+    int max = 0;
+    for (const auto &territory : territories)
+    {
+        int actualArmyValue = territory.getOccupyingArmies() + player.getReinforcementsPendingDeployment(territory);
+        if (map.getDisjunctOwnerNeighbors(territory).size() != 0 && actualArmyValue == max)
+        {
+            strongest.push_back(territory);
+        }
+        else if (map.getDisjunctOwnerNeighbors(territory).size() != 0 && actualArmyValue > max)
+        {
+            strongest.clear();
+            strongest.push_back(territory);
+            max = actualArmyValue;
+        }
+    }
+
+    if (strongest.size() == 0)
+    {
+        return territories.at(0);
+    }
+
+    Territory chosenStrongest = strongest.at(0);
+
+    // If there's a tie pick a territory with the most neighbors to reinforce
+    if (strongest.size() > 1)
+    {
+        for (const auto &territory : strongest)
+        {
+            if (map.getDisjunctOwnerNeighbors(territory).size() > map.getDisjunctOwnerNeighbors(chosenStrongest).size())
+            {
+                chosenStrongest = territory;
+            }
+        }
+    }
+
+    return chosenStrongest;
+}
+
 
 //============================================================================================================================================================
 // CLASS DEFINITIONS: BenevolentPlayerStrategy
