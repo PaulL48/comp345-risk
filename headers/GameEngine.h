@@ -101,6 +101,7 @@ public:
     void reinforcementPhase();
     void issueOrdersPhase();
     void executeOrdersPhase();
+    void chooseNewStrategy();
 
     // Auxiliary Methods ==================================================
     bool gameShouldEnd() const;

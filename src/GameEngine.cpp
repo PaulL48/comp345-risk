@@ -481,6 +481,7 @@ void GameEngine::mainGameLoop()
 {
     while (!gameShouldEnd())
     {
+        this->chooseNewStrategy();
         this->reinforcementPhase();
         this->issueOrdersPhase();
         this->executeOrdersPhase();
@@ -538,6 +539,36 @@ void GameEngine::executeOrdersPhase()
         }
         order->execute();
         this->notify();
+    }
+}
+
+void GameEngine::chooseNewStrategy()
+{
+    for (auto &player : *this->players)
+    {
+        std::size_t choice = InputUtilities::getNumericalMenuChoice(player.getPlayerName() + " would you like to change strategies?", std::vector<std::string>{"Yes", "No"});
+        if (choice == 0)
+        {
+            std::cout << "Current strategy is: " << player.getStrategy() << std::endl;
+            std::size_t strategyChoice = InputUtilities::getNumericalMenuChoice(
+            "Select a new strategy:",
+            std::vector<std::string>{"Human", "Aggressive", "Benevolent", "Neutral"});
+            switch (strategyChoice)
+            {
+            case 0:
+                player.setStrategy(HumanPlayerStrategy());
+                break;
+            case 1:
+                player.setStrategy(AggressivePlayerStrategy());
+                break;
+            case 2:
+                player.setStrategy(BenevolentPlayerStrategy());
+                break;
+            case 3:
+                player.setStrategy(NeutralPlayerStrategy());
+                break;
+            }
+        }
     }
 }
 
