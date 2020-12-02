@@ -3,6 +3,8 @@
 #include "Player.h"
 #include "GameEngine.h"
 #include <unordered_set>
+#include <algorithm>
+#include <cmath> 
 
 PlayerStrategy::~PlayerStrategy()
 {
@@ -469,8 +471,28 @@ std::ostream &BenevolentPlayerStrategy::print(std::ostream &output) const
     return output;
 }
 
-void BenevolentPlayerStrategy::issueOrder(Map &, Player &)
+void BenevolentPlayerStrategy::issueOrder(Map &map, Player &player)
 {
+    std::vector<Territory> playerTerritories = map.getPlayersTerritories(player);
+    int armyUnitsPerTerritory = player.getReinforcementPool() / playerTerritories.size();
+    int extraUnits = remainder(player.getReinforcementPool(), playerTerritories.size());
+
+    // assign equal army units to each territory
+    if(armyUnitsPerTerritory > 0){
+        for (const auto territory : map.getPlayersTerritories(player))
+        {
+            player.getOrders().addToList(OrderBuilder::buildDeployOrder(&map, &player, territory, armyUnitsPerTerritory));
+        }
+    }
+    
+    // sort by army units per territory
+    std::sort(playerTerritories.begin( ), playerTerritories.end( ), [ ]( const Territory& lhs, const Territory& rhs )
+    {
+        return lhs.getOccupyingArmies() < rhs.getOccupyingArmies();
+    });
+
+    // assign the extra units to the weakest territort at index 0
+    player.getOrders().addToList(OrderBuilder::buildDeployOrder(&map, &player, playerTerritories.at(0), armyUnitsPerTerritory));
 }
 
 std::vector<Territory> BenevolentPlayerStrategy::toAttack(const Map &, const Player &)
@@ -478,9 +500,9 @@ std::vector<Territory> BenevolentPlayerStrategy::toAttack(const Map &, const Pla
     return std::vector<Territory>();
 }
 
-std::vector<Territory> BenevolentPlayerStrategy::toDefend(const Map &, const Player &)
+std::vector<Territory> BenevolentPlayerStrategy::toDefend(const Map &map, const Player &player)
 {
-    return std::vector<Territory>();
+    return map.getPlayersTerritories(player);
 }
 
 PlayerStrategy *BenevolentPlayerStrategy::clone() const
