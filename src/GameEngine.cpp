@@ -117,7 +117,7 @@ Map ConfigurationUtilities::getMap()
     {
         std::string choice = InputUtilities::getMenuChoice(
             "Map Selection. Please choose from the following maps: ", maps);
-        m = MapLoader::loadMapValidated(choice, valid);
+        m = MapReader().read(choice, valid);
         std::cout << "Checking map integrity" << std::endl;
         MapState state = m.validate();
         if (state != MapState::VALID)

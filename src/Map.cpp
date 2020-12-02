@@ -246,7 +246,7 @@ std::ostream &operator<<(std::ostream &output, const Continent &continent)
     output << "Color: " << *continent.color << "\n";
     output << "Army Value: " << *continent.armyValue << "\n";
     output << "Territories: \n";
-    for (auto &entry : *continent.territories)
+    for (auto &entry : continent.getTerritories())
     {
         output << entry;
     }
@@ -323,6 +323,19 @@ const std::vector<Continent> &Map::getContinents() const
 const std::unordered_set<Territory> *Map::getNeighbors(const Territory &t) const
 {
     return this->territories->getNeighbors(t);
+}
+
+const std::unordered_set<Territory> Map::getCommonOwnerNeighbors(const Territory &t) const
+{
+    if (t.getOwningPlayer() == nullptr)
+    {
+        return std::unordered_set<Territory>();
+    }
+
+    const std::unordered_set<Territory> *neighbors = this->getNeighbors(t);
+    std::vector<Territory> playerOwnedList = this->getPlayersTerritories(*t.getOwningPlayer());
+    std::unordered_set<Territory> playerOwned(playerOwnedList.begin(), playerOwnedList.end());
+    return SetUtilities::setIntersect(*neighbors, playerOwned);
 }
 
 MapState Map::validate() const
@@ -429,6 +442,7 @@ void Map::addContinent(const Continent &continent)
 
 void Map::addTerritory(const Territory &territory, int continentId)
 {
+    std::cout << "Adding territory: " << territory << std::endl;
     if (continentId <= 0 ||
         static_cast<std::size_t>(continentId) > this->continents->size())
     {
@@ -570,6 +584,24 @@ std::ostream &operator<<(std::ostream &output, const Map &map)
 std::size_t Map::size() const
 {
     return this->territories->size();
+}
+
+int Map::getContinentIdByName(const std::string &name){
+    int i = 1;
+    for (const auto& continent : *this->continents){
+        if (name == continent.getName())
+            break;
+        i++;
+    }
+    return i;
+}
+
+int Map::getTerritoryIdByName(const std::string &name){
+    for (const auto& territory : this->territories->getVertices()){
+        if (name == territory.getName())
+            return territory.getId();
+    }
+    return -1;
 }
 
 const Territory *Map::getTerritory(const Territory &t)

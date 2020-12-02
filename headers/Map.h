@@ -335,6 +335,7 @@ public:
     Graph<Territory> &getGraph();
     //std::vector<Territory> getPlayersTerritories(const Player &player);
     const std::unordered_set<Territory> *getNeighbors(const Territory &t) const;
+    const std::unordered_set<Territory> getCommonOwnerNeighbors(const Territory &t) const;
     std::vector<Continent> &getContinents();
 
     std::string getErrorString(MapState mapState) const;
@@ -359,11 +360,12 @@ public:
 
     std::vector<Continent> getPlayersContinents(const Player &player) const;
     int getPlayersContinentBonus(const Player &player);
-
     void setTerritoryOwnerByName(Player &player, const std::string &territoryName);
 
     std::size_t size() const;
 
+    int getContinentIdByName(const std::string &name);
+    int getTerritoryIdByName(const std::string &name);
     const Territory *getTerritory(const Territory& t);
 
 private:
