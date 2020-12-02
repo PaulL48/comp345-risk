@@ -98,7 +98,7 @@ void HumanPlayerStrategy::issueOrder(Map &map, Player &player)
     }
 }
 
-std::vector<Territory> HumanPlayerStrategy::toAttack(const Map &map, Player &player)
+std::vector<Territory> HumanPlayerStrategy::toAttack(const Map &map, const Player &player) const
 {
     std::unordered_set<Territory> attackOptions; // Using an unordered set prevents duplication
     std::vector<Territory> ownedTerritories = map.getPlayersTerritories(player);
@@ -119,7 +119,7 @@ std::vector<Territory> HumanPlayerStrategy::toAttack(const Map &map, Player &pla
     return result;
 }
 
-std::vector<Territory> HumanPlayerStrategy::toDefend(const Map &map, Player &player)
+std::vector<Territory> HumanPlayerStrategy::toDefend(const Map &map, const Player &player) const
 {
     return map.getPlayersTerritories(player);
 }
@@ -413,12 +413,12 @@ void AggressivePlayerStrategy::issueOrder(Map &, Player &)
 {
 }
 
-std::vector<Territory> AggressivePlayerStrategy::toAttack(const Map &, Player &)
+std::vector<Territory> AggressivePlayerStrategy::toAttack(const Map &, const Player &) const
 {
     return std::vector<Territory>();
 }
 
-std::vector<Territory> AggressivePlayerStrategy::toDefend(const Map &, Player &)
+std::vector<Territory> AggressivePlayerStrategy::toDefend(const Map &, const Player &) const
 {
     return std::vector<Territory>();
 }
@@ -465,22 +465,68 @@ std::ostream &BenevolentPlayerStrategy::print(std::ostream &output) const
     return output;
 }
 
-void BenevolentPlayerStrategy::issueOrder(Map &, Player &)
+void BenevolentPlayerStrategy::issueOrder(Map &map, Player &player)
 {
+    std::vector<Territory> preDeployWeakest = this->toDefend(map, player);
+    int evenArmiesPerTerritory = player.getReinforcementPool() / preDeployWeakest.size();
+    int remainingArmiesPerTerritory = player.getReinforcementPool() % preDeployWeakest.size();
 
+    if (evenArmiesPerTerritory != 0)
+    {
+        for (auto &territory : preDeployWeakest)
+        {
+            player.getOrders().addToList(OrderBuilder::buildDeployOrder(&map, &player, territory, evenArmiesPerTerritory));
+        }
+    }
+
+    if (remainingArmiesPerTerritory != 0)
+    {
+        for (std::size_t i = 0; i < static_cast<std::size_t>(remainingArmiesPerTerritory); ++i)
+        {
+            player.getOrders().addToList(OrderBuilder::buildDeployOrder(&map, &player, preDeployWeakest.at(i), 1));
+        }
+    }
+
+    std::cout << "Deploying reinforcements to weakest territories" << std::endl;
+    std::string input;
+    std::cout << "Press enter to continue..." << std::endl;
+    std::getline(std::cin, input);
+
+    player.getGameEngine().notify();
+
+
+    // Now that forces are deployed try to even them out further
+    std::vector<Territory> postDeployWeakest = this->toDefend(map, player);
+
+    // For each weakest get a non-weak player owned neighbor
+    for (const auto &territory : postDeployWeakest)
+    {
+        std::unordered_set<Territory> ownedNeighbors = map.getCommonOwnerNeighbors(territory);
+        std::vector<Territory> strongestNeighbors = player.getStrongest(std::vector<Territory>(ownedNeighbors.begin(), ownedNeighbors.end()));
+
+        if (!strongestNeighbors.empty())
+        {
+            Territory chosenStrongest = strongestNeighbors.at(0);
+            int move = std::min((chosenStrongest.getOccupyingArmies() - territory.getOccupyingArmies()) / 2, 1);
+            player.getOrders().addToList(OrderBuilder::buildAdvanceOrder(&map, &player, chosenStrongest, territory, move));
+        }
+    }
+
+    std::cout << "Moving armies from strongest territories to weakest territories" << std::endl;
+    std::cout << "Press enter to continue..." << std::endl;
+    std::getline(std::cin, input);
+
+    player.getGameEngine().notify();
 }
 
-std::vector<Territory> BenevolentPlayerStrategy::toAttack(const Map &, Player &)
+std::vector<Territory> BenevolentPlayerStrategy::toAttack(const Map &, const Player &) const
 {
     return std::vector<Territory>();
 }
 
-std::vector<Territory> BenevolentPlayerStrategy::toDefend(const Map &, Player &player)
+std::vector<Territory> BenevolentPlayerStrategy::toDefend(const Map &map, const Player &player) const
 {
-    // Find the weakest territories
-    // check if their neighbors have any armies
-    // split the armies in half between territories
-    std::vector<Territory> weakest = player
+    return player.getWeakest(map.getPlayersTerritories(player));
 }
 
 PlayerStrategy *BenevolentPlayerStrategy::clone() const
@@ -529,12 +575,12 @@ void NeutralPlayerStrategy::issueOrder(Map &, Player &)
 {
 }
 
-std::vector<Territory> NeutralPlayerStrategy::toAttack(const Map &, Player &)
+std::vector<Territory> NeutralPlayerStrategy::toAttack(const Map &, const Player &) const
 {
     return std::vector<Territory>();
 }
 
-std::vector<Territory> NeutralPlayerStrategy::toDefend(const Map &, Player &)
+std::vector<Territory> NeutralPlayerStrategy::toDefend(const Map &, const Player &) const
 {
     return std::vector<Territory>();
 }

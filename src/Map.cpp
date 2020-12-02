@@ -325,6 +325,19 @@ const std::unordered_set<Territory> *Map::getNeighbors(const Territory &t) const
     return this->territories->getNeighbors(t);
 }
 
+const std::unordered_set<Territory> Map::getCommonOwnerNeighbors(const Territory &t) const
+{
+    if (t.getOwningPlayer() == nullptr)
+    {
+        return std::unordered_set<Territory>();
+    }
+
+    const std::unordered_set<Territory> *neighbors = this->getNeighbors(t);
+    std::vector<Territory> playerOwnedList = this->getPlayersTerritories(*t.getOwningPlayer());
+    std::unordered_set<Territory> playerOwned(playerOwnedList.begin(), playerOwnedList.end());
+    return SetUtilities::setIntersect(*neighbors, playerOwned);
+}
+
 MapState Map::validate() const
 {
     if (!this->territories->isConnected())

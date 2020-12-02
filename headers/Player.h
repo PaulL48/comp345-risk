@@ -73,16 +73,16 @@ public:
 
     // Auxiliary Methods ==================================================
     // Return the number of armies currently queued to deploy
-    int getReinforcementsPendingDeployment();
-    int getReinforcementsPendingDeployment(const Territory& territory);
+    int getReinforcementsPendingDeployment() const;
+    int getReinforcementsPendingDeployment(const Territory& territory) const;
     void addToNegotiatorsList(Player *player) const;
     bool isNegotiator(const Player *player) const;
 
     void setGameEngine(GameEngine *engine);
     GameEngine &getGameEngine() const;
 
-    std::vector<Territory> getWeakest(const std::vector<Territory> &territories);
-    std::vector<Territory> getStrongest(const std::vector<Territory> &territories);
+    std::vector<Territory> getWeakest(const std::vector<Territory> &territories) const;
+    std::vector<Territory> getStrongest(const std::vector<Territory> &territories) const;
 private:
     std::string *playerName;
     Hand *cards;

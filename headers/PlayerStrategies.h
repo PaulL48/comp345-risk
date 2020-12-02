@@ -14,11 +14,11 @@ public:
     virtual void issueOrder(Map &map, Player &player) = 0;
 
     // Return the list of territories to attack based on the intended strategy behavior
-    virtual std::vector<Territory> toAttack(const Map &map, Player &player) = 0;
+    virtual std::vector<Territory> toAttack(const Map &map, const Player &player) const = 0;
 
     // Return the list of territories to reinforce based on the intended strategy
     // behavior
-    virtual std::vector<Territory> toDefend(const Map &map, Player &player) = 0;
+    virtual std::vector<Territory> toDefend(const Map &map, const Player &player) const = 0;
 
     virtual PlayerStrategy *clone() const = 0;
 
@@ -36,8 +36,8 @@ public:
     HumanPlayerStrategy &operator=(const HumanPlayerStrategy &strategy);
     friend std::ostream &operator<<(std::ostream &output, const HumanPlayerStrategy & strategy);
     virtual void issueOrder(Map &map, Player &player);
-    virtual std::vector<Territory> toAttack(const Map &map, Player &player);
-    virtual std::vector<Territory> toDefend(const Map &map, Player &player);
+    virtual std::vector<Territory> toAttack(const Map &map, const Player &player) const;
+    virtual std::vector<Territory> toDefend(const Map &map, const Player &player) const;
     virtual PlayerStrategy *clone() const;
     virtual std::ostream &print(std::ostream &output) const;
 
@@ -66,8 +66,8 @@ public:
     AggressivePlayerStrategy &operator=(const AggressivePlayerStrategy &strategy);
     friend std::ostream &operator<<(std::ostream &output, const AggressivePlayerStrategy & strategy);
     virtual void issueOrder(Map &map, Player &player);
-    virtual std::vector<Territory> toAttack(const Map &map, Player &player);
-    virtual std::vector<Territory> toDefend(const Map &map, Player &player);
+    virtual std::vector<Territory> toAttack(const Map &map, const Player &player) const;
+    virtual std::vector<Territory> toDefend(const Map &map, const Player &player) const;
     virtual PlayerStrategy *clone() const;
     virtual std::ostream &print(std::ostream &output) const;
 
@@ -82,8 +82,8 @@ public:
     BenevolentPlayerStrategy &operator=(const BenevolentPlayerStrategy &strategy);
     friend std::ostream &operator<<(std::ostream &output, const BenevolentPlayerStrategy & strategy);
     virtual void issueOrder(Map &map, Player &player);
-    virtual std::vector<Territory> toAttack(const Map &map, Player &player);
-    virtual std::vector<Territory> toDefend(const Map &map, Player &player);
+    virtual std::vector<Territory> toAttack(const Map &map, const Player &player) const;
+    virtual std::vector<Territory> toDefend(const Map &map, const Player &player) const;
     virtual PlayerStrategy *clone() const;
     virtual std::ostream &print(std::ostream &output) const;
 };
@@ -97,8 +97,8 @@ public:
     NeutralPlayerStrategy &operator=(const NeutralPlayerStrategy &strategy);
     friend std::ostream &operator<<(std::ostream &output, const NeutralPlayerStrategy & strategy);
     virtual void issueOrder(Map &map, Player &player);
-    virtual std::vector<Territory> toAttack(const Map &map, Player &player);
-    virtual std::vector<Territory> toDefend(const Map &map, Player &player);
+    virtual std::vector<Territory> toAttack(const Map &map, const Player &player) const;
+    virtual std::vector<Territory> toDefend(const Map &map, const Player &player) const;
     virtual PlayerStrategy *clone() const;
     virtual std::ostream &print(std::ostream &output) const;
 };
