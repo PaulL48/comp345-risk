@@ -320,3 +320,42 @@ PlayerStrategy &Player::getStrategy() const
     return *this->strategy;
 }
 
+std::vector<Territory> Player::getWeakest(const std::vector<Territory> &territories)
+{
+    std::vector<Territory> result;
+    int min = std::numeric_limits<int>::max();
+    for (const auto &territory : territories)
+    {
+        int actualArmyValue = territory.getOccupyingArmies() + this->getReinforcementsPendingDeployment(territory);
+        if (actualArmyValue == min)
+        {
+            result.push_back(territory);
+        }
+        else if (actualArmyValue < min)
+        {
+            result.clear();
+            result.push_back(territory);
+        }
+    }
+    return result;
+}
+
+std::vector<Territory> Player::getStrongest(const std::vector<Territory> &territories)
+{
+    std::vector<Territory> result;
+    int max = std::numeric_limits<int>::max();
+    for (const auto &territory : territories)
+    {
+        int actualArmyValue = territory.getOccupyingArmies() + this->getReinforcementsPendingDeployment(territory);
+        if (actualArmyValue == max)
+        {
+            result.push_back(territory);
+        }
+        else if (actualArmyValue > max)
+        {
+            result.clear();
+            result.push_back(territory);
+        }
+    }
+    return result;
+}

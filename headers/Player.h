@@ -80,6 +80,9 @@ public:
 
     void setGameEngine(GameEngine *engine);
     GameEngine &getGameEngine() const;
+
+    std::vector<Territory> getWeakest(const std::vector<Territory> &territories);
+    std::vector<Territory> getStrongest(const std::vector<Territory> &territories);
 private:
     std::string *playerName;
     Hand *cards;
