@@ -359,11 +359,12 @@ public:
 
     std::vector<Continent> getPlayersContinents(const Player &player) const;
     int getPlayersContinentBonus(const Player &player);
-
     void setTerritoryOwnerByName(Player &player, const std::string &territoryName);
 
     std::size_t size() const;
 
+    int getContinentIdByName(const std::string &name);
+    int getTerritoryIdByName(const std::string &name);
     const Territory *getTerritory(const Territory& t);
 
 private:

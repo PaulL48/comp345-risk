@@ -246,7 +246,7 @@ std::ostream &operator<<(std::ostream &output, const Continent &continent)
     output << "Color: " << *continent.color << "\n";
     output << "Army Value: " << *continent.armyValue << "\n";
     output << "Territories: \n";
-    for (auto &entry : *continent.territories)
+    for (auto &entry : continent.getTerritories())
     {
         output << entry;
     }
@@ -429,6 +429,7 @@ void Map::addContinent(const Continent &continent)
 
 void Map::addTerritory(const Territory &territory, int continentId)
 {
+    std::cout << "Adding territory: " << territory << std::endl;
     if (continentId <= 0 ||
         static_cast<std::size_t>(continentId) > this->continents->size())
     {
@@ -570,6 +571,24 @@ std::ostream &operator<<(std::ostream &output, const Map &map)
 std::size_t Map::size() const
 {
     return this->territories->size();
+}
+
+int Map::getContinentIdByName(const std::string &name){
+    int i = 1;
+    for (const auto& continent : *this->continents){
+        if (name == continent.getName())
+            break;
+        i++;
+    }
+    return i;
+}
+
+int Map::getTerritoryIdByName(const std::string &name){
+    for (const auto& territory : this->territories->getVertices()){
+        if (name == territory.getName())
+            return territory.getId();
+    }
+    return -1;
 }
 
 const Territory *Map::getTerritory(const Territory &t)
