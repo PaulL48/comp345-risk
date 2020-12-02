@@ -1,8 +1,8 @@
 #ifndef GAME_OBSERVERS_H
 #define GAME_OBSERVERS_H
 
-#include <set>
 #include <vector>
+#include <string>
 
 constexpr int SMALL_COLUMN = 10;
 constexpr int MED_COLUMN = 20;
