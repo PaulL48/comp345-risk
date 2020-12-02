@@ -334,7 +334,7 @@ void HumanPlayerStrategy::airlift(Player &player, Map &map)
 
 
     std::vector<Territory> candidates = this->toDefend(map, player);
-    auto it = std::remove_if(candidates.begin(), candidates.end(), [&player, &target](Territory& t) { return t.getOccupyingArmies() == 0 || t == target; });
+    auto it = std::remove_if(candidates.begin(), candidates.end(), [&target](Territory& t) { return t.getOccupyingArmies() == 0 || t == target; });
     if (it != candidates.end())
     {
         candidates.erase(it);
