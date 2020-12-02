@@ -361,3 +361,24 @@ std::vector<Territory> Player::getStrongest(const std::vector<Territory> &territ
     }
     return result;
 }
+
+std::vector<Territory> Player::getStrongestWithHostileNeighbors(const std::vector<Territory> &territories) const
+{
+    std::vector<Territory> result;
+    int max = 0;
+    for (const auto &territory : territories)
+    {
+        int actualArmyValue = territory.getOccupyingArmies() + this->getReinforcementsPendingDeployment(territory);
+        if (actualArmyValue == max)
+        {
+            result.push_back(territory);
+        }
+        else if (actualArmyValue > max)
+        {
+            result.clear();
+            result.push_back(territory);
+            max = actualArmyValue;
+        }
+    }
+    return result;
+}
