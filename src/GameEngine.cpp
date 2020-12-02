@@ -536,7 +536,6 @@ void GameEngine::executeOrdersPhase()
                 *this->currentPlayer = i;
             }
         }
-        order->getMutableDataPayload().player;
         order->execute();
         this->notify();
     }
