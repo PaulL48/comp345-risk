@@ -335,6 +335,7 @@ std::vector<Territory> Player::getWeakest(const std::vector<Territory> &territor
         {
             result.clear();
             result.push_back(territory);
+            min = actualArmyValue;
         }
     }
     return result;
@@ -343,7 +344,7 @@ std::vector<Territory> Player::getWeakest(const std::vector<Territory> &territor
 std::vector<Territory> Player::getStrongest(const std::vector<Territory> &territories) const
 {
     std::vector<Territory> result;
-    int max = std::numeric_limits<int>::max();
+    int max = 0;
     for (const auto &territory : territories)
     {
         int actualArmyValue = territory.getOccupyingArmies() + this->getReinforcementsPendingDeployment(territory);
@@ -355,6 +356,7 @@ std::vector<Territory> Player::getStrongest(const std::vector<Territory> &territ
         {
             result.clear();
             result.push_back(territory);
+            max = actualArmyValue;
         }
     }
     return result;

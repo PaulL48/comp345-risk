@@ -508,7 +508,7 @@ void BenevolentPlayerStrategy::issueOrder(Map &map, Player &player)
         {
             Territory chosenStrongest = strongestNeighbors.at(0);
             int move = chosenStrongest.getOccupyingArmies() - territory.getOccupyingArmies();
-            if (move != 0)
+            if (move > 0)
             {
                 player.getOrders().addToList(OrderBuilder::buildAdvanceOrder(&map, &player, chosenStrongest, territory, move));
             }
