@@ -107,6 +107,7 @@ Player::Player(const Player &p) :
     reinforcementPool(new int(*p.reinforcementPool)),
     negotiators(new std::vector<Player *>(*p.negotiators)),
     conqueredTerritory(new bool(*p.conqueredTerritory)),
+    strategy(nullptr),
     engine(p.engine)
 {
     if (p.strategy != nullptr)
@@ -168,7 +169,8 @@ Player &Player::operator=(const Player &player)
     *this->negotiators = *player.negotiators;
     *this->conqueredTerritory = *player.conqueredTerritory;
     *this->reinforcementPool = *player.reinforcementPool;
-    *this->strategy = *player.strategy;
+    this->setStrategy(*player.strategy);
+    //*this->strategy = *player.strategy;
     this->engine = player.engine;
     return *this;
 }
@@ -224,6 +226,11 @@ void Player::setConqueredTerritory(bool conqueredTerritory)
 
 void Player::setStrategy(const PlayerStrategy &strategy)
 {
+    if (this->strategy != nullptr)
+    {
+        delete this->strategy;
+    }
+
     this->strategy = strategy.clone();
 }
 
@@ -264,7 +271,11 @@ int Player::getReinforcementsPendingDeployment(const Territory& territory)
         {
             pendingDeployment += *order->getMutableDataPayload().numberOfArmies;
         }
-        else if ((order->getExecutionPriority() == AIRLIFT_PRIORITY) && *order->getMutableDataPayload().sourceTerritory == territory)
+        else if (order->getExecutionPriority() == REMAINDER_PRIORITY && order->getMutableDataPayload().sourceTerritory != nullptr && order->getMutableDataPayload().targetTerritory != nullptr && *order->getMutableDataPayload().sourceTerritory == territory)
+        {
+            pendingDeployment -= *order->getMutableDataPayload().numberOfArmies;
+        }
+        else if (order->getExecutionPriority() == AIRLIFT_PRIORITY && *order->getMutableDataPayload().sourceTerritory == territory)
         {
             pendingDeployment -= *order->getMutableDataPayload().numberOfArmies;
         }
@@ -303,3 +314,9 @@ GameEngine &Player::getGameEngine() const
 {
     return *this->engine;
 }
+
+PlayerStrategy &Player::getStrategy() const
+{
+    return *this->strategy;
+}
+

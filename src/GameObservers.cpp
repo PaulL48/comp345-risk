@@ -289,7 +289,7 @@ void PhaseObserver::displayReinforcementsPhase() const
 {
     const Player &player = this->game->getCurrentPlayer();
     std::cout << "Reinforcement Phase" << std::endl;
-    std::cout << "Player: " << player.getPlayerName() << std::endl;
+    std::cout << "Player: " << player.getPlayerName() << "(" << player.getStrategy() << ")" << std::endl;
 
     const auto &territories = this->game->getMap().getPlayersTerritories(player);
     const auto &continents = this->game->getMap().getPlayersContinents(player);

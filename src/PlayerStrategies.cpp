@@ -58,7 +58,11 @@ void HumanPlayerStrategy::issueOrder(Map &map, Player &player)
         std::cout << "================================================================================" << std::endl;
         std::cout << "Issue deployment orders to distribute all your reinforcements" << std::endl;
         std::cout << "Current orders are:" << std::endl;
-        std::cout << player.getOrders() << std::endl;
+        for (const auto *order : player.getOrders().getList())
+        {
+            std::cout << "\t- " << *order << std::endl;
+        }
+        std::cout << std::endl;
 
         InputUtilities::executeMenuAction(
             "Actions: ",
@@ -76,7 +80,10 @@ void HumanPlayerStrategy::issueOrder(Map &map, Player &player)
         std::cout << "================================================================================" << std::endl;
         std::cout << "Issue other orders to try and conquer the world" << std::endl;
         std::cout << "Current orders are:" << std::endl;
-        std::cout << player.getOrders() << std::endl;
+        for (const auto *order : player.getOrders().getList())
+        {
+            std::cout << "\t- " << *order << std::endl;
+        }
         InputUtilities::executeMenuAction(
             "Actions: ",
             std::vector<std::string>{"Issue attack order", "Issue defense order", "Play a card", "Delete an order", "Stop Issuing Orders"},
@@ -186,7 +193,7 @@ void HumanPlayerStrategy::attack(Player &player, Map& map)
     Territory &source = InputUtilities::getMenuChoice("Choose territory to attack from: ", attackCandidatesList);
 
     // We need to get the number of armies deployed to the territory as the number
-    std::size_t amount = InputUtilities::getRangedInput("Choose the number of armies to attack with: ", 1, player.getReinforcementsPendingDeployment(source));
+    std::size_t amount = InputUtilities::getRangedInput("Choose the number of armies to attack with: ", 1, source.getOccupyingArmies() + player.getReinforcementsPendingDeployment(source));
     player.getOrders().addToList(OrderBuilder::buildAdvanceOrder(&map, &player, source, target, amount));
 }
 
@@ -229,7 +236,7 @@ void HumanPlayerStrategy::defend(Player &player, Map& map)
     Territory &source = InputUtilities::getMenuChoice("Choose territory to defend from: ", attackCandidatesList);
 
     // We need to get the number of armies deployed to the territory as the number
-    std::size_t amount = InputUtilities::getRangedInput("Choose the number of armies to defend with: ", 1, player.getReinforcementsPendingDeployment(source));
+    std::size_t amount = InputUtilities::getRangedInput("Choose the number of armies to defend with: ", 1, source.getOccupyingArmies() + player.getReinforcementsPendingDeployment(source));
 
     player.getOrders().addToList(OrderBuilder::buildAdvanceOrder(&map, &player, source, target, amount));
 }

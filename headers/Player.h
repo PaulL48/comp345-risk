@@ -64,6 +64,7 @@ public:
     bool getConqueredTerritory() const;
     void setConqueredTerritory(bool conqueredTerritory);
     void setStrategy(const PlayerStrategy &strategy);
+    PlayerStrategy &getStrategy() const;
 
     // Core Functionality =================================================
     std::vector<Territory> toAttack(const Map &map) const;

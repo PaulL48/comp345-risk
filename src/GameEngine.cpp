@@ -493,6 +493,7 @@ void GameEngine::mainGameLoop()
             player.getOrders().clear();
         }
     }
+    this->notify();
 }
 
 void GameEngine::reinforcementPhase()
