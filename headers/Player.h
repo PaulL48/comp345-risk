@@ -26,8 +26,13 @@ namespace InputUtilities
     T &getMenuChoice(const std::string &prompt, std::vector<T> &list);
 
     template <typename T>
+    const T *getConstMenuChoice(const std::string &prompt, const std::vector<T*> &list);
+
+    template <typename T>
     std::size_t getNumericalMenuChoice(const std::string &prompt,
                                        const std::vector<T> &list);
+
+    void executeMenuAction(const std::string &prompt, const std::vector<std::string> &list, const std::vector<std::function<void(void)>> &actions);
 
 } // namespace InputUtilities
 
@@ -59,20 +64,22 @@ public:
     bool getConqueredTerritory() const;
     void setConqueredTerritory(bool conqueredTerritory);
     void setStrategy(const PlayerStrategy &strategy);
+    PlayerStrategy &getStrategy() const;
 
     // Core Functionality =================================================
     std::vector<Territory> toAttack(const Map &map) const;
     std::vector<Territory> toDefend(const Map &map) const;
-    void issueOrder(const Map &map);
+    void issueOrder(Map &map);
 
     // Auxiliary Methods ==================================================
     // Return the number of armies currently queued to deploy
     int getReinforcementsPendingDeployment();
+    int getReinforcementsPendingDeployment(const Territory& territory);
     void addToNegotiatorsList(Player *player) const;
     bool isNegotiator(const Player *player) const;
 
     void setGameEngine(GameEngine *engine);
-
+    GameEngine &getGameEngine() const;
 private:
     std::string *playerName;
     Hand *cards;
@@ -81,12 +88,31 @@ private:
     std::vector<Player *> *negotiators;
     bool *conqueredTerritory; // whether this player has conquered a territory this turn
     PlayerStrategy *strategy;
-    GameEngine
-        *engine; // This is purely to be able to call notify from within issueOrder
+    GameEngine *engine;
 };
 
 template <typename T>
 T &InputUtilities::getMenuChoice(const std::string &prompt, std::vector<T> &list)
+{
+    if (list.size() == 0)
+    {
+        std::exit(1); // Nothing meaningful or valid can be returned here.
+    }
+
+    // Build the list string into the prompt
+    std::stringstream ss;
+    ss << prompt << std::endl;
+    for (std::size_t i = 0; i < list.size(); ++i)
+    {
+        ss << i + 1 << ") " << list.at(i) << std::endl;
+    }
+
+    std::size_t input = InputUtilities::getRangedInput(ss.str(), 1, list.size()) - 1;
+    return list.at(input);
+}
+
+template <typename T>
+const T *InputUtilities::getConstMenuChoice(const std::string &prompt, const std::vector<T*> &list)
 {
     if (list.size() == 0)
     {

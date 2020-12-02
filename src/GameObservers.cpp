@@ -289,7 +289,7 @@ void PhaseObserver::displayReinforcementsPhase() const
 {
     const Player &player = this->game->getCurrentPlayer();
     std::cout << "Reinforcement Phase" << std::endl;
-    std::cout << "Player: " << player.getPlayerName() << std::endl;
+    std::cout << "Player: " << player.getPlayerName() << "(" << player.getStrategy() << ")" << std::endl;
 
     const auto &territories = this->game->getMap().getPlayersTerritories(player);
     const auto &continents = this->game->getMap().getPlayersContinents(player);
@@ -305,7 +305,7 @@ void PhaseObserver::displayReinforcementsPhase() const
               << std::endl;
     for (const auto &continent : continents)
     {
-        std::cout << continent.getName() << " with " << continent.getBonusArmyValue()
+        std::cout << "\t- " << continent.getName() << " with " << continent.getBonusArmyValue()
                   << " bonus armies." << std::endl;
     }
     std::cout << "Total territory control reinforcements: "
@@ -329,20 +329,20 @@ void PhaseObserver::displayIssueOrdersPhase() const
     std::cout << "Current orders: " << std::endl;
     for (const auto *order : player.getOrders().getList())
     {
-        std::cout << "\t -" << order << std::endl;
+        std::cout << "\t- " << *order << std::endl;
     }
 
-    std::cout << "Current territories to attack: ";
+    std::cout << "Current territories to attack: " << std::endl;
     for (const auto &territory : player.toAttack(this->game->getMap()))
     {
-        std::cout << "\t -" << territory.getName() << ", ";
+        std::cout << "\t- " << territory.getName() << " (" << territory.getOccupyingArmies() << " armies)" << std::endl;
     }
     std::cout << std::endl;
 
-    std::cout << "Current territories to defend: ";
+    std::cout << "Current territories to defend: " << std::endl;
     for (const auto &territory : player.toDefend(this->game->getMap()))
     {
-        std::cout << "\t -" << territory.getName() << ", ";
+        std::cout << "\t- " << territory.getName() << " (" << territory.getOccupyingArmies() << " armies)" << std::endl;
     }
     std::cout << std::endl;
 }
@@ -356,6 +356,7 @@ void PhaseObserver::displayOrdersExecutionPhase() const
     std::cout << "Some or all of your orders have been executed: " << std::endl;
     for (const auto *order : player.getOrders().getList())
     {
-        std::cout << "\t -" << order << std::endl;
+        std::cout << "\t- " << *order << std::endl;
     }
+    std::cout << std::endl;
 }

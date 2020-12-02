@@ -590,3 +590,8 @@ int Map::getTerritoryIdByName(const std::string &name){
     }
     return -1;
 }
+
+const Territory *Map::getTerritory(const Territory &t)
+{
+    return this->territories->findIf([&t](const Territory &territory){ return t == territory; });
+}

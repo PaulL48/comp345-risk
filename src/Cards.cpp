@@ -1,6 +1,7 @@
 #include "Cards.h"
 #include "Orders.h"
 
+#include "Orders.h"
 #include <algorithm>
 #include <ctime>
 #include <iostream>
@@ -29,6 +30,11 @@ Card &Card::operator=(const Card &card)
 std::ostream &operator<<(std::ostream &out, const Card &card)
 {
     return card.print(out);
+}
+
+bool Card::operator==(const Card &card) const
+{
+    return this->discriminant() == card.discriminant();
 }
 
 // Deck constructor initializes a deck of 30 assorted cards
@@ -186,6 +192,26 @@ void Hand::playNextCard(Deck &deck, OrdersList &ordersList)
     this->hand->pop_back();
 }
 
+std::vector<Card*> &Hand::getList()
+{
+    return *this->hand;
+}
+
+Order *Hand::playCard(const Card& card, Deck &deck, OrdersList &ordersList)
+{
+    auto it = std::find(this->hand->begin(), this->hand->end(), &card);
+    if (it == this->hand->end())
+    {
+        return nullptr;
+    }
+
+    Order *order = (*it)->play(deck, ordersList);
+    this->hand->at(it - this->hand->begin()) = this->hand->back();
+    this->hand->pop_back();
+
+    return order;
+}
+
 Bombcard::Bombcard()
 {
 }
@@ -202,7 +228,6 @@ Bombcard::Bombcard(const Bombcard &bombcard) : Card(bombcard)
 std::ostream &Bombcard::print(std::ostream &out) const
 {
     out << "Bomb card";
-
     return out;
 }
 
@@ -223,14 +248,16 @@ Card *Bombcard::clone() const
 }
 
 // Plays the card  and creates an order
-void Bombcard::play(Deck &deck, OrdersList &ordersList)
+Order *Bombcard::play(Deck &deck, OrdersList &)
 {
-    // create an order using orders list Bomb constructor
-    ordersList.addToList(Bomb());
     std::cout << "Bomb order has been created" << std::endl;
+    deck.backToDeck(this); // return card to deck once played
+    return new Bomb();
+}
 
-    // return card to deck once played
-    deck.backToDeck(this);
+int Bombcard::discriminant() const
+{
+    return 0;
 }
 
 Reinforcementcard::Reinforcementcard()
@@ -250,7 +277,6 @@ Reinforcementcard::Reinforcementcard(const Reinforcementcard &reinforcementcard)
 std::ostream &Reinforcementcard::print(std::ostream &out) const
 {
     out << "Reinforcement card";
-
     return out;
 }
 
@@ -271,15 +297,16 @@ Card *Reinforcementcard::clone() const
 }
 
 // Plays the card  and creates an order
-void Reinforcementcard::play(Deck &deck, OrdersList &ordersList)
+Order *Reinforcementcard::play(Deck &deck, OrdersList &)
 {
-    // create an order using orders list Reinforcement constructor
-    // Reinforcement reinforcement;
-    ordersList.addToList(Deploy()); // ??
     std::cout << "Reinforcement order has been created" << std::endl;
-
-    // return card to deck once played
     deck.backToDeck(this);
+    return new Reinforcement();
+}
+
+int Reinforcementcard::discriminant() const
+{
+    return 1;
 }
 
 Blockadecard::Blockadecard()
@@ -298,7 +325,6 @@ Blockadecard::Blockadecard(const Blockadecard &blockadecard) : Card(blockadecard
 std::ostream &Blockadecard::print(std::ostream &out) const
 {
     out << "Blockade card";
-
     return out;
 }
 
@@ -319,14 +345,16 @@ Card *Blockadecard::clone() const
 }
 
 // Plays the card  and creates an order
-void Blockadecard::play(Deck &deck, OrdersList &ordersList)
+Order *Blockadecard::play(Deck &deck, OrdersList &)
 {
-    // create an order using orders list Blockade constructor
-    //  Blockade blockade;
-    ordersList.addToList(Blockade());
     std::cout << "Blockade order has been created" << std::endl;
-    // return card to deck once played
     deck.backToDeck(this);
+    return new Blockade();
+}
+
+int Blockadecard::discriminant() const
+{
+    return 2;
 }
 
 Airliftcard::Airliftcard()
@@ -366,14 +394,16 @@ Card *Airliftcard::clone() const
 }
 
 // Plays the card  and creates an order
-void Airliftcard::play(Deck &deck, OrdersList &ordersList)
+Order *Airliftcard::play(Deck &deck, OrdersList &)
 {
-    // create an order using orders list Airlift constructor
-    ordersList.addToList(Airlift());
     std::cout << "Airlift order has been created" << std::endl;
-
-    // return card to deck once played
     deck.backToDeck(this);
+    return new Airlift();
+}
+
+int Airliftcard::discriminant() const
+{
+    return 3;
 }
 
 Diplomacycard::Diplomacycard()
@@ -388,7 +418,6 @@ Diplomacycard::Diplomacycard(const Diplomacycard &diplomacycard) : Card(diplomac
 {
 }
 
-// Stream operator
 std::ostream &Diplomacycard::print(std::ostream &out) const
 {
     out << "Diplomacy card";
@@ -396,7 +425,6 @@ std::ostream &Diplomacycard::print(std::ostream &out) const
     return out;
 }
 
-// copy assignment operator
 Diplomacycard &Diplomacycard::operator=(Diplomacycard &diplomacycard)
 {
     if (&diplomacycard == this)
@@ -412,13 +440,14 @@ Card *Diplomacycard::clone() const
     return new Diplomacycard(*this);
 }
 
-// Plays the card  and creates an order
-void Diplomacycard::play(Deck &deck, OrdersList &ordersList)
+Order *Diplomacycard::play(Deck &deck, OrdersList &)
 {
-    // create an order using orders list Diplomacy constructor
-    ordersList.addToList(Negotiate()); // ??
     std::cout << "Diplomacy order has been created" << std::endl;
-
-    // return card to deck once played
     deck.backToDeck(this);
+    return new Negotiate();
+}
+
+int Diplomacycard::discriminant() const
+{
+    return 4;
 }

@@ -10,6 +10,7 @@ const std::size_t DECK_SIZE = 30;
 
 class Deck;
 class OrdersList;
+class Order;
 
 class Card
 {
@@ -17,13 +18,15 @@ public:
     Card();
     virtual ~Card();
     virtual Card *clone() const = 0;
-    virtual void play(Deck &deck, OrdersList &ordersList) = 0;
+    virtual Order *play(Deck &deck, OrdersList &ordersList) = 0;
     Card &operator=(const Card &card);
+    bool operator==(const Card &card) const;
     friend std::ostream &operator<<(std::ostream &out, const Card &card);
-
+    virtual int discriminant() const = 0;
 protected:
     Card(const Card &card);
     virtual std::ostream &print(std::ostream &out) const = 0;
+    
 };
 
 class Bombcard : public Card
@@ -33,11 +36,12 @@ public:
     virtual ~Bombcard();
     Bombcard(const Bombcard &bomb);
     virtual Card *clone() const;
-    virtual void play(Deck &deck, OrdersList &ordersList);
+    virtual Order *play(Deck &deck, OrdersList &ordersList);
     Bombcard &operator=(const Bombcard &bomb);
-
+    virtual int discriminant() const;
 protected:
     virtual std::ostream &print(std::ostream &out) const;
+    
 };
 
 class Reinforcementcard : public Card
@@ -47,9 +51,9 @@ public:
     Reinforcementcard(const Reinforcementcard &reinforcementcard);
     virtual ~Reinforcementcard();
     virtual Card *clone() const;
-    virtual void play(Deck &deck, OrdersList &ordersList);
+    virtual Order *play(Deck &deck, OrdersList &ordersList);
     Reinforcementcard &operator=(const Reinforcementcard &reinforcementcard);
-
+    virtual int discriminant() const;
 protected:
     virtual std::ostream &print(std::ostream &out) const;
 };
@@ -61,9 +65,9 @@ public:
     virtual ~Blockadecard();
     Blockadecard(const Blockadecard &blockadecard);
     virtual Card *clone() const;
-    virtual void play(Deck &deck, OrdersList &ordersList);
+    virtual Order *play(Deck &deck, OrdersList &ordersList);
     Blockadecard &operator=(const Blockadecard &blockadecard);
-
+    virtual int discriminant() const;
 protected:
     virtual std::ostream &print(std::ostream &out) const;
 };
@@ -75,9 +79,9 @@ public:
     virtual ~Airliftcard();
     Airliftcard(const Airliftcard &airliftcard);
     virtual Card *clone() const;
-    virtual void play(Deck &deck, OrdersList &ordersList);
+    virtual Order *play(Deck &deck, OrdersList &ordersList);
     Airliftcard &operator=(const Airliftcard &airliftcard);
-
+    virtual int discriminant() const;
 protected:
     virtual std::ostream &print(std::ostream &out) const;
 };
@@ -89,9 +93,9 @@ public:
     Diplomacycard(const Diplomacycard &diplomacycard);
     virtual ~Diplomacycard();
     virtual Card *clone() const;
-    virtual void play(Deck &deck, OrdersList &ordersList);
+    virtual Order *play(Deck &deck, OrdersList &ordersList);
     Diplomacycard &operator=(Diplomacycard &diplomacycard);
-
+    virtual int discriminant() const;
 protected:
     virtual std::ostream &print(std::ostream &out) const;
 };
@@ -123,7 +127,8 @@ public:
     int handSize();
     Hand &operator=(const Hand &);
     friend std::ostream &operator<<(std::ostream &out, const Hand &hand);
-
+    std::vector<Card*> &getList();
+    Order *playCard(const Card& card, Deck &deck, OrdersList &ordersList);
 protected:
     std::vector<Card *> *hand;
 };

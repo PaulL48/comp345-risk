@@ -48,6 +48,10 @@ namespace SetUtilities
     template <typename T>
     std::unordered_set<T> setDifference(const std::unordered_set<T> &minuend,
                                         const std::unordered_set<T> &subtrahend);
+
+    template <typename T>
+    std::unordered_set<T> setIntersect(const std::unordered_set<T> &lhs,
+                                        const std::unordered_set<T> &rhs);
 } // namespace SetUtilities
 
 //============================================================================================================================================================
@@ -329,7 +333,7 @@ public:
     MapState validate() const;
 
     Graph<Territory> &getGraph();
-    std::vector<Territory> getPlayersTerritories(const Player &player);
+    //std::vector<Territory> getPlayersTerritories(const Player &player);
     const std::unordered_set<Territory> *getNeighbors(const Territory &t) const;
     std::vector<Continent> &getContinents();
 
@@ -361,6 +365,7 @@ public:
 
     int getContinentIdByName(const std::string &name);
     int getTerritoryIdByName(const std::string &name);
+    const Territory *getTerritory(const Territory& t);
 
 private:
     Graph<Territory> *territories;
@@ -509,6 +514,22 @@ SetUtilities::setDifference(const std::unordered_set<T> &minuend,
     for (const T &element : minuend)
     {
         if (subtrahend.count(element) == 0)
+        {
+            result.insert(element);
+        }
+    }
+    return result;
+}
+
+template <typename T>
+std::unordered_set<T> 
+SetUtilities::setIntersect(const std::unordered_set<T> &lhs,
+                           const std::unordered_set<T> &rhs)
+{
+    std::unordered_set<T> result;
+    for (const T &element : lhs)
+    {
+        if (rhs.count(element) != 0)
         {
             result.insert(element);
         }
