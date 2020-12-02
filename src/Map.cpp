@@ -429,6 +429,7 @@ void Map::addContinent(const Continent &continent)
 
 void Map::addTerritory(const Territory &territory, int continentId)
 {
+    std::cout << "Adding territory: " << territory << std::endl;
     if (continentId <= 0 ||
         static_cast<std::size_t>(continentId) > this->continents->size())
     {
@@ -583,11 +584,9 @@ int Map::getContinentIdByName(const std::string &name){
 }
 
 int Map::getTerritoryIdByName(const std::string &name){
-    int i = 1;
-    for (const auto& territory : *this->territories){
+    for (const auto& territory : this->territories->getVertices()){
         if (name == territory.getName())
-            break;
-        i++;
+            return territory.getId();
     }
-    return i;
+    return -1;
 }

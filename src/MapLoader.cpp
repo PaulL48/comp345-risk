@@ -239,30 +239,104 @@ bool MapLoader::validateFile(const std::vector<std::string> &v)
 }
 
 //==================================================================================================
-//                                              FileReader Class
+//                                              MapReader Class
 //==================================================================================================
 
-FileReader::FileReader(){}
+MapReader::MapReader()
+{
+}
 
-FileReader::FileReader(const FileReader &other) = default;
+MapReader::MapReader(const MapReader &)
+{
+}
 
-FileReader &FileReader::operator=(const FileReader &other) = default;
+MapReader &MapReader::operator=(const MapReader &)
+{
+    return *this;
+}
 
-FileReader::~FileReader(){}
+Map MapReader::read(const std::string &path, bool &valid)
+{
+    return MapReaderAdapter().read(path, valid);
+}
 
 //==================================================================================================
-//                                              ConquestFileReader Class
+//                                              MapReaderAdapter Class
 //==================================================================================================
 
-ConquestFileReader::ConquestFileReader(){}
+MapReaderAdapter::MapReaderAdapter()
+{
+}
 
-ConquestFileReader::ConquestFileReader(const ConquestFileReader &other) = default;
+MapReaderAdapter::MapReaderAdapter(const MapReaderAdapter &)
+{
+}
 
-ConquestFileReader &ConquestFileReader::operator=(const ConquestFileReader &other) = default;
+MapReaderAdapter &MapReaderAdapter::operator=(const MapReaderAdapter &)
+{
+    return *this;
+}
 
-ConquestFileReader::~ConquestFileReader(){}
+Map MapReaderAdapter::read(const std::string &path, bool &valid)
+{
+    std::string extension = path.substr(path.find_last_of(".") + 1);
+    if (extension == CONQUEST_EXTENSION)
+    {
+        std::cout << "Standby, loading conquest map..." << std::endl;
+        return ConquestMapReader().readConquestMap(path, valid);
+    }
+    else if (extension == WARZONE_EXTENSION)
+    {
+        std::cout << "Standby, loading warzone map..." << std::endl;
+        return WarzoneMapReader().readWarzoneMap(path, valid);
+    }
+    else
+    {
+        std::cout << "Unsupported map type extension: " << extension << std::endl;
+        return Map();
+    }
+}
 
-Map ConquestFileReader::loadMapValidated(const std::string &path, bool &valid)
+//==================================================================================================
+//                                              WarzoneMapReader Class
+//==================================================================================================
+
+WarzoneMapReader::WarzoneMapReader()
+{
+}
+
+WarzoneMapReader::WarzoneMapReader(const WarzoneMapReader &)
+{
+}
+
+WarzoneMapReader &WarzoneMapReader::operator=(const WarzoneMapReader &)
+{
+    return *this;
+}
+
+Map WarzoneMapReader::readWarzoneMap(const std::string &path, bool &valid)
+{
+    return MapLoader::loadMapValidated(path, valid);
+}
+
+//==================================================================================================
+//                                              ConquestMapReader Class
+//==================================================================================================
+
+ConquestMapReader::ConquestMapReader()
+{
+}
+
+ConquestMapReader::ConquestMapReader(const ConquestMapReader &)
+{
+}
+
+ConquestMapReader &ConquestMapReader::operator=(const ConquestMapReader &)
+{
+    return *this;
+}
+
+Map ConquestMapReader::readConquestMap(const std::string &path, bool &valid)
 {
     Map map;
     // Check the path is valid
@@ -281,12 +355,14 @@ Map ConquestFileReader::loadMapValidated(const std::string &path, bool &valid)
         exit(1);
     }
 
-    std::vector<std::string> v = ConquestFileReader::readFile(input);
+    std::vector<std::string> v = MapLoader::readFile(input);
 
     // check if valid map file
     std::cout << "Testing : " << path << "\n";
-    if (ConquestFileReader::validateFile(v))
+    if (this->validateFile(v))
+    {
         std::cout << "Testing successful \nBuilding Map\n";
+    }
     else
     {
         std::cout << "Invalid Map, please start again.\n";
@@ -295,9 +371,9 @@ Map ConquestFileReader::loadMapValidated(const std::string &path, bool &valid)
     }
 
     // Load continents
-    ConquestFileReader::addContinents(map, v);
-    ConquestFileReader::addTerritories(map, v);
-    ConquestFileReader::addBorders(map, v);
+    this->addContinents(map, v);
+    this->addTerritories(map, v);
+    this->addBorders(map, v);
     valid = true;
 
     return map;
@@ -308,18 +384,11 @@ Map ConquestFileReader::loadMapValidated(const std::string &path, bool &valid)
  * @param v
  * @return
  */
-void ConquestFileReader::addContinents(Map &map, const std::vector<std::string> &v)
+void ConquestMapReader::addContinents(Map &map, const std::vector<std::string> &v)
 {
     std::cout << "Extraction Continents\n";
     bool flag = false;
     std::string first;
-    std::string item;
-    std::string tempName;
-
-    // the following will be used as parameters
-    std::string name;
-    int armyValue;
-
 
     for (std::string::size_type i = 0; i < v.size(); i++)
     {
@@ -335,18 +404,22 @@ void ConquestFileReader::addContinents(Map &map, const std::vector<std::string> 
             break;
         if (flag)
         {
+            std::size_t separator = v[i].find('=');
+            std::string name = v[i].substr(0, separator);
+            std::string bonus = v[i].substr(separator + 1);
+            int parsedBonus = -1;
 
-            std::stringstream cc;
-            cc << v[i];
-            cc >> name;
-
-            while (cc >> tempName && !isdigit(tempName[0])){
-                name += " " + tempName;
-
+            try
+            {
+                parsedBonus = std::stoi(bonus);
+            }
+            catch(const std::exception& e)
+            {
+                std::cout << e.what() << std::endl;
+                std::exit(1);
             }
 
-            armyValue = std::stoi(tempName);
-            map.addContinent(Continent(name, armyValue, "null"));
+            map.addContinent(Continent(name, parsedBonus, "none"));
 
         }
         // if we reach the continents section start creating
@@ -360,7 +433,7 @@ void ConquestFileReader::addContinents(Map &map, const std::vector<std::string> 
  * @param v
  * @return
  */
-void ConquestFileReader::addTerritories(Map &map, const std::vector<std::string> &v)
+void ConquestMapReader::addTerritories(Map &map, const std::vector<std::string> &v)
 {
     std::cout << "Extraction Territories\n";
     // std::vector<Territory> territories;
@@ -415,7 +488,7 @@ void ConquestFileReader::addTerritories(Map &map, const std::vector<std::string>
  * extracting and adding borders
  * @param v
  */
-void ConquestFileReader::addBorders(Map &map, const std::vector<std::string> &v)
+void ConquestMapReader::addBorders(Map &map, const std::vector<std::string> &v)
 {
     std::cout << "Connecting Territories\n";
     bool flag = false;
@@ -446,7 +519,16 @@ void ConquestFileReader::addBorders(Map &map, const std::vector<std::string> &v)
             }
 
             for (std::string::size_type i = 4; i < line.size(); i++){
-                map.connectTerritories(id, map.getTerritoryIdByName(line.at(i)));
+                // std::cout << "Connecting territory " << i << " with name: " << line.at(i) << std::endl;
+                // map.connectTerritories(id, map.getTerritoryIdByName(line.at(i)));
+                // std::cout << "Connecting territory " << map.getTerritoryIdByName(line.at(i)) << " with name: " << i << std::endl;
+                // map.connectTerritories(map.getTerritoryIdByName(line.at(i)), id);
+                
+                int territoryId1 = map.getTerritoryIdByName(line.at(0));
+                int territoryId2 = map.getTerritoryIdByName(line.at(i));
+
+                std::cout << "Connecting " << territoryId1 << " to " << territoryId2 << std::endl;
+                map.connectTerritories(territoryId1, territoryId2);
             }
 
             id++;
@@ -458,43 +540,24 @@ void ConquestFileReader::addBorders(Map &map, const std::vector<std::string> &v)
 }
 
 /**
- * Helper method. Read file into string vector
- * @param file
- * @return
- */
-std::vector<std::string> ConquestFileReader::readFile(std::ifstream &file)
-{
-    std::vector<std::string> lines;
-    std::string line;
-    while (std::getline(file, line))
-    {
-        replace( line.begin(), line.end(), '=', ' ' );
-        if (line.length() <= 1)
-            continue;
-        lines.push_back(line);
-    }
-    return lines;
-}
-
-/**
  * Helper Method. Validate if file is valid map file
  * @param v
  * @return
  */
-bool ConquestFileReader::validateFile(const std::vector<std::string> &v)
+bool ConquestMapReader::validateFile(const std::vector<std::string> &fileContents)
 {
     std::cout << "Verifing Map file\n";
     bool continentsSwitch = false;
     bool countriesSwitch = false;
     std::string first;
 
-    for (std::string::size_type i = 0; i < v.size(); i++)
+    for (std::string::size_type i = 0; i < fileContents.size(); i++)
     {
         std::stringstream line;
-        line << v[i];
+        line << fileContents[i];
         line >> first;
-        if (v[i].size() == 0 || v[i].at(0) == ';' || v[i].at(0) == '\r' ||
-            v[i].at(0) == '\n')
+        if (fileContents[i].size() == 0 || fileContents[i].at(0) == ';' || fileContents[i].at(0) == '\r' ||
+            fileContents[i].at(0) == '\n')
             continue;
         if (first == "[Continents]")
             continentsSwitch = true;
@@ -505,4 +568,3 @@ bool ConquestFileReader::validateFile(const std::vector<std::string> &v)
         return true;
     return false;
 }
-

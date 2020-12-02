@@ -4,6 +4,8 @@
 #include "Map.h"
 #include <string>
 
+const std::string CONQUEST_EXTENSION = "cmap";
+const std::string WARZONE_EXTENSION = "map";
 
 namespace MapLoader
 {
@@ -13,50 +15,50 @@ namespace MapLoader
     void addContinents(Map &map, const std::vector<std::string> &v);
     std::vector<std::string> readFile(std::ifstream &file);
     bool validateFile(const std::vector<std::string> &v);
-
 } // namespace MapLoader
 
-class FileReader{
+// Endpoint of the adapter pattern
+class MapReader
+{
 public:
-    FileReader();
-    FileReader(const FileReader &other);
-    FileReader &operator=(const FileReader &other);
-    ~FileReader();
-
-    Map read(const std::string &path, bool &valid){
-        return MapLoader::loadMapValidated(path, valid);
-    }
+    MapReader();
+    MapReader(const MapReader &reader);
+    MapReader &operator=(const MapReader &reader);
+    Map read(const std::string &path, bool &valid);
 };
 
-class ConquestFileReader{
+// Adapter of the adapter pattern
+class MapReaderAdapter
+{
 public:
-    ConquestFileReader();
-    ConquestFileReader(const ConquestFileReader &other);
-    ConquestFileReader &operator=(const ConquestFileReader &other);
-    ~ConquestFileReader();
+    MapReaderAdapter();
+    MapReaderAdapter(const MapReaderAdapter &readerAdapter);
+    MapReaderAdapter &operator=(const MapReaderAdapter &readerAdapter);
+    Map read(const std::string &path, bool &valid);
+};
 
-    Map read(const std::string &path, bool &valid){
-        return loadMapValidated(path,valid);
-    }
-    Map loadMapValidated(const std::string &path, bool &valid);
+// Adaptee of the adapter pattern
+class WarzoneMapReader
+{
+public:
+    WarzoneMapReader();
+    WarzoneMapReader(const WarzoneMapReader &reader);
+    WarzoneMapReader &operator=(const WarzoneMapReader &reader);
+    Map readWarzoneMap(const std::string &path, bool &valid);
+};
+
+// Adaptee of the adapter pattern
+class ConquestMapReader
+{
+public:
+    ConquestMapReader();
+    ConquestMapReader(const ConquestMapReader &reader);
+    ConquestMapReader &operator=(const ConquestMapReader &reader);
+    Map readConquestMap(const std::string &path, bool &valid);
     void addTerritories(Map &map, const std::vector<std::string> &v);
     void addBorders(Map &map, const std::vector<std::string> &v);
     void addContinents(Map &map, const std::vector<std::string> &v);
-    std::vector<std::string> readFile(std::ifstream &file);
-    bool validateFile(const std::vector<std::string> &v);
+    bool validateFile(const std::vector<std::string> &fileContents);
 };
-
-class ConquestFileReaderAdapter: public FileReader{
-private:
-    ConquestFileReader conquestFileReader;
-public:
-    ConquestFileReaderAdapter(ConquestFileReader reader){
-        conquestFileReader = reader;
-    }
-    Map read(const std::string &path, bool &valid){
-        return conquestFileReader.read(path, valid);
-    }
-};
-
 
 #endif // MAPLOADER_H
