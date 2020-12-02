@@ -3,6 +3,8 @@
 #include "Player.h"
 #include "GameEngine.h"
 #include <unordered_set>
+#include <algorithm>
+#include <cmath> 
 
 PlayerStrategy::~PlayerStrategy()
 {
