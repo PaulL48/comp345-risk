@@ -8,6 +8,11 @@ PlayerStrategy::~PlayerStrategy()
 {
 }
 
+std::ostream &operator<<(std::ostream &output, const PlayerStrategy &playerStrategy)
+{
+    return playerStrategy.print(output);
+}
+
 //============================================================================================================================================================
 // CLASS DEFINITIONS: HumanPlayerStrategy
 //============================================================================================================================================================
@@ -36,6 +41,12 @@ HumanPlayerStrategy &HumanPlayerStrategy::operator=(const HumanPlayerStrategy &s
 std::ostream &operator<<(std::ostream &output, const HumanPlayerStrategy &)
 {
     output << "Human strategy";
+    return output;
+}
+
+std::ostream &HumanPlayerStrategy::print(std::ostream &output) const
+{
+    output << "Human Strategy";
     return output;
 }
 
@@ -389,6 +400,12 @@ std::ostream &operator<<(std::ostream &output, const AggressivePlayerStrategy &)
     return output;
 }
 
+std::ostream &AggressivePlayerStrategy::print(std::ostream &output) const
+{
+    output << "Aggressive Strategy";
+    return output;
+}
+
 void AggressivePlayerStrategy::issueOrder(Map &, Player &)
 {
 }
@@ -439,6 +456,12 @@ std::ostream &operator<<(std::ostream &output, const BenevolentPlayerStrategy &)
     return output;
 }
 
+std::ostream &BenevolentPlayerStrategy::print(std::ostream &output) const
+{
+    output << "Benevolent Strategy";
+    return output;
+}
+
 void BenevolentPlayerStrategy::issueOrder(Map &, Player &)
 {
 }
@@ -486,6 +509,12 @@ NeutralPlayerStrategy &NeutralPlayerStrategy::operator=(const NeutralPlayerStrat
 std::ostream &operator<<(std::ostream &output, const NeutralPlayerStrategy &)
 {
     output << "Neutral strategy";
+    return output;
+}
+
+std::ostream &NeutralPlayerStrategy::print(std::ostream &output) const
+{
+    output << "Neutral Strategy";
     return output;
 }
 

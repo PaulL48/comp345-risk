@@ -21,6 +21,10 @@ public:
     virtual std::vector<Territory> toDefend(const Map &map, const Player &player) = 0;
 
     virtual PlayerStrategy *clone() const = 0;
+
+    virtual std::ostream &print(std::ostream &output) const = 0;
+
+    friend std::ostream &operator<<(std::ostream &output, const PlayerStrategy &playerStrategy);
 };
 
 class HumanPlayerStrategy : public PlayerStrategy
@@ -35,6 +39,7 @@ public:
     virtual std::vector<Territory> toAttack(const Map &map, const Player &player);
     virtual std::vector<Territory> toDefend(const Map &map, const Player &player);
     virtual PlayerStrategy *clone() const;
+    virtual std::ostream &print(std::ostream &output) const;
 
 private:
     void deploy(Player &player, Map& map);
@@ -64,6 +69,8 @@ public:
     virtual std::vector<Territory> toAttack(const Map &map, const Player &player);
     virtual std::vector<Territory> toDefend(const Map &map, const Player &player);
     virtual PlayerStrategy *clone() const;
+    virtual std::ostream &print(std::ostream &output) const;
+
 };
 
 class BenevolentPlayerStrategy : public PlayerStrategy
@@ -78,6 +85,7 @@ public:
     virtual std::vector<Territory> toAttack(const Map &map, const Player &player);
     virtual std::vector<Territory> toDefend(const Map &map, const Player &player);
     virtual PlayerStrategy *clone() const;
+    virtual std::ostream &print(std::ostream &output) const;
 };
 
 class NeutralPlayerStrategy : public PlayerStrategy
@@ -92,6 +100,7 @@ public:
     virtual std::vector<Territory> toAttack(const Map &map, const Player &player);
     virtual std::vector<Territory> toDefend(const Map &map, const Player &player);
     virtual PlayerStrategy *clone() const;
+    virtual std::ostream &print(std::ostream &output) const;
 };
 
 #endif

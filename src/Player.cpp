@@ -175,7 +175,7 @@ Player &Player::operator=(const Player &player)
 
 std::ostream &operator<<(std::ostream &output, const Player &p)
 {
-    output << "(Player Name: " << *p.playerName << ", Reinforcement Pool: "
+    output << "(Name: " << *p.playerName << ", Strategy: " << *p.strategy << ", Reinforcement Pool: "
            << *p.reinforcementPool << ")";
            //<< ", Orders: " << *p.orders << ", Cards: " << *p.cards << ")";
            //<< ", Cards: " << *p.cards << ")";
@@ -264,8 +264,7 @@ int Player::getReinforcementsPendingDeployment(const Territory& territory)
         {
             pendingDeployment += *order->getMutableDataPayload().numberOfArmies;
         }
-
-        if ((order->getExecutionPriority() == AIRLIFT_PRIORITY) && *order->getMutableDataPayload().sourceTerritory == territory)
+        else if ((order->getExecutionPriority() == AIRLIFT_PRIORITY) && *order->getMutableDataPayload().sourceTerritory == territory)
         {
             pendingDeployment -= *order->getMutableDataPayload().numberOfArmies;
         }
