@@ -106,6 +106,7 @@ public:
     int getExecutionPriority() const;
 
     OrderDataPayload &getMutableDataPayload();
+    const OrderDataPayload &getDataPayload() const;
 
     virtual void execute() = 0;
     virtual bool validate() = 0;

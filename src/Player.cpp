@@ -249,39 +249,39 @@ void Player::issueOrder(Map &map)
     this->strategy->issueOrder(map, *this);
 }
 
-int Player::getReinforcementsPendingDeployment()
+int Player::getReinforcementsPendingDeployment() const
 {
     int pendingDeployment = 0;
     for (Order *order : this->orders->getList())
     {
         if (order->getExecutionPriority() == DEPLOY_PRIORITY)
         {
-            pendingDeployment += *order->getMutableDataPayload().numberOfArmies;
+            pendingDeployment += *order->getDataPayload().numberOfArmies;
         }
     }
     return pendingDeployment;
 }
 
-int Player::getReinforcementsPendingDeployment(const Territory& territory)
+int Player::getReinforcementsPendingDeployment(const Territory& territory) const
 {
     int pendingDeployment = 0;
-    for (Order *order : this->orders->getList())
+    for (const Order *order : this->orders->getList())
     {
-        if ((order->getExecutionPriority() == DEPLOY_PRIORITY) && *order->getMutableDataPayload().targetTerritory == territory)
+        if ((order->getExecutionPriority() == DEPLOY_PRIORITY) && *order->getDataPayload().targetTerritory == territory)
         {
-            pendingDeployment += *order->getMutableDataPayload().numberOfArmies;
+            pendingDeployment += *order->getDataPayload().numberOfArmies;
         }
-        else if (order->getExecutionPriority() == REMAINDER_PRIORITY && order->getMutableDataPayload().sourceTerritory != nullptr && order->getMutableDataPayload().targetTerritory != nullptr && *order->getMutableDataPayload().sourceTerritory == territory)
+        else if (order->getExecutionPriority() == REMAINDER_PRIORITY && order->getDataPayload().sourceTerritory != nullptr && order->getDataPayload().targetTerritory != nullptr && *order->getDataPayload().sourceTerritory == territory)
         {
-            pendingDeployment -= *order->getMutableDataPayload().numberOfArmies;
+            pendingDeployment -= *order->getDataPayload().numberOfArmies;
         }
-        else if (order->getExecutionPriority() == AIRLIFT_PRIORITY && *order->getMutableDataPayload().sourceTerritory == territory)
+        else if (order->getExecutionPriority() == AIRLIFT_PRIORITY && *order->getDataPayload().sourceTerritory == territory)
         {
-            pendingDeployment -= *order->getMutableDataPayload().numberOfArmies;
+            pendingDeployment -= *order->getDataPayload().numberOfArmies;
         }
-        else if ((order->getExecutionPriority() == AIRLIFT_PRIORITY) && *order->getMutableDataPayload().targetTerritory == territory)
+        else if ((order->getExecutionPriority() == AIRLIFT_PRIORITY) && *order->getDataPayload().targetTerritory == territory)
         {
-            pendingDeployment += *order->getMutableDataPayload().numberOfArmies;
+            pendingDeployment += *order->getDataPayload().numberOfArmies;
         }
     }
     return pendingDeployment;
@@ -320,3 +320,44 @@ PlayerStrategy &Player::getStrategy() const
     return *this->strategy;
 }
 
+std::vector<Territory> Player::getWeakest(const std::vector<Territory> &territories) const
+{
+    std::vector<Territory> result;
+    int min = std::numeric_limits<int>::max();
+    for (const auto &territory : territories)
+    {
+        int actualArmyValue = territory.getOccupyingArmies() + this->getReinforcementsPendingDeployment(territory);
+        if (actualArmyValue == min)
+        {
+            result.push_back(territory);
+        }
+        else if (actualArmyValue < min)
+        {
+            result.clear();
+            result.push_back(territory);
+            min = actualArmyValue;
+        }
+    }
+    return result;
+}
+
+std::vector<Territory> Player::getStrongest(const std::vector<Territory> &territories) const
+{
+    std::vector<Territory> result;
+    int max = 0;
+    for (const auto &territory : territories)
+    {
+        int actualArmyValue = territory.getOccupyingArmies() + this->getReinforcementsPendingDeployment(territory);
+        if (actualArmyValue == max)
+        {
+            result.push_back(territory);
+        }
+        else if (actualArmyValue > max)
+        {
+            result.clear();
+            result.push_back(territory);
+            max = actualArmyValue;
+        }
+    }
+    return result;
+}

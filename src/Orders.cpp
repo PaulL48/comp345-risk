@@ -262,6 +262,11 @@ OrderDataPayload &Order::getMutableDataPayload()
     return *this->dataPayload;
 }
 
+const OrderDataPayload &Order::getDataPayload() const
+{
+    return *this->dataPayload;
+}
+
 ostream &operator<<(ostream &out, const Order &order)
 {
     order.print(out);
